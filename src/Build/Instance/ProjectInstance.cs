@@ -1393,7 +1393,7 @@ namespace Microsoft.Build.Execution
             // If another SDK already set it, we do not overwrite it.
             if (_sdkResolvedEnvironmentVariableProperties?.Contains(name) == true)
             {
-                _loggingContext.LogComment(MessageImportance.Low, "SdkEnvironmentVariableAlreadySetBySdk", name, value);
+                LogIfValueDiffers(_sdkResolvedEnvironmentVariableProperties, name, value, "SdkEnvironmentVariableAlreadySetBySdk");
                 return;
             }
 
@@ -1407,8 +1407,9 @@ namespace Microsoft.Build.Execution
             bool overridingAmbient = _environmentVariableProperties.Contains(name);
             if (overridingAmbient)
             {
+                // Log before removing so LogIfValueDiffers can compare the old and new values.
+                LogIfValueDiffers(_environmentVariableProperties, name, value, "SdkEnvironmentVariableOverridingAmbient");
                 _environmentVariableProperties.Remove(name);
-                _loggingContext.LogComment(MessageImportance.Low, "SdkEnvironmentVariableOverridingAmbient", name, value);
             }
 
             // Set the property, overriding ambient environment variables but not regular properties defined in XML.
@@ -1419,8 +1420,18 @@ namespace Microsoft.Build.Execution
                 ((IEvaluatorData<ProjectPropertyInstance, ProjectItemInstance, ProjectMetadataInstance, ProjectItemDefinitionInstance>)this)
                    .SetProperty(name, value, isGlobalProperty: false, mayBeReserved: false, loggingContext: _loggingContext, isEnvironmentVariable: true, isCommandLineProperty: false);
             }
+        }
 
-            _loggingContext.LogComment(MessageImportance.Low, "SdkEnvironmentVariableSet", name, value);
+        /// <summary>
+        /// Helper method to log a message if the attempted value differs from the existing value.
+        /// </summary>
+        private void LogIfValueDiffers(PropertyDictionary<ProjectPropertyInstance> propertyDictionary, string name, string attemptedValue, string messageResourceName)
+        {
+            ProjectPropertyInstance existingProperty = propertyDictionary.GetProperty(name);
+            if (existingProperty != null && !string.Equals(existingProperty.EvaluatedValue, attemptedValue, StringComparison.Ordinal))
+            {
+                _loggingContext.LogComment(MessageImportance.Low, messageResourceName, name, attemptedValue, existingProperty.EvaluatedValue);
+            }
         }
 
         /// <summary>
