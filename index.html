@@ -15,6 +15,7 @@
 
     <div class="tabs">
         <button class="tab active" data-view="overview">Overview</button>
+        <button class="tab" data-view="trends">Trends</button>
         <button class="tab" data-view="health">Health</button>
     </div>
 
@@ -25,7 +26,20 @@
                 <div class="controls-row">
                     <label>Asset:</label>
                     <select id="assetSelect"></select>
+                    <label>Time Range:</label>
+                    <select id="timeRange">
+                        <option value="all" selected>All Time</option>
+                        <option value="1y">Last Year</option>
+                        <option value="6m">Last 6 Months</option>
+                        <option value="90d">Last 90 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                    </select>
                     <span id="loadingMsg" style="font-size:12px;color:var(--text-subtle);font-style:italic"></span>
+                </div>
+                <div class="intro-text">
+                    Tracking MSBuild build performance across CI pipeline runs. Each test asset is built
+                    with <strong>standard</strong> and <strong>multithreaded (MT)</strong> configurations.
+                    Select an asset and time range to explore the data.
                 </div>
             </div>
 
@@ -47,7 +61,17 @@
                 <div class="mt-summary" id="mtSummary"></div>
             </div>
 
-            <!-- Trend -->
+            <!-- Comparison -->
+            <div class="card">
+                <div class="card-header">Build Time — Standard vs MT</div>
+                <div class="chart-wrapper"><canvas id="compChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ TRENDS ============ -->
+    <div class="view" id="view-trends">
+        <div class="layout">
             <div class="card">
                 <div class="card-header">Trend</div>
                 <div class="controls-row">
@@ -64,16 +88,9 @@
                 <div class="stats-bar" id="trendStats"></div>
             </div>
 
-            <!-- Resources -->
             <div class="card" id="resourcePanel">
                 <div class="card-header">Resource Usage — Standard vs MT</div>
                 <div class="resource-grid" id="resourceGrid"></div>
-            </div>
-
-            <!-- Comparison -->
-            <div class="card">
-                <div class="card-header">Latest Build Time — Standard vs MT</div>
-                <div class="chart-wrapper"><canvas id="compChart"></canvas></div>
             </div>
         </div>
     </div>
@@ -98,6 +115,7 @@
 
     <script>
     let DATA = [];
+    let DATA_ALL = [];
     let MANIFEST = [];
     const CHARTS = {};
 
@@ -134,6 +152,40 @@
             if (!matched.has(mt)) pairs.push({ std: null, mt, label: short(mt) });
         }
         return pairs;
+    }
+
+    function applyTimeFilter() {
+        const range = document.getElementById('timeRange').value;
+        if (range === 'all' || !DATA_ALL.length) {
+            DATA = [...DATA_ALL];
+        } else {
+            const dates = DATA_ALL.map(d => d.date).sort();
+            const latest = new Date(dates[dates.length - 1]);
+            const days = { '30d': 30, '90d': 90, '6m': 180, '1y': 365 }[range] || 0;
+            latest.setDate(latest.getDate() - days);
+            const cutoff = latest.toISOString().slice(0, 10);
+            DATA = DATA_ALL.filter(d => d.date >= cutoff);
+        }
+        renderAll();
+    }
+
+    function renderAll() {
+        const sel = document.getElementById('trendScenario');
+        const prev = sel.value;
+        sel.innerHTML = '';
+        scenarioList().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = short(s); sel.appendChild(o); });
+        if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
+
+        const name = document.getElementById('assetSelect').value;
+        const dates = [...new Set(DATA.map(d => d.date))].sort();
+        document.getElementById('headerMeta').textContent = dates.length
+            ? `${name} · ${DATA.length} runs · ${dates[0]} to ${dates[dates.length-1]}`
+            : `${name} · No data in selected range`;
+        document.getElementById('footerInfo').textContent = dates.length
+            ? `${DATA.length} runs · ${dates[0]} to ${dates[dates.length-1]} · MSBuild PerfStar CI`
+            : 'MSBuild PerfStar CI';
+
+        renderMt(); renderTrend(); renderResources(); renderComp(); renderHealth();
     }
 
     // All values stay in ms
@@ -427,18 +479,9 @@
     async function loadAsset(name) {
         document.getElementById('loadingMsg').textContent = 'Loading...';
         const resp = await fetch(`data/${name}.json`);
-        DATA = await resp.json();
+        DATA_ALL = await resp.json();
         document.getElementById('loadingMsg').textContent = '';
-
-        const sel = document.getElementById('trendScenario');
-        sel.innerHTML = '';
-        scenarioList().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = short(s); sel.appendChild(o); });
-
-        const dates = [...new Set(DATA.map(d => d.date))].sort();
-        document.getElementById('headerMeta').textContent = `${name} · ${DATA.length} runs · ${dates[0]} to ${dates[dates.length-1]}`;
-        document.getElementById('footerInfo').textContent = `${DATA.length} runs · ${dates[0]} to ${dates[dates.length-1]} · MSBuild PerfStar CI`;
-
-        renderMt(); renderTrend(); renderResources(); renderComp(); renderHealth();
+        applyTimeFilter();
     }
 
     // ── Init ──
@@ -467,6 +510,7 @@
     document.getElementById('mtMetric').addEventListener('change', renderMt);
     document.getElementById('trendScenario').addEventListener('change', renderTrend);
     document.getElementById('trendMetric').addEventListener('change', renderTrend);
+    document.getElementById('timeRange').addEventListener('change', applyTimeFilter);
 
     init();
     </script>
