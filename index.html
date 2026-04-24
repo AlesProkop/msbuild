@@ -214,16 +214,6 @@
         if (!SUMMARY) return;
         const assets = SUMMARY.assets;
 
-        // ── Stale Data Warning ──
-        const staleAssets = assets.filter(a => a.stale);
-        if (staleAssets.length > 0) {
-            const maxStaleDays = Math.max(...staleAssets.map(a => a.staleDays));
-            bannerHtml = `<div class="banner banner-stale">
-                <span class="banner-icon">⏳</span>
-                <div><strong>Stale Data</strong> — ${staleAssets.length === assets.length ? 'All' : staleAssets.length + '/' + assets.length} assets have no data in the last 30 days (up to ${maxStaleDays} days old). Showing stats relative to last available data.</div>
-            </div>` + bannerHtml;
-        }
-
         // ── Regression Banner ──
         const withRegr = assets.filter(a =>
             a.incBuild?.regressionPct != null &&
@@ -233,9 +223,9 @@
         const regressions = withRegr.filter(a => a.incBuild.regressionPct > 5);
         const improvements = withRegr.filter(a => a.incBuild.regressionPct < -5);
 
-        let bannerHtml;
+        let bannerHtml = '';
         if (regressions.length === 0) {
-            bannerHtml = `<div class="banner banner-ok">
+            bannerHtml += `<div class="banner banner-ok">
                 <span class="banner-icon">✅</span>
                 <div><strong>All Clear</strong> — No regressions detected across ${withRegr.length} assets (7-day P50 vs prior 30-day P50)</div>
             </div>`;
@@ -243,7 +233,7 @@
             const items = regressions.map(a =>
                 `<span class="banner-item">${a.name}: <strong>+${a.incBuild.regressionPct.toFixed(1)}%</strong></span>`
             ).join('');
-            bannerHtml = `<div class="banner banner-alert">
+            bannerHtml += `<div class="banner banner-alert">
                 <span class="banner-icon">🔴</span>
                 <div><strong>${regressions.length} Regression${regressions.length > 1 ? 's' : ''} Detected</strong>
                 <div class="banner-details">${items}</div></div>
@@ -259,6 +249,17 @@
                 <div class="banner-details">${items}</div></div>
             </div>`;
         }
+
+        // ── Stale Data Warning ──
+        const staleAssets = assets.filter(a => a.stale);
+        if (staleAssets.length > 0) {
+            const maxStaleDays = Math.max(...staleAssets.map(a => a.staleDays));
+            bannerHtml = `<div class="banner banner-stale">
+                <span class="banner-icon">⏳</span>
+                <div><strong>Stale Data</strong> — ${staleAssets.length === assets.length ? 'All' : staleAssets.length + '/' + assets.length} assets have no data in the last 30 days (up to ${maxStaleDays} days old). Showing stats relative to last available data.</div>
+            </div>` + bannerHtml;
+        }
+
         document.getElementById('regressionContent').innerHTML = bannerHtml;
 
         // ── Summary Table ──
@@ -669,29 +670,34 @@
 
     /* ── Init ── */
     async function init() {
-        // Load summary for Overview
-        const summResp = await fetch('data/summary.json');
-        SUMMARY = await summResp.json();
-        renderOverview();
+        try {
+            // Load summary for Overview
+            const summResp = await fetch('data/summary.json');
+            SUMMARY = await summResp.json();
+            renderOverview();
 
-        // Load manifest for Trends asset selector
-        const manResp = await fetch('data/manifest.json');
-        MANIFEST = await manResp.json();
-        MANIFEST.sort((a, b) => b.records - a.records);
+            // Load manifest for Trends asset selector
+            const manResp = await fetch('data/manifest.json');
+            MANIFEST = await manResp.json();
+            MANIFEST.sort((a, b) => b.records - a.records);
 
-        const sel = document.getElementById('assetSelect');
-        MANIFEST.forEach(a => {
-            if (a.name === 'sample-orchard-core') return;
-            const o = document.createElement('option');
-            o.value = a.name;
-            o.textContent = `${a.name} (${a.records})`;
-            sel.appendChild(o);
-        });
-        sel.addEventListener('change', () => loadAsset(sel.value));
+            const sel = document.getElementById('assetSelect');
+            MANIFEST.forEach(a => {
+                if (a.name === 'sample-orchard-core') return;
+                const o = document.createElement('option');
+                o.value = a.name;
+                o.textContent = `${a.name} (${a.records})`;
+                sel.appendChild(o);
+            });
+            sel.addEventListener('change', () => loadAsset(sel.value));
 
-        const defaultAsset = MANIFEST.find(a => a.name === 'net8-console-app')?.name || MANIFEST[0].name;
-        sel.value = defaultAsset;
-        await loadAsset(defaultAsset);
+            const defaultAsset = MANIFEST.find(a => a.name === 'net8-console-app')?.name || MANIFEST[0].name;
+            sel.value = defaultAsset;
+            await loadAsset(defaultAsset);
+        } catch (err) {
+            console.error('Dashboard init failed:', err);
+            document.getElementById('headerMeta').textContent = `Error: ${err.message}`;
+        }
     }
 
     document.getElementById('mtBuildType').addEventListener('change', renderMt);
