@@ -112,6 +112,12 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     color: var(--text);
     font-size: 13px;
 }
+.intro-text {
+    padding: 0 14px 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
 
 /* ── Charts ── */
 .chart-wrapper { position: relative; height: 340px; padding: 14px; }
