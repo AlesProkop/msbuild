@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSBuild PerfStar Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+    <header>
+        <h1>MSBuild PerfStar — Orchard Core</h1>
+        <p class="subtitle">Build performance tracking over time</p>
+    </header>
+
+    <main>
+        <section class="controls">
+            <label for="scenarioSelect">Scenario:</label>
+            <select id="scenarioSelect"></select>
+
+            <label for="metricSelect">Metric:</label>
+            <select id="metricSelect">
+                <option value="build-time" selected>Build Time (ms)</option>
+                <option value="evaluation-time">Evaluation Time (μs)</option>
+                <option value="evaluation-time-pass1">Eval Pass 1 (μs)</option>
+                <option value="evaluation-time-pass5">Eval Pass 5 (μs)</option>
+                <option value="benchmarks/build-time">Crank Build Time (ms)</option>
+            </select>
+        </section>
+
+        <section class="chart-container">
+            <canvas id="mainChart"></canvas>
+        </section>
+
+        <section class="chart-container">
+            <h2>All Scenarios — Build Time Comparison</h2>
+            <canvas id="comparisonChart"></canvas>
+        </section>
+
+        <section id="summary" class="summary">
+            <h2>Latest Run Summary</h2>
+            <div id="summaryCards" class="cards"></div>
+        </section>
+    </main>
+
+    <script>
+        let allData = [];
+        let mainChart = null;
+        let comparisonChart = null;
+
+        async function init() {
+            const resp = await fetch('data/orchard-core.json');
+            allData = await resp.json();
+
+            // Populate scenario dropdown
+            const scenarios = [...new Set(allData.map(d => d.scenario))].sort();
+            const scenarioSelect = document.getElementById('scenarioSelect');
+            scenarios.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s;
+                opt.textContent = s.replace('orchard-core-', '').replace('-dotnet', '');
+                scenarioSelect.appendChild(opt);
+            });
+
+            scenarioSelect.addEventListener('change', updateMainChart);
+            document.getElementById('metricSelect').addEventListener('change', updateMainChart);
+
+            updateMainChart();
+            updateComparisonChart();
+            updateSummary();
+        }
+
+        function updateMainChart() {
+            const scenario = document.getElementById('scenarioSelect').value;
+            const metric = document.getElementById('metricSelect').value;
+
+            const filtered = allData
+                .filter(d => d.scenario === scenario && d.results && d.results[metric] != null)
+                .sort((a, b) => a.date.localeCompare(b.date));
+
+            const labels = filtered.map(d => d.date);
+            const values = filtered.map(d => d.results[metric]);
+
+            if (mainChart) mainChart.destroy();
+
+            mainChart = new Chart(document.getElementById('mainChart'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: `${metric} — ${scenario.replace('orchard-core-', '')}`,
+                        data: values,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } },
+                    scales: {
+                        x: { title: { display: true, text: 'Date' } },
+                        y: { title: { display: true, text: metric }, beginAtZero: false }
+                    }
+                }
+            });
+        }
+
+        function updateComparisonChart() {
+            // Latest build-time per scenario
+            const scenarios = [...new Set(allData.map(d => d.scenario))].sort();
+            const latestPerScenario = scenarios.map(s => {
+                const entries = allData
+                    .filter(d => d.scenario === s && d.results && d.results['build-time'] != null)
+                    .sort((a, b) => b.date.localeCompare(a.date));
+                return { scenario: s, value: entries.length > 0 ? entries[0].results['build-time'] : 0 };
+            });
+
+            const colors = [
+                '#2563eb', '#dc2626', '#16a34a', '#ca8a04',
+                '#9333ea', '#0891b2', '#e11d48', '#65a30d'
+            ];
+
+            if (comparisonChart) comparisonChart.destroy();
+
+            comparisonChart = new Chart(document.getElementById('comparisonChart'), {
+                type: 'bar',
+                data: {
+                    labels: latestPerScenario.map(d => d.scenario.replace('orchard-core-', '').replace('-dotnet', '')),
+                    datasets: [{
+                        label: 'Build Time (ms) — Latest',
+                        data: latestPerScenario.map(d => d.value),
+                        backgroundColor: latestPerScenario.map((_, i) => colors[i % colors.length])
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { title: { display: true, text: 'Build Time (ms)' }, beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function updateSummary() {
+            const latest = allData
+                .sort((a, b) => b.date.localeCompare(a.date))
+                .slice(0, 8);
+
+            const container = document.getElementById('summaryCards');
+            container.innerHTML = latest.map(d => `
+                <div class="card">
+                    <h3>${d.scenario.replace('orchard-core-', '').replace('-dotnet', '')}</h3>
+                    <p class="date">${d.date}</p>
+                    <p><strong>Build:</strong> ${(d.results['build-time'] / 1000).toFixed(1)}s</p>
+                    <p><strong>Eval:</strong> ${(d.results['evaluation-time'] / 1000).toFixed(0)}ms</p>
+                    <p><strong>MSBuild:</strong> ${d.results['msbuild-version'] || 'N/A'}</p>
+                    <p><strong>Exit:</strong> ${d.results['exit-code']}</p>
+                </div>
+            `).join('');
+        }
+
+        init();
+    </script>
+</body>
+</html>
