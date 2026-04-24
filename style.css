@@ -184,6 +184,11 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     border: 1px solid rgba(9, 105, 218, 0.2);
     color: var(--accent);
 }
+.banner-stale {
+    background: rgba(154, 103, 0, 0.06);
+    border: 1px solid rgba(154, 103, 0, 0.2);
+    color: var(--warning);
+}
 .banner-details {
     display: flex;
     gap: 12px;

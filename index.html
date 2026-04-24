@@ -214,6 +214,16 @@
         if (!SUMMARY) return;
         const assets = SUMMARY.assets;
 
+        // ── Stale Data Warning ──
+        const staleAssets = assets.filter(a => a.stale);
+        if (staleAssets.length > 0) {
+            const maxStaleDays = Math.max(...staleAssets.map(a => a.staleDays));
+            bannerHtml = `<div class="banner banner-stale">
+                <span class="banner-icon">⏳</span>
+                <div><strong>Stale Data</strong> — ${staleAssets.length === assets.length ? 'All' : staleAssets.length + '/' + assets.length} assets have no data in the last 30 days (up to ${maxStaleDays} days old). Showing stats relative to last available data.</div>
+            </div>` + bannerHtml;
+        }
+
         // ── Regression Banner ──
         const withRegr = assets.filter(a =>
             a.incBuild?.regressionPct != null &&
