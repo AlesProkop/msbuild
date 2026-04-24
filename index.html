@@ -29,6 +29,8 @@
                     <label>Time Range:</label>
                     <select id="timeRange">
                         <option value="all" selected>All Time</option>
+                        <option value="3y">Last 3 Years</option>
+                        <option value="2y">Last 2 Years</option>
                         <option value="1y">Last Year</option>
                         <option value="6m">Last 6 Months</option>
                         <option value="90d">Last 90 Days</option>
@@ -160,11 +162,10 @@
         if (range === 'all' || !DATA_ALL.length) {
             DATA = [...DATA_ALL];
         } else {
-            const dates = DATA_ALL.map(d => d.date).sort();
-            const latest = new Date(dates[dates.length - 1]);
-            const days = { '30d': 30, '90d': 90, '6m': 180, '1y': 365 }[range] || 0;
-            latest.setDate(latest.getDate() - days);
-            const cutoff = latest.toISOString().slice(0, 10);
+            const now = new Date();
+            const days = { '30d': 30, '90d': 90, '6m': 180, '1y': 365, '2y': 730, '3y': 1095 }[range] || 0;
+            now.setDate(now.getDate() - days);
+            const cutoff = now.toISOString().slice(0, 10);
             DATA = DATA_ALL.filter(d => d.date >= cutoff);
         }
         renderAll();
