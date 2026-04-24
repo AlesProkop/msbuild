@@ -152,24 +152,41 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
 /* ── Resource grid ── */
 .resource-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
     padding: 14px;
 }
-.resource-card {
+.resource-pair {
     background: var(--surface-raised);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 10px 12px;
+    padding: 12px;
 }
-.resource-card h4 {
+.resource-pair h4 {
     font-size: 11px;
-    color: var(--text-subtle);
+    color: var(--text);
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     font-weight: 600;
 }
+.resource-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.resource-col-header {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    border-bottom: 2px solid;
+}
+.resource-col-header.std { color: var(--text-muted); border-color: var(--text-muted); }
+.resource-col-header.mt { color: var(--accent); border-color: var(--accent); }
+.resource-na { font-size: 12px; color: var(--text-subtle); font-style: italic; padding: 4px 0; }
 .resource-row {
     display: flex;
     justify-content: space-between;
@@ -202,9 +219,11 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
 
 /* ── Timeline ── */
 .timeline-wrapper { overflow-x: auto; padding: 14px; }
+.timeline-group { margin-bottom: 2px; border-bottom: 1px solid #f0f3f6; padding-bottom: 2px; }
+.timeline-group:last-child { border-bottom: none; }
 .timeline-row { display: flex; align-items: center; margin-bottom: 3px; }
 .timeline-label {
-    flex: 0 0 180px;
+    flex: 0 0 200px;
     font-size: 11px;
     font-weight: 500;
     white-space: nowrap;
@@ -212,6 +231,18 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     text-overflow: ellipsis;
     padding-right: 8px;
 }
+.tl-type {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-right: 3px;
+    vertical-align: middle;
+}
+.tl-type-std { background: #e8ecf0; color: var(--text-muted); }
+.tl-type-mt { background: rgba(9,105,218,0.1); color: var(--accent); }
 .timeline-dots { display: flex; gap: 2px; }
 .tl-dot {
     width: 14px; height: 14px;
