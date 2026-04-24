@@ -3,24 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MSBuild PerfStar — Orchard Core</title>
+    <title>MSBuild PerfStar Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head>
 <body>
     <header>
-        <h1>🔬 MSBuild PerfStar — Orchard Core</h1>
-        <p class="subtitle" id="headerMeta"></p>
+        <div>
+            <h1>MSBuild PerfStar Dashboard</h1>
+            <p class="subtitle" id="headerMeta"></p>
+        </div>
     </header>
 
     <main>
+        <section class="asset-bar">
+            <label>Test Asset:</label>
+            <select id="assetSelect"></select>
+            <span class="loading" id="loadingMsg"></span>
+        </section>
+
         <!-- MT vs Standard -->
-        <section class="panel">
+        <section class="panel" id="mtPanel">
             <div class="panel-header">
                 <h2>Multithreaded vs Standard</h2>
                 <div class="controls-inline">
                     <select id="mtBuildType">
-                        <option value="inc-build" selected>Incremental Build</option>
+                        <option value="inc-build">Incremental Build</option>
                         <option value="rebuild">Rebuild</option>
                     </select>
                     <select id="mtMetric">
@@ -46,86 +54,100 @@
                         <option value="evaluation-time-pass1">Eval Pass 1</option>
                         <option value="evaluation-time-pass5">Eval Pass 5</option>
                         <option value="benchmarks/build-time">Crank Build Time</option>
-                        <option value="benchmarks/working-set">Working Set (MB)</option>
                     </select>
                 </div>
             </div>
             <div class="chart-wrapper"><canvas id="trendChart"></canvas></div>
         </section>
 
-        <!-- All Scenarios -->
+        <!-- Resource Averages -->
+        <section class="panel" id="resourcePanel">
+            <div class="panel-header">
+                <h2>Resource Usage (All-Time Averages)</h2>
+            </div>
+            <div class="resource-grid" id="resourceGrid"></div>
+        </section>
+
+        <!-- All scenarios latest -->
         <section class="panel">
             <div class="panel-header">
                 <h2>Latest — All Scenarios</h2>
             </div>
-            <div class="chart-wrapper chart-short"><canvas id="compChart"></canvas></div>
+            <div class="chart-wrapper"><canvas id="compChart"></canvas></div>
         </section>
     </main>
 
-    <footer>
-        <p id="footerInfo"></p>
-    </footer>
+    <footer><p id="footerInfo"></p></footer>
 
     <script>
     let DATA = [];
+    let MANIFEST = [];
     const CHARTS = {};
-    const C = {
-        blue: '#3b82f6', green: '#22c55e', amber: '#f59e0b', red: '#ef4444',
-        purple: '#a855f7', cyan: '#06b6d4', pink: '#ec4899', lime: '#84cc16',
-        blueA: 'rgba(59,130,246,0.12)', greenA: 'rgba(34,197,94,0.12)'
-    };
-    const BAR_COLORS = [C.blue, C.green, C.amber, C.red, C.purple, C.cyan, C.pink, C.lime];
 
-    function short(s) { return s.replace('orchard-core-','').replace('-dotnet',''); }
+    // Muted palette
+    const CLR = { std: '#4b5563', mt: '#2563eb', avg: '#d97706', fill: 'rgba(75,85,99,0.08)', mtFill: 'rgba(37,99,235,0.08)' };
+    const BAR_CLR = '#9ca3af';
 
-    function toSeconds(v, metric) {
+    function short(s) { return s.replace(/^.*?-(?=inc-build|rebuild)/, '').replace('-dotnet',''); }
+    function assetFromScenario(s) { return s.replace(/-(inc-build|rebuild).*$/, ''); }
+
+    function toDisplay(v, metric) {
         if (v == null || v === '') return null;
         if (metric === 'build-time') return +(v / 1000).toFixed(2);
-        if (metric === 'evaluation-time' || metric.startsWith('evaluation-time-'))
-            return +(v / 1000000).toFixed(3);
+        if (metric === 'evaluation-time' || metric.startsWith('evaluation-time-')) return +(v / 1000000).toFixed(3);
         return +v;
     }
 
     function unitLabel(metric) {
-        if (metric === 'build-time') return 'seconds';
-        if (metric === 'evaluation-time' || metric.startsWith('evaluation-time-')) return 'seconds';
+        if (metric === 'build-time' || metric === 'evaluation-time' || metric.startsWith('evaluation-time-')) return 'seconds';
         if (metric.includes('working-set') || metric.includes('private-memory')) return 'MB';
         return 'ms';
     }
 
     function avg(arr) { return arr.length ? arr.reduce((a,b) => a+b, 0) / arr.length : 0; }
 
-    function getSeriesData(scenario, metric) {
+    function getSeries(scenario, metric) {
         return DATA.filter(d => d.scenario === scenario && d.results[metric] != null && d.results[metric] !== '')
             .sort((a,b) => a.date.localeCompare(b.date))
-            .map(d => ({ date: d.date, value: toSeconds(d.results[metric], metric) }))
+            .map(d => ({ date: d.date, value: toDisplay(d.results[metric], metric) }))
             .filter(d => d.value !== null);
     }
 
     function getLatest(scenario) {
-        return DATA.filter(d => d.scenario === scenario)
-            .sort((a, b) => b.date.localeCompare(a.date))[0];
+        return DATA.filter(d => d.scenario === scenario).sort((a, b) => b.date.localeCompare(a.date))[0];
     }
 
     function chartOpts(yLabel) {
         return {
             responsive: true, maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
-            plugins: { legend: { labels: { color: '#94a3b8', font: { size: 12 } } } },
+            plugins: { legend: { labels: { color: '#6b7280', font: { size: 11 } } } },
             scales: {
-                x: { ticks: { color: '#64748b', maxTicksLimit: 12, font: { size: 10 } }, grid: { color: '#1e293b' } },
-                y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' }, title: { display: true, text: yLabel, color: '#94a3b8' } }
+                x: { ticks: { color: '#9ca3af', maxTicksLimit: 12, font: { size: 10 } }, grid: { color: '#f3f4f6' } },
+                y: { ticks: { color: '#9ca3af' }, grid: { color: '#f3f4f6' }, title: { display: true, text: yLabel, color: '#9ca3af' } }
             }
         };
     }
 
+    function scenarios() { return [...new Set(DATA.map(d => d.scenario))].sort(); }
+
+    // Does this asset have MT data?
+    function hasMt() {
+        return DATA.some(d => d.scenario.includes('-mt-'));
+    }
+
     // ── MT vs Standard ──
     function renderMt() {
+        const panel = document.getElementById('mtPanel');
+        if (!hasMt()) { panel.style.display = 'none'; return; }
+        panel.style.display = '';
+
         const buildType = document.getElementById('mtBuildType').value;
         const metric = document.getElementById('mtMetric').value;
+        const asset = assetFromScenario(DATA[0].scenario);
 
-        const stdSeries = getSeriesData(`orchard-core-${buildType}-dotnet`, metric);
-        const mtSeries = getSeriesData(`orchard-core-${buildType}-mt-dotnet`, metric);
+        const stdSeries = getSeries(`${asset}-${buildType}-dotnet`, metric);
+        const mtSeries = getSeries(`${asset}-${buildType}-mt-dotnet`, metric);
 
         const allDates = [...new Set([...stdSeries.map(d=>d.date), ...mtSeries.map(d=>d.date)])].sort();
         const stdMap = Object.fromEntries(stdSeries.map(d => [d.date, d.value]));
@@ -137,23 +159,22 @@
             data: {
                 labels: allDates,
                 datasets: [
-                    { label: 'Standard', data: allDates.map(d => stdMap[d] ?? null), borderColor: C.blue, backgroundColor: C.blueA, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true },
-                    { label: 'Multithreaded', data: allDates.map(d => mtMap[d] ?? null), borderColor: C.green, backgroundColor: C.greenA, fill: true, tension: 0.3, pointRadius: 3, spanGaps: true }
+                    { label: 'Standard', data: allDates.map(d => stdMap[d] ?? null), borderColor: CLR.std, backgroundColor: CLR.fill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
+                    { label: 'Multithreaded', data: allDates.map(d => mtMap[d] ?? null), borderColor: CLR.mt, backgroundColor: CLR.mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
                 ]
             },
             options: chartOpts(unitLabel(metric))
         });
 
-        // Summary
         const stdVals = stdSeries.map(d => d.value);
         const mtVals = mtSeries.map(d => d.value);
-        let html = `<span><span class="dot blue"></span> Standard avg: <strong>${stdVals.length ? avg(stdVals).toFixed(1) + 's' : 'N/A'}</strong> (${stdVals.length} runs)</span>`;
-        html += `<span><span class="dot green"></span> MT avg: <strong>${mtVals.length ? avg(mtVals).toFixed(1) + 's' : 'N/A'}</strong> (${mtVals.length} runs)</span>`;
+        let html = `<span><span class="dot std"></span> Standard avg: <strong>${stdVals.length ? avg(stdVals).toFixed(2) + 's' : 'N/A'}</strong> (${stdVals.length} runs)</span>`;
+        html += `<span><span class="dot mt"></span> MT avg: <strong>${mtVals.length ? avg(mtVals).toFixed(2) + 's' : 'N/A'}</strong> (${mtVals.length} runs)</span>`;
         if (stdVals.length && mtVals.length) {
             const diff = ((1 - avg(mtVals)/avg(stdVals)) * 100);
-            html += `<span>Diff: <strong>${diff > 0 ? '+' : ''}${diff.toFixed(1)}%</strong> ${diff > 0 ? '🟢 faster' : '🔴 slower'}</span>`;
+            html += `<span>Diff: <strong>${diff > 0 ? '+' : ''}${diff.toFixed(1)}%</strong> ${diff > 0 ? ' faster' : ' slower'}</span>`;
         } else if (mtVals.length === 0) {
-            html += `<span class="muted">⚠ No successful MT data for this metric (all MT runs had exit-code 1)</span>`;
+            html += `<span class="muted">No successful MT data for this metric</span>`;
         }
         document.getElementById('mtSummary').innerHTML = html;
     }
@@ -162,7 +183,7 @@
     function renderTrend() {
         const scenario = document.getElementById('trendScenario').value;
         const metric = document.getElementById('trendMetric').value;
-        const series = getSeriesData(scenario, metric);
+        const series = getSeries(scenario, metric);
         const vals = series.map(d => d.value);
         const mean = avg(vals);
 
@@ -172,61 +193,130 @@
             data: {
                 labels: series.map(d => d.date),
                 datasets: [
-                    { label: short(scenario), data: vals, borderColor: C.blue, backgroundColor: C.blueA, fill: true, tension: 0.3, pointRadius: 2 },
-                    { label: `Avg (${mean.toFixed(1)}s)`, data: vals.map(() => mean), borderColor: C.amber, borderDash: [6,3], pointRadius: 0, fill: false }
+                    { label: short(scenario), data: vals, borderColor: CLR.std, backgroundColor: CLR.fill, fill: true, tension: 0.3, pointRadius: 1.5, borderWidth: 1.5 },
+                    { label: `Avg (${mean.toFixed(2)}s)`, data: vals.map(() => mean), borderColor: CLR.avg, borderDash: [5,3], pointRadius: 0, fill: false, borderWidth: 1 }
                 ]
             },
             options: chartOpts(unitLabel(metric))
         });
     }
 
+    // ── Resource Averages ──
+    function renderResources() {
+        const grid = document.getElementById('resourceGrid');
+        const allScenarios = scenarios();
+        
+        // Compute global averages across all scenarios
+        const withMetrics = DATA.filter(d => d.resourceMetrics);
+        if (withMetrics.length === 0) {
+            grid.innerHTML = '<p class="muted">No resource metrics available</p>';
+            return;
+        }
+
+        const metrics = [
+            { key: 'benchmarks-cpu-global-avg', label: 'CPU Global', unit: '%' },
+            { key: 'benchmarks-working-set-avg', label: 'Working Set', unit: 'MB' },
+            { key: 'benchmarks-private-memory-avg', label: 'Private Memory', unit: 'MB' },
+            { key: 'benchmarks-cpu-avg', label: 'CPU Process', unit: '%' }
+        ];
+
+        // Per-scenario resource averages
+        let html = '';
+        for (const sc of allScenarios) {
+            const records = withMetrics.filter(d => d.scenario === sc);
+            if (records.length === 0) continue;
+            
+            html += `<div class="resource-card"><h4>${short(sc)}</h4>`;
+            for (const m of metrics) {
+                const vals = records.map(r => r.resourceMetrics[m.key]).filter(v => v != null);
+                if (vals.length === 0) continue;
+                const a = avg(vals);
+                const mn = Math.min(...vals);
+                const mx = Math.max(...vals);
+                html += `<div style="margin-bottom:0.3rem"><span class="resource-val">${a.toFixed(1)}</span> <span class="resource-range">${m.unit} ${m.label} (${mn.toFixed(0)}–${mx.toFixed(0)})</span></div>`;
+            }
+            html += `<div class="resource-range">${records.length} runs</div></div>`;
+        }
+        grid.innerHTML = html;
+    }
+
     // ── All Scenarios Comparison ──
     function renderComp() {
-        const scenarios = [...new Set(DATA.map(d => d.scenario))].sort();
-        const values = scenarios.map(s => {
+        const allSc = scenarios();
+        const values = allSc.map(s => {
             const latest = getLatest(s);
             if (!latest || latest.results['build-time'] == null) return 0;
-            return +(latest.results['build-time'] / 1000).toFixed(1);
+            return +(latest.results['build-time'] / 1000).toFixed(2);
         });
 
         if (CHARTS.comp) CHARTS.comp.destroy();
         CHARTS.comp = new Chart(document.getElementById('compChart'), {
             type: 'bar',
             data: {
-                labels: scenarios.map(short),
-                datasets: [{ label: 'Build Time (s)', data: values, backgroundColor: scenarios.map((_, i) => BAR_COLORS[i % BAR_COLORS.length]), borderRadius: 4 }]
+                labels: allSc.map(short),
+                datasets: [{ label: 'Build Time (s)', data: values, backgroundColor: BAR_CLR, borderRadius: 3 }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
-                    y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' }, title: { display: true, text: 'seconds', color: '#94a3b8' }, beginAtZero: true }
+                    x: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { display: false } },
+                    y: { ticks: { color: '#9ca3af' }, grid: { color: '#f3f4f6' }, title: { display: true, text: 'seconds', color: '#9ca3af' }, beginAtZero: true }
                 }
             }
         });
     }
 
+    // ── Load asset data ──
+    async function loadAsset(assetName) {
+        document.getElementById('loadingMsg').textContent = 'Loading...';
+        const resp = await fetch(`data/${assetName}.json`);
+        DATA = await resp.json();
+        document.getElementById('loadingMsg').textContent = '';
+
+        // Populate scenario dropdown
+        const sel = document.getElementById('trendScenario');
+        sel.innerHTML = '';
+        scenarios().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = short(s); sel.appendChild(o); });
+
+        // Update header
+        const dates = [...new Set(DATA.map(d => d.date))].sort();
+        document.getElementById('headerMeta').textContent = `${assetName} · ${DATA.length} runs · ${dates[0]} to ${dates[dates.length-1]}`;
+        document.getElementById('footerInfo').textContent = `${DATA.length} runs · ${dates[0]} to ${dates[dates.length-1]} · MSBuild PerfStar CI`;
+
+        renderMt();
+        renderTrend();
+        renderResources();
+        renderComp();
+    }
+
     // ── Init ──
     async function init() {
-        const resp = await fetch('data/orchard-core.json');
-        DATA = await resp.json();
+        const resp = await fetch('data/manifest.json');
+        MANIFEST = await resp.json();
 
-        const scenarios = [...new Set(DATA.map(d => d.scenario))].sort();
-        const sel = document.getElementById('trendScenario');
-        scenarios.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = short(s); sel.appendChild(o); });
+        const sel = document.getElementById('assetSelect');
+        // Sort by record count descending for relevance
+        MANIFEST.sort((a, b) => b.records - a.records);
+        MANIFEST.forEach(a => {
+            if (a.name === 'sample-orchard-core') return; // skip junk
+            const o = document.createElement('option');
+            o.value = a.name;
+            o.textContent = `${a.name} (${a.records})`;
+            sel.appendChild(o);
+        });
 
-        const dates = [...new Set(DATA.map(d => d.date))].sort();
-        document.getElementById('headerMeta').textContent = `${DATA.length} runs · ${dates[0]} to ${dates[dates.length-1]}`;
-        document.getElementById('footerInfo').textContent = `${DATA.length} runs across ${scenarios.length} scenarios · ${dates[0]} to ${dates[dates.length-1]}`;
+        sel.addEventListener('change', () => loadAsset(sel.value));
 
-        renderMt(); renderTrend(); renderComp();
-
-        document.getElementById('mtBuildType').addEventListener('change', renderMt);
-        document.getElementById('mtMetric').addEventListener('change', renderMt);
-        document.getElementById('trendScenario').addEventListener('change', renderTrend);
-        document.getElementById('trendMetric').addEventListener('change', renderTrend);
+        // Default to orchard-core
+        sel.value = 'orchard-core';
+        await loadAsset('orchard-core');
     }
+
+    document.getElementById('mtBuildType').addEventListener('change', renderMt);
+    document.getElementById('mtMetric').addEventListener('change', renderMt);
+    document.getElementById('trendScenario').addEventListener('change', renderTrend);
+    document.getElementById('trendMetric').addEventListener('change', renderTrend);
 
     init();
     </script>
