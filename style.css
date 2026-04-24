@@ -52,9 +52,19 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     background: none;
     border-bottom: 2px solid transparent;
     transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
 }
 .tab:hover { color: var(--text); }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-subtitle {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-subtle);
+    letter-spacing: normal;
+}
 
 .view { display: none; }
 .view.active { display: block; }
@@ -86,6 +96,17 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     letter-spacing: 0.4px;
     color: var(--text-muted);
     background: var(--surface-raised);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.card-subtitle {
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--text-subtle);
+    line-height: 1.4;
 }
 .card-body { padding: 14px; }
 
@@ -154,6 +175,23 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .dot.std { background: var(--text-muted); }
 .dot.mt { background: var(--accent); }
+.mt-speedup {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.mt-speedup.faster {
+    color: var(--success);
+    background: rgba(26, 127, 55, 0.1);
+}
+.mt-speedup.slower {
+    color: var(--danger);
+    background: rgba(207, 34, 46, 0.1);
+}
 
 /* ── Resource grid ── */
 .resource-grid {
@@ -202,6 +240,35 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
 .resource-metric { font-size: 12px; color: var(--text-muted); }
 .resource-val { font-size: 13px; font-weight: 600; color: var(--text); }
 .resource-range { font-size: 10px; color: var(--text-subtle); }
+.resource-deltas {
+    border-top: 1px dashed var(--border);
+    margin-top: 8px;
+    padding-top: 8px;
+}
+.delta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+}
+.delta-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+.delta-good {
+    color: var(--success);
+    background: rgba(26, 127, 55, 0.08);
+}
+.delta-bad {
+    color: var(--danger);
+    background: rgba(207, 34, 46, 0.08);
+}
+.delta-neutral {
+    color: var(--text-muted);
+    background: rgba(101, 109, 118, 0.08);
+}
 
 /* ── Health ── */
 .health-grid {

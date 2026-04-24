@@ -14,9 +14,9 @@
     </header>
 
     <div class="tabs">
-        <button class="tab active" data-view="overview">Overview</button>
-        <button class="tab" data-view="trends">Trends</button>
-        <button class="tab" data-view="health">Health</button>
+        <button class="tab active" data-view="overview"><span class="tab-label">Overview</span><span class="tab-subtitle">Key comparisons</span></button>
+        <button class="tab" data-view="trends"><span class="tab-label">Trends</span><span class="tab-subtitle">Deep-dive over time</span></button>
+        <button class="tab" data-view="health"><span class="tab-label">Health</span><span class="tab-subtitle">Pass/fail tracking</span></button>
     </div>
 
     <!-- ============ OVERVIEW ============ -->
@@ -37,15 +37,15 @@
                     <span id="loadingMsg" style="font-size:12px;color:var(--text-subtle);font-style:italic"></span>
                 </div>
                 <div class="intro-text">
-                    Tracking MSBuild build performance across CI pipeline runs. Each test asset is built
-                    with <strong>standard</strong> and <strong>multithreaded (MT)</strong> configurations.
-                    Select an asset and time range to explore the data.
+                    Comparing <strong>standard</strong> vs <strong>multithreaded (MT)</strong> MSBuild builds.
+                    Look for MT build times below Standard — that means multithreading is helping.
+                    Check resource usage for CPU &amp; memory trade-offs. Select an asset and time range above.
                 </div>
             </div>
 
             <!-- MT vs Standard -->
             <div class="card" id="mtPanel">
-                <div class="card-header">Multithreaded vs Standard</div>
+                <div class="card-header"><span class="card-title">Multithreaded vs Standard</span><span class="card-subtitle">Build time trend comparing standard and MT configurations</span></div>
                 <div class="controls-row">
                     <select id="mtBuildType">
                         <option value="inc-build">Incremental Build</option>
@@ -61,10 +61,10 @@
                 <div class="mt-summary" id="mtSummary"></div>
             </div>
 
-            <!-- Comparison -->
-            <div class="card">
-                <div class="card-header">Build Time — Standard vs MT</div>
-                <div class="chart-wrapper"><canvas id="compChart"></canvas></div>
+            <!-- Resource Usage -->
+            <div class="card" id="resourcePanel">
+                <div class="card-header"><span class="card-title">Resource Usage — Standard vs MT</span><span class="card-subtitle">Average CPU &amp; memory per build type</span></div>
+                <div class="resource-grid" id="resourceGrid"></div>
             </div>
         </div>
     </div>
@@ -73,7 +73,7 @@
     <div class="view" id="view-trends">
         <div class="layout">
             <div class="card">
-                <div class="card-header">Trend</div>
+                <div class="card-header"><span class="card-title">Performance Trend</span><span class="card-subtitle">Single scenario metric over time with average line</span></div>
                 <div class="controls-row">
                     <select id="trendScenario"></select>
                     <select id="trendMetric">
@@ -88,9 +88,10 @@
                 <div class="stats-bar" id="trendStats"></div>
             </div>
 
-            <div class="card" id="resourcePanel">
-                <div class="card-header">Resource Usage — Standard vs MT</div>
-                <div class="resource-grid" id="resourceGrid"></div>
+            <!-- Comparison -->
+            <div class="card">
+                <div class="card-header"><span class="card-title">Build Time — Standard vs MT</span><span class="card-subtitle">Latest build time for each scenario</span></div>
+                <div class="chart-wrapper"><canvas id="compChart"></canvas></div>
             </div>
         </div>
     </div>
@@ -99,7 +100,7 @@
     <div class="view" id="view-health">
         <div class="layout">
             <div class="card">
-                <div class="card-header">Test Health Summary</div>
+                <div class="card-header"><span class="card-title">Test Health Summary</span><span class="card-subtitle">Pass/fail rates across all scenarios</span></div>
                 <div class="stats-bar" id="healthStats"></div>
                 <div class="health-grid" id="healthGrid"></div>
             </div>
@@ -275,7 +276,8 @@
         html += `<span><span class="dot mt"></span> MT avg: <strong>${mv.length ? avg(mv).toFixed(0) + ' ms' : 'N/A'}</strong> (${mv.length})</span>`;
         if (sv.length && mv.length) {
             const d = ((1 - avg(mv)/avg(sv)) * 100);
-            html += `<span>${d > 0 ? '↓' : '↑'} <strong>${Math.abs(d).toFixed(1)}%</strong> ${d > 0 ? 'faster' : 'slower'}</span>`;
+            const badge = d > 0 ? 'faster' : 'slower';
+            html += `<span class="mt-speedup ${badge}">${d > 0 ? '▼' : '▲'} ${Math.abs(d).toFixed(1)}% ${badge}</span>`;
         } else if (mv.length === 0) {
             html += `<span class="muted">No successful MT data</span>`;
         }
@@ -349,7 +351,27 @@
                 }
                 html += `</div>`;
             }
-            html += `</div></div>`;
+            html += `</div>`;
+
+            if (stdRecs.length && mtRecs.length) {
+                html += '<div class="resource-deltas">';
+                for (const m of metrics) {
+                    const sv = stdRecs.map(r => r.resourceMetrics[m.key]).filter(v => v != null);
+                    const mv = mtRecs.map(r => r.resourceMetrics[m.key]).filter(v => v != null);
+                    if (!sv.length || !mv.length) continue;
+                    const sa = avg(sv), ma = avg(mv);
+                    if (Math.abs(sa) < 0.01) continue;
+                    const pct = ((ma - sa) / sa * 100);
+                    const isCpu = m.key.includes('cpu');
+                    const isLower = pct < 0;
+                    const dcls = isCpu ? 'delta-neutral' : (isLower ? 'delta-good' : 'delta-bad');
+                    const arrow = isLower ? '▼' : '▲';
+                    html += `<div class="delta-row"><span class="resource-metric">${m.label}</span><span class="delta-badge ${dcls}">${arrow} ${Math.abs(pct).toFixed(1)}% ${isLower ? 'less' : 'more'}</span></div>`;
+                }
+                html += '</div>';
+            }
+
+            html += `</div>`;
         }
         grid.innerHTML = html || '<p class="muted" style="padding:14px">No resource metrics available</p>';
     }
