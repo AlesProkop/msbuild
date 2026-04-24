@@ -125,7 +125,7 @@
         const stdScs = scs.filter(s => !s.includes('-mt-'));
         const pairs = [], matched = new Set();
         for (const std of stdScs) {
-            const mtCandidate = std.replace('-dotnet', '-mt-dotnet');
+            const mtCandidate = std.replace(/(inc-build|rebuild)/, '$1-mt');
             const mt = mtSet.has(mtCandidate) ? mtCandidate : null;
             if (mt) matched.add(mt);
             pairs.push({ std, mt, label: short(std) });
