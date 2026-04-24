@@ -133,12 +133,6 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     color: var(--text);
     font-size: 13px;
 }
-.intro-text {
-    padding: 0 14px 12px;
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.6;
-}
 
 /* ── Charts ── */
 .chart-wrapper { position: relative; height: 340px; padding: 14px; }
@@ -160,7 +154,160 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     letter-spacing: 0.4px;
 }
 
-/* ── MT summary ── */
+/* ══════════════════════════════════════
+   OVERVIEW — Banners
+   ══════════════════════════════════════ */
+.banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.banner + .banner { margin-top: 0; }
+.banner-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.banner-ok {
+    background: rgba(26, 127, 55, 0.06);
+    border: 1px solid rgba(26, 127, 55, 0.2);
+    color: var(--success);
+}
+.banner-alert {
+    background: rgba(207, 34, 46, 0.06);
+    border: 1px solid rgba(207, 34, 46, 0.2);
+    color: var(--danger);
+}
+.banner-improvement {
+    background: rgba(9, 105, 218, 0.06);
+    border: 1px solid rgba(9, 105, 218, 0.2);
+    color: var(--accent);
+}
+.banner-details {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+    font-size: 12px;
+}
+.banner-item { white-space: nowrap; }
+
+/* ══════════════════════════════════════
+   OVERVIEW — Summary Table
+   ══════════════════════════════════════ */
+.table-wrapper { overflow-x: auto; }
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.summary-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+    background: var(--surface-raised);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+.summary-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f3f6;
+    vertical-align: middle;
+}
+.summary-table tbody tr { cursor: pointer; transition: background 0.1s; }
+.summary-table tbody tr:hover { background: var(--surface-raised); }
+.summary-table .num { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.asset-name { white-space: nowrap; }
+.asset-link { color: var(--accent); font-weight: 600; }
+
+/* Tags & Badges */
+.tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+.tag-mt {
+    background: rgba(9, 105, 218, 0.1);
+    color: var(--accent);
+}
+.badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+.badge-ok { background: rgba(26, 127, 55, 0.08); color: var(--success); }
+.badge-success { background: rgba(9, 105, 218, 0.08); color: var(--accent); }
+.badge-warning { background: rgba(154, 103, 0, 0.08); color: var(--warning); }
+.badge-danger { background: rgba(207, 34, 46, 0.08); color: var(--danger); }
+.badge-neutral { background: rgba(101, 109, 118, 0.08); color: var(--text-subtle); font-weight: 400; font-style: italic; }
+
+/* Sparklines */
+.sparkline { vertical-align: middle; }
+
+/* ══════════════════════════════════════
+   OVERVIEW — MT Performance Section
+   ══════════════════════════════════════ */
+.mt-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    padding: 14px;
+}
+.mt-overview-item {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+}
+.mt-overview-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+.mt-overview-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 12px;
+}
+.mt-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--text-muted);
+    min-width: 64px;
+}
+.mt-speedup-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+.mt-speedup-badge.faster { color: var(--success); background: rgba(26, 127, 55, 0.1); }
+.mt-speedup-badge.slower { color: var(--danger); background: rgba(207, 34, 46, 0.1); }
+.mt-speedup-badge.neutral { color: var(--text-muted); background: rgba(101, 109, 118, 0.08); }
+.mt-times { font-size: 11px; color: var(--text-subtle); }
+
+/* ══════════════════════════════════════
+   TRENDS — MT summary
+   ══════════════════════════════════════ */
 .mt-summary {
     display: flex;
     gap: 1.2rem;
@@ -349,4 +496,6 @@ footer {
     .layout { padding: 12px; }
     header { padding: 14px 16px; }
     .tabs { padding: 0 12px; }
+    .summary-table { font-size: 12px; }
+    .mt-overview-grid { grid-template-columns: 1fr; }
 }
