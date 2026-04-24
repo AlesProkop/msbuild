@@ -3,167 +3,471 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MSBuild PerfStar Dashboard</title>
+    <title>MSBuild PerfStar — Orchard Core</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head>
 <body>
     <header>
-        <h1>MSBuild PerfStar — Orchard Core</h1>
-        <p class="subtitle">Build performance tracking over time</p>
+        <div class="header-inner">
+            <div>
+                <h1>🔬 MSBuild PerfStar</h1>
+                <p class="subtitle">Orchard Core — Build Performance Dashboard</p>
+            </div>
+            <div class="header-meta" id="headerMeta"></div>
+        </div>
     </header>
 
     <main>
-        <section class="controls">
-            <label for="scenarioSelect">Scenario:</label>
-            <select id="scenarioSelect"></select>
+        <!-- Stats overview -->
+        <section class="stats-row" id="statsRow"></section>
 
-            <label for="metricSelect">Metric:</label>
-            <select id="metricSelect">
-                <option value="build-time" selected>Build Time (ms)</option>
-                <option value="evaluation-time">Evaluation Time (μs)</option>
-                <option value="evaluation-time-pass1">Eval Pass 1 (μs)</option>
-                <option value="evaluation-time-pass5">Eval Pass 5 (μs)</option>
-                <option value="benchmarks/build-time">Crank Build Time (ms)</option>
-            </select>
+        <!-- MT vs Standard comparison -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Multithreaded vs Standard Builds</h2>
+                <div class="controls-inline">
+                    <label>Build type:</label>
+                    <select id="mtBuildType">
+                        <option value="inc-build" selected>Incremental Build</option>
+                        <option value="rebuild">Rebuild</option>
+                    </select>
+                    <label>Metric:</label>
+                    <select id="mtMetric">
+                        <option value="build-time" selected>Build Time (ms)</option>
+                        <option value="evaluation-time">Evaluation Time (μs)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="mtChart"></canvas>
+            </div>
+            <div class="mt-summary" id="mtSummary"></div>
         </section>
 
-        <section class="chart-container">
-            <canvas id="mainChart"></canvas>
+        <!-- Trend explorer -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Trend Explorer</h2>
+                <div class="controls-inline">
+                    <label>Scenario:</label>
+                    <select id="trendScenario"></select>
+                    <label>Metric:</label>
+                    <select id="trendMetric">
+                        <option value="build-time" selected>Build Time (ms)</option>
+                        <option value="evaluation-time">Evaluation Time (μs)</option>
+                        <option value="evaluation-time-pass0">Eval Pass 0</option>
+                        <option value="evaluation-time-pass1">Eval Pass 1</option>
+                        <option value="evaluation-time-pass2">Eval Pass 2</option>
+                        <option value="evaluation-time-pass3">Eval Pass 3</option>
+                        <option value="evaluation-time-pass4">Eval Pass 4</option>
+                        <option value="evaluation-time-pass5">Eval Pass 5</option>
+                        <option value="evaluation-time-globbing">Eval Globbing</option>
+                        <option value="benchmarks/build-time">Crank Build Time</option>
+                        <option value="benchmarks/working-set">Working Set (MB)</option>
+                        <option value="benchmarks/private-memory">Private Memory (MB)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="trendChart"></canvas>
+            </div>
         </section>
 
-        <section class="chart-container">
-            <h2>All Scenarios — Build Time Comparison</h2>
-            <canvas id="comparisonChart"></canvas>
+        <!-- Evaluation breakdown -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Evaluation Time Breakdown (Latest)</h2>
+                <div class="controls-inline">
+                    <label>Scenario:</label>
+                    <select id="evalScenario"></select>
+                </div>
+            </div>
+            <div class="chart-row">
+                <div class="chart-wrapper"><canvas id="evalPieChart"></canvas></div>
+                <div class="chart-wrapper"><canvas id="evalBarChart"></canvas></div>
+            </div>
         </section>
 
-        <section id="summary" class="summary">
-            <h2>Latest Run Summary</h2>
-            <div id="summaryCards" class="cards"></div>
+        <!-- All scenarios bar comparison -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2>All Scenarios — Latest Comparison</h2>
+                <div class="controls-inline">
+                    <label>Metric:</label>
+                    <select id="compMetric">
+                        <option value="build-time" selected>Build Time (ms)</option>
+                        <option value="evaluation-time">Evaluation Time (μs)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="compChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Resource metrics -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Resource Usage (Latest)</h2>
+            </div>
+            <div class="cards" id="resourceCards"></div>
         </section>
     </main>
 
+    <footer>
+        <p>Data: <span id="dataRange"></span> · <span id="dataCount"></span> runs · MSBuild PerfStar CI</p>
+    </footer>
+
     <script>
-        let allData = [];
-        let mainChart = null;
-        let comparisonChart = null;
+    let DATA = [];
+    const CHARTS = {};
+    const COLORS = {
+        blue: '#3b82f6', red: '#ef4444', green: '#22c55e', amber: '#f59e0b',
+        purple: '#a855f7', cyan: '#06b6d4', pink: '#ec4899', lime: '#84cc16',
+        blueAlpha: 'rgba(59,130,246,0.15)', redAlpha: 'rgba(239,68,68,0.15)',
+        greenAlpha: 'rgba(34,197,94,0.15)', amberAlpha: 'rgba(245,158,11,0.15)'
+    };
 
-        async function init() {
-            const resp = await fetch('data/orchard-core.json');
-            allData = await resp.json();
+    function shortName(s) { return s.replace('orchard-core-','').replace('-dotnet',''); }
 
-            // Populate scenario dropdown
-            const scenarios = [...new Set(allData.map(d => d.scenario))].sort();
-            const scenarioSelect = document.getElementById('scenarioSelect');
+    function scenarioGroup(s) {
+        if (s.includes('-mt-')) return 'mt';
+        if (s.includes('-binlog-')) return 'binlog';
+        if (s.includes('-check-')) return 'check';
+        return 'standard';
+    }
+
+    function getLatest(scenario) {
+        return DATA.filter(d => d.scenario === scenario)
+            .sort((a, b) => b.date.localeCompare(a.date))[0];
+    }
+
+    function avg(arr) { return arr.length ? arr.reduce((a,b) => a+b, 0) / arr.length : 0; }
+
+    function fmt(v) {
+        if (v == null) return 'N/A';
+        if (v >= 1000000) return (v/1000000).toFixed(1) + 'M';
+        if (v >= 1000) return (v/1000).toFixed(1) + 'K';
+        return v.toFixed(0);
+    }
+
+    function fmtMs(v) {
+        if (v == null) return 'N/A';
+        if (v >= 1000) return (v/1000).toFixed(1) + 's';
+        return v.toFixed(0) + 'ms';
+    }
+
+    // ── Stats Row ──
+    function renderStats() {
+        const scenarios = [...new Set(DATA.map(d => d.scenario))];
+        const dates = [...new Set(DATA.map(d => d.date))].sort();
+
+        // Averages for standard inc-build
+        const stdIncBuild = DATA.filter(d => d.scenario === 'orchard-core-inc-build-dotnet' && d.results['build-time']);
+        const avgBuildTime = avg(stdIncBuild.map(d => d.results['build-time']));
+
+        // Latest
+        const latest = getLatest('orchard-core-inc-build-dotnet');
+        const latestMt = getLatest('orchard-core-inc-build-mt-dotnet');
+
+        let mtSpeedup = 'N/A';
+        if (latest && latestMt && latest.results['build-time'] && latestMt.results['build-time']) {
+            const pct = ((1 - latestMt.results['build-time'] / latest.results['build-time']) * 100);
+            mtSpeedup = (pct > 0 ? '+' : '') + pct.toFixed(1) + '%';
+        }
+
+        document.getElementById('statsRow').innerHTML = `
+            <div class="stat-card">
+                <span class="stat-value">${DATA.length}</span>
+                <span class="stat-label">Total Runs</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">${scenarios.length}</span>
+                <span class="stat-label">Scenarios</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">${fmtMs(avgBuildTime)}</span>
+                <span class="stat-label">Avg Build (std inc)</span>
+            </div>
+            <div class="stat-card accent">
+                <span class="stat-value">${mtSpeedup}</span>
+                <span class="stat-label">MT Speedup (latest)</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">${dates[dates.length-1]}</span>
+                <span class="stat-label">Latest Data</span>
+            </div>
+        `;
+
+        document.getElementById('headerMeta').textContent = `${dates[0]} → ${dates[dates.length-1]}`;
+        document.getElementById('dataRange').textContent = `${dates[0]} to ${dates[dates.length-1]}`;
+        document.getElementById('dataCount').textContent = DATA.length;
+    }
+
+    // ── MT vs Standard Chart ──
+    function renderMtChart() {
+        const buildType = document.getElementById('mtBuildType').value;
+        const metric = document.getElementById('mtMetric').value;
+
+        const stdScenario = `orchard-core-${buildType}-dotnet`;
+        const mtScenario = `orchard-core-${buildType}-mt-dotnet`;
+
+        const stdData = DATA.filter(d => d.scenario === stdScenario && d.results[metric] != null)
+            .sort((a,b) => a.date.localeCompare(b.date));
+        const mtData = DATA.filter(d => d.scenario === mtScenario && d.results[metric] != null)
+            .sort((a,b) => a.date.localeCompare(b.date));
+
+        // Union of dates
+        const allDates = [...new Set([...stdData.map(d=>d.date), ...mtData.map(d=>d.date)])].sort();
+        const stdMap = Object.fromEntries(stdData.map(d => [d.date, d.results[metric]]));
+        const mtMap = Object.fromEntries(mtData.map(d => [d.date, d.results[metric]]));
+
+        if (CHARTS.mt) CHARTS.mt.destroy();
+        CHARTS.mt = new Chart(document.getElementById('mtChart'), {
+            type: 'line',
+            data: {
+                labels: allDates,
+                datasets: [
+                    {
+                        label: 'Standard',
+                        data: allDates.map(d => stdMap[d] ?? null),
+                        borderColor: COLORS.blue,
+                        backgroundColor: COLORS.blueAlpha,
+                        fill: true, tension: 0.3, pointRadius: 3, spanGaps: true
+                    },
+                    {
+                        label: 'Multithreaded',
+                        data: allDates.map(d => mtMap[d] ?? null),
+                        borderColor: COLORS.green,
+                        backgroundColor: COLORS.greenAlpha,
+                        fill: true, tension: 0.3, pointRadius: 3, spanGaps: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: { legend: { labels: { color: '#94a3b8' } },
+                    tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmt(ctx.parsed.y)}` } }
+                },
+                scales: {
+                    x: { ticks: { color: '#64748b', maxTicksLimit: 15 }, grid: { color: '#1e293b' } },
+                    y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' }, title: { display: true, text: metric, color: '#94a3b8' } }
+                }
+            }
+        });
+
+        // MT summary stats
+        const stdVals = stdData.map(d => d.results[metric]);
+        const mtVals = mtData.map(d => d.results[metric]);
+        document.getElementById('mtSummary').innerHTML = `
+            <div class="mt-stat"><span class="dot blue"></span>Standard avg: <strong>${fmt(avg(stdVals))}</strong> (${stdVals.length} runs)</div>
+            <div class="mt-stat"><span class="dot green"></span>MT avg: <strong>${fmt(avg(mtVals))}</strong> (${mtVals.length} runs)</div>
+            ${mtVals.length > 0 ? `<div class="mt-stat">Difference: <strong>${((1 - avg(mtVals)/avg(stdVals)) * 100).toFixed(1)}%</strong> ${avg(mtVals) < avg(stdVals) ? '🟢 faster' : '🔴 slower'}</div>` : ''}
+        `;
+    }
+
+    // ── Trend Explorer ──
+    function renderTrend() {
+        const scenario = document.getElementById('trendScenario').value;
+        const metric = document.getElementById('trendMetric').value;
+        const filtered = DATA.filter(d => d.scenario === scenario && d.results[metric] != null)
+            .sort((a,b) => a.date.localeCompare(b.date));
+
+        const values = filtered.map(d => d.results[metric]);
+        const mean = avg(values);
+
+        if (CHARTS.trend) CHARTS.trend.destroy();
+        CHARTS.trend = new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: filtered.map(d => d.date),
+                datasets: [
+                    {
+                        label: shortName(scenario),
+                        data: values,
+                        borderColor: COLORS.blue, backgroundColor: COLORS.blueAlpha,
+                        fill: true, tension: 0.3, pointRadius: 2
+                    },
+                    {
+                        label: 'Average',
+                        data: values.map(() => mean),
+                        borderColor: COLORS.amber, borderDash: [6, 3],
+                        pointRadius: 0, fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                scales: {
+                    x: { ticks: { color: '#64748b', maxTicksLimit: 15 }, grid: { color: '#1e293b' } },
+                    y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' }, title: { display: true, text: metric, color: '#94a3b8' } }
+                }
+            }
+        });
+    }
+
+    // ── Evaluation Breakdown ──
+    function renderEvalBreakdown() {
+        const scenario = document.getElementById('evalScenario').value;
+        const latest = getLatest(scenario);
+        if (!latest) return;
+
+        const passes = ['pass0','pass1','pass2','pass3','pass3dot1','pass4','pass5','globbing'];
+        const passLabels = ['Pass 0','Pass 1','Pass 2','Pass 3','Pass 3.1','Pass 4','Pass 5','Globbing'];
+        const passColors = [COLORS.blue, COLORS.red, COLORS.green, COLORS.amber, COLORS.purple, COLORS.cyan, COLORS.pink, COLORS.lime];
+        const passValues = passes.map(p => latest.results[`evaluation-time-${p}`] || latest.results[`evaluation-time-${p}`] || 0);
+
+        if (CHARTS.evalPie) CHARTS.evalPie.destroy();
+        CHARTS.evalPie = new Chart(document.getElementById('evalPieChart'), {
+            type: 'doughnut',
+            data: {
+                labels: passLabels,
+                datasets: [{ data: passValues, backgroundColor: passColors, borderWidth: 0 }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right', labels: { color: '#94a3b8', padding: 12, font: { size: 11 } } },
+                    tooltip: { callbacks: { label: ctx => `${ctx.label}: ${fmt(ctx.parsed)} μs` } }
+                }
+            }
+        });
+
+        if (CHARTS.evalBar) CHARTS.evalBar.destroy();
+        CHARTS.evalBar = new Chart(document.getElementById('evalBarChart'), {
+            type: 'bar',
+            data: {
+                labels: passLabels,
+                datasets: [{ data: passValues, backgroundColor: passColors, borderRadius: 4 }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                plugins: { legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => fmt(ctx.parsed.x) + ' μs' } }
+                },
+                scales: {
+                    x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' }, title: { display: true, text: 'μs', color: '#94a3b8' } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // ── All Scenarios Comparison ──
+    function renderComparison() {
+        const metric = document.getElementById('compMetric').value;
+        const scenarios = [...new Set(DATA.map(d => d.scenario))].sort();
+        const barColors = [COLORS.blue, COLORS.red, COLORS.green, COLORS.amber, COLORS.purple, COLORS.cyan, COLORS.pink, COLORS.lime];
+
+        const latestValues = scenarios.map(s => {
+            const latest = getLatest(s);
+            return latest && latest.results[metric] != null ? latest.results[metric] : 0;
+        });
+
+        if (CHARTS.comp) CHARTS.comp.destroy();
+        CHARTS.comp = new Chart(document.getElementById('compChart'), {
+            type: 'bar',
+            data: {
+                labels: scenarios.map(shortName),
+                datasets: [{
+                    label: metric,
+                    data: latestValues,
+                    backgroundColor: scenarios.map((_, i) => barColors[i % barColors.length]),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => fmt(ctx.parsed.y) } }
+                },
+                scales: {
+                    x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+                    y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' }, beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    // ── Resource Cards ──
+    function renderResources() {
+        const scenarios = [...new Set(DATA.map(d => d.scenario))].sort();
+        const container = document.getElementById('resourceCards');
+
+        container.innerHTML = scenarios.map(s => {
+            const latest = getLatest(s);
+            if (!latest || !latest.resourceMetrics) return '';
+            const m = latest.resourceMetrics;
+            return `
+                <div class="card">
+                    <h3>${shortName(s)}</h3>
+                    <p class="date">${latest.date}</p>
+                    <div class="metric-row">
+                        <span class="metric-label">CPU Global</span>
+                        <span class="metric-value">${m['benchmarks-cpu-global-avg']?.toFixed(0) ?? '-'}%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Working Set</span>
+                        <span class="metric-value">${m['benchmarks-working-set-avg']?.toFixed(0) ?? '-'} MB</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Private Mem</span>
+                        <span class="metric-value">${m['benchmarks-private-memory-avg']?.toFixed(0) ?? '-'} MB</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Build Time</span>
+                        <span class="metric-value">${fmtMs(latest.results['build-time'])}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">MSBuild</span>
+                        <span class="metric-value small">${latest.results['msbuild-version'] || '-'}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ── Populate dropdowns ──
+    function populateDropdowns() {
+        const scenarios = [...new Set(DATA.map(d => d.scenario))].sort();
+        [document.getElementById('trendScenario'), document.getElementById('evalScenario')].forEach(sel => {
+            sel.innerHTML = '';
             scenarios.forEach(s => {
                 const opt = document.createElement('option');
                 opt.value = s;
-                opt.textContent = s.replace('orchard-core-', '').replace('-dotnet', '');
-                scenarioSelect.appendChild(opt);
+                opt.textContent = shortName(s);
+                sel.appendChild(opt);
             });
+        });
+    }
 
-            scenarioSelect.addEventListener('change', updateMainChart);
-            document.getElementById('metricSelect').addEventListener('change', updateMainChart);
+    // ── Init ──
+    async function init() {
+        const resp = await fetch('data/orchard-core.json');
+        DATA = await resp.json();
 
-            updateMainChart();
-            updateComparisonChart();
-            updateSummary();
-        }
+        populateDropdowns();
+        renderStats();
+        renderMtChart();
+        renderTrend();
+        renderEvalBreakdown();
+        renderComparison();
+        renderResources();
 
-        function updateMainChart() {
-            const scenario = document.getElementById('scenarioSelect').value;
-            const metric = document.getElementById('metricSelect').value;
+        // Event listeners
+        document.getElementById('mtBuildType').addEventListener('change', renderMtChart);
+        document.getElementById('mtMetric').addEventListener('change', renderMtChart);
+        document.getElementById('trendScenario').addEventListener('change', renderTrend);
+        document.getElementById('trendMetric').addEventListener('change', renderTrend);
+        document.getElementById('evalScenario').addEventListener('change', renderEvalBreakdown);
+        document.getElementById('compMetric').addEventListener('change', renderComparison);
+    }
 
-            const filtered = allData
-                .filter(d => d.scenario === scenario && d.results && d.results[metric] != null)
-                .sort((a, b) => a.date.localeCompare(b.date));
-
-            const labels = filtered.map(d => d.date);
-            const values = filtered.map(d => d.results[metric]);
-
-            if (mainChart) mainChart.destroy();
-
-            mainChart = new Chart(document.getElementById('mainChart'), {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [{
-                        label: `${metric} — ${scenario.replace('orchard-core-', '')}`,
-                        data: values,
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                        fill: true,
-                        tension: 0.2,
-                        pointRadius: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: true } },
-                    scales: {
-                        x: { title: { display: true, text: 'Date' } },
-                        y: { title: { display: true, text: metric }, beginAtZero: false }
-                    }
-                }
-            });
-        }
-
-        function updateComparisonChart() {
-            // Latest build-time per scenario
-            const scenarios = [...new Set(allData.map(d => d.scenario))].sort();
-            const latestPerScenario = scenarios.map(s => {
-                const entries = allData
-                    .filter(d => d.scenario === s && d.results && d.results['build-time'] != null)
-                    .sort((a, b) => b.date.localeCompare(a.date));
-                return { scenario: s, value: entries.length > 0 ? entries[0].results['build-time'] : 0 };
-            });
-
-            const colors = [
-                '#2563eb', '#dc2626', '#16a34a', '#ca8a04',
-                '#9333ea', '#0891b2', '#e11d48', '#65a30d'
-            ];
-
-            if (comparisonChart) comparisonChart.destroy();
-
-            comparisonChart = new Chart(document.getElementById('comparisonChart'), {
-                type: 'bar',
-                data: {
-                    labels: latestPerScenario.map(d => d.scenario.replace('orchard-core-', '').replace('-dotnet', '')),
-                    datasets: [{
-                        label: 'Build Time (ms) — Latest',
-                        data: latestPerScenario.map(d => d.value),
-                        backgroundColor: latestPerScenario.map((_, i) => colors[i % colors.length])
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { title: { display: true, text: 'Build Time (ms)' }, beginAtZero: true }
-                    }
-                }
-            });
-        }
-
-        function updateSummary() {
-            const latest = allData
-                .sort((a, b) => b.date.localeCompare(a.date))
-                .slice(0, 8);
-
-            const container = document.getElementById('summaryCards');
-            container.innerHTML = latest.map(d => `
-                <div class="card">
-                    <h3>${d.scenario.replace('orchard-core-', '').replace('-dotnet', '')}</h3>
-                    <p class="date">${d.date}</p>
-                    <p><strong>Build:</strong> ${(d.results['build-time'] / 1000).toFixed(1)}s</p>
-                    <p><strong>Eval:</strong> ${(d.results['evaluation-time'] / 1000).toFixed(0)}ms</p>
-                    <p><strong>MSBuild:</strong> ${d.results['msbuild-version'] || 'N/A'}</p>
-                    <p><strong>Exit:</strong> ${d.results['exit-code']}</p>
-                </div>
-            `).join('');
-        }
-
-        init();
+    init();
     </script>
 </body>
 </html>
