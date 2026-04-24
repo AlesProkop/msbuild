@@ -9,24 +9,30 @@
 </head>
 <body>
     <header>
-        <div>
-            <h1>MSBuild PerfStar Dashboard</h1>
-            <p class="subtitle" id="headerMeta"></p>
-        </div>
+        <h1>📊 MSBuild Performance Dashboard</h1>
+        <p id="headerMeta">Loading...</p>
     </header>
 
-    <main>
-        <section class="asset-bar">
-            <label>Test Asset:</label>
-            <select id="assetSelect"></select>
-            <span class="loading" id="loadingMsg"></span>
-        </section>
+    <div class="tabs">
+        <button class="tab active" data-view="overview">Overview</button>
+        <button class="tab" data-view="health">Health</button>
+    </div>
 
-        <!-- MT vs Standard -->
-        <section class="panel" id="mtPanel">
-            <div class="panel-header">
-                <h2>Multithreaded vs Standard</h2>
-                <div class="controls-inline">
+    <!-- ============ OVERVIEW ============ -->
+    <div class="view active" id="view-overview">
+        <div class="layout">
+            <div class="card">
+                <div class="controls-row">
+                    <label>Asset:</label>
+                    <select id="assetSelect"></select>
+                    <span id="loadingMsg" style="font-size:12px;color:var(--text-subtle);font-style:italic"></span>
+                </div>
+            </div>
+
+            <!-- MT vs Standard -->
+            <div class="card" id="mtPanel">
+                <div class="card-header">Multithreaded vs Standard</div>
+                <div class="controls-row">
                     <select id="mtBuildType">
                         <option value="inc-build">Incremental Build</option>
                         <option value="rebuild">Rebuild</option>
@@ -37,16 +43,14 @@
                         <option value="benchmarks/build-time">Crank Build Time</option>
                     </select>
                 </div>
+                <div class="chart-wrapper"><canvas id="mtChart"></canvas></div>
+                <div class="mt-summary" id="mtSummary"></div>
             </div>
-            <div class="chart-wrapper"><canvas id="mtChart"></canvas></div>
-            <div class="mt-summary" id="mtSummary"></div>
-        </section>
 
-        <!-- Trend -->
-        <section class="panel">
-            <div class="panel-header">
-                <h2>Trend</h2>
-                <div class="controls-inline">
+            <!-- Trend -->
+            <div class="card">
+                <div class="card-header">Trend</div>
+                <div class="controls-row">
                     <select id="trendScenario"></select>
                     <select id="trendMetric">
                         <option value="build-time" selected>Build Time</option>
@@ -56,26 +60,39 @@
                         <option value="benchmarks/build-time">Crank Build Time</option>
                     </select>
                 </div>
+                <div class="chart-wrapper"><canvas id="trendChart"></canvas></div>
+                <div class="stats-bar" id="trendStats"></div>
             </div>
-            <div class="chart-wrapper"><canvas id="trendChart"></canvas></div>
-        </section>
 
-        <!-- Resource Averages -->
-        <section class="panel" id="resourcePanel">
-            <div class="panel-header">
-                <h2>Resource Usage (All-Time Averages)</h2>
+            <!-- Resources -->
+            <div class="card" id="resourcePanel">
+                <div class="card-header">Resource Usage — All-Time Averages</div>
+                <div class="resource-grid" id="resourceGrid"></div>
             </div>
-            <div class="resource-grid" id="resourceGrid"></div>
-        </section>
 
-        <!-- All scenarios latest -->
-        <section class="panel">
-            <div class="panel-header">
-                <h2>Latest — All Scenarios</h2>
+            <!-- Comparison -->
+            <div class="card">
+                <div class="card-header">Latest Build Time — All Scenarios</div>
+                <div class="chart-wrapper"><canvas id="compChart"></canvas></div>
             </div>
-            <div class="chart-wrapper"><canvas id="compChart"></canvas></div>
-        </section>
-    </main>
+        </div>
+    </div>
+
+    <!-- ============ HEALTH ============ -->
+    <div class="view" id="view-health">
+        <div class="layout">
+            <div class="card">
+                <div class="card-header">Test Health Summary</div>
+                <div class="stats-bar" id="healthStats"></div>
+                <div class="health-grid" id="healthGrid"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" id="timelineHeader">Status Timeline</div>
+                <div class="timeline-wrapper" id="timelineContainer"></div>
+            </div>
+        </div>
+    </div>
 
     <footer><p id="footerInfo"></p></footer>
 
@@ -84,32 +101,37 @@
     let MANIFEST = [];
     const CHARTS = {};
 
-    // Muted palette
-    const CLR = { std: '#4b5563', mt: '#2563eb', avg: '#d97706', fill: 'rgba(75,85,99,0.08)', mtFill: 'rgba(37,99,235,0.08)' };
-    const BAR_CLR = '#9ca3af';
+    const CLR = {
+        line: '#656d76',
+        lineFill: 'rgba(101,109,118,0.06)',
+        mt: '#0969da',
+        mtFill: 'rgba(9,105,218,0.06)',
+        avg: '#9a6700',
+        bar: '#d0d7de'
+    };
 
     function short(s) { return s.replace(/^.*?-(?=inc-build|rebuild)/, '').replace('-dotnet',''); }
-    function assetFromScenario(s) { return s.replace(/-(inc-build|rebuild).*$/, ''); }
+    function assetPrefix() {
+        if (!DATA.length) return '';
+        return DATA[0].scenario.replace(/-(inc-build|rebuild).*$/, '');
+    }
+    function scenarioList() { return [...new Set(DATA.map(d => d.scenario))].sort(); }
+    function avg(arr) { return arr.length ? arr.reduce((a,b) => a+b, 0) / arr.length : 0; }
 
-    function toDisplay(v, metric) {
+    // All values stay in ms
+    function toMs(v, metric) {
         if (v == null || v === '') return null;
-        if (metric === 'build-time') return +(v / 1000).toFixed(2);
-        if (metric === 'evaluation-time' || metric.startsWith('evaluation-time-')) return +(v / 1000000).toFixed(3);
+        if (metric === 'evaluation-time' || metric.startsWith('evaluation-time-'))
+            return +(v / 1000).toFixed(1); // μs → ms
         return +v;
     }
 
-    function unitLabel(metric) {
-        if (metric === 'build-time' || metric === 'evaluation-time' || metric.startsWith('evaluation-time-')) return 'seconds';
-        if (metric.includes('working-set') || metric.includes('private-memory')) return 'MB';
-        return 'ms';
-    }
-
-    function avg(arr) { return arr.length ? arr.reduce((a,b) => a+b, 0) / arr.length : 0; }
+    function unitLabel() { return 'ms'; }
 
     function getSeries(scenario, metric) {
         return DATA.filter(d => d.scenario === scenario && d.results[metric] != null && d.results[metric] !== '')
             .sort((a,b) => a.date.localeCompare(b.date))
-            .map(d => ({ date: d.date, value: toDisplay(d.results[metric], metric) }))
+            .map(d => ({ date: d.date, value: toMs(d.results[metric], metric), exitCode: d.results['exit-code'] }))
             .filter(d => d.value !== null);
     }
 
@@ -117,73 +139,84 @@
         return DATA.filter(d => d.scenario === scenario).sort((a, b) => b.date.localeCompare(a.date))[0];
     }
 
-    function chartOpts(yLabel) {
+    function chartOpts() {
         return {
             responsive: true, maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
-            plugins: { legend: { labels: { color: '#6b7280', font: { size: 11 } } } },
+            plugins: {
+                legend: { labels: { color: '#656d76', font: { size: 11 } } },
+                tooltip: {
+                    backgroundColor: 'rgba(255,255,255,0.97)',
+                    titleColor: '#1f2328', bodyColor: '#1f2328',
+                    borderColor: '#d8dee4', borderWidth: 1,
+                    cornerRadius: 6, padding: 10,
+                    callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1)} ms` }
+                }
+            },
             scales: {
-                x: { ticks: { color: '#9ca3af', maxTicksLimit: 12, font: { size: 10 } }, grid: { color: '#f3f4f6' } },
-                y: { ticks: { color: '#9ca3af' }, grid: { color: '#f3f4f6' }, title: { display: true, text: yLabel, color: '#9ca3af' } }
+                x: { ticks: { color: '#8b949e', maxTicksLimit: 12, font: { size: 10 } }, grid: { color: '#f0f3f6' } },
+                y: { ticks: { color: '#8b949e' }, grid: { color: '#f0f3f6' }, title: { display: true, text: 'ms', color: '#8b949e' } }
             }
         };
     }
 
-    function scenarios() { return [...new Set(DATA.map(d => d.scenario))].sort(); }
-
-    // Does this asset have MT data?
-    function hasMt() {
-        return DATA.some(d => d.scenario.includes('-mt-'));
-    }
+    // ── Tab switching ──
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('view-' + tab.dataset.view).classList.add('active');
+        });
+    });
 
     // ── MT vs Standard ──
     function renderMt() {
         const panel = document.getElementById('mtPanel');
-        if (!hasMt()) { panel.style.display = 'none'; return; }
+        if (!DATA.some(d => d.scenario.includes('-mt-'))) { panel.style.display = 'none'; return; }
         panel.style.display = '';
 
-        const buildType = document.getElementById('mtBuildType').value;
+        const bt = document.getElementById('mtBuildType').value;
         const metric = document.getElementById('mtMetric').value;
-        const asset = assetFromScenario(DATA[0].scenario);
+        const asset = assetPrefix();
 
-        const stdSeries = getSeries(`${asset}-${buildType}-dotnet`, metric);
-        const mtSeries = getSeries(`${asset}-${buildType}-mt-dotnet`, metric);
+        const stdS = getSeries(`${asset}-${bt}-dotnet`, metric);
+        const mtS = getSeries(`${asset}-${bt}-mt-dotnet`, metric);
 
-        const allDates = [...new Set([...stdSeries.map(d=>d.date), ...mtSeries.map(d=>d.date)])].sort();
-        const stdMap = Object.fromEntries(stdSeries.map(d => [d.date, d.value]));
-        const mtMap = Object.fromEntries(mtSeries.map(d => [d.date, d.value]));
+        const dates = [...new Set([...stdS.map(d=>d.date), ...mtS.map(d=>d.date)])].sort();
+        const stdMap = Object.fromEntries(stdS.map(d => [d.date, d.value]));
+        const mtMap = Object.fromEntries(mtS.map(d => [d.date, d.value]));
 
         if (CHARTS.mt) CHARTS.mt.destroy();
         CHARTS.mt = new Chart(document.getElementById('mtChart'), {
             type: 'line',
             data: {
-                labels: allDates,
+                labels: dates,
                 datasets: [
-                    { label: 'Standard', data: allDates.map(d => stdMap[d] ?? null), borderColor: CLR.std, backgroundColor: CLR.fill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
-                    { label: 'Multithreaded', data: allDates.map(d => mtMap[d] ?? null), borderColor: CLR.mt, backgroundColor: CLR.mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
+                    { label: 'Standard', data: dates.map(d => stdMap[d] ?? null), borderColor: CLR.line, backgroundColor: CLR.lineFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
+                    { label: 'Multithreaded', data: dates.map(d => mtMap[d] ?? null), borderColor: CLR.mt, backgroundColor: CLR.mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
                 ]
             },
-            options: chartOpts(unitLabel(metric))
+            options: chartOpts()
         });
 
-        const stdVals = stdSeries.map(d => d.value);
-        const mtVals = mtSeries.map(d => d.value);
-        let html = `<span><span class="dot std"></span> Standard avg: <strong>${stdVals.length ? avg(stdVals).toFixed(2) + 's' : 'N/A'}</strong> (${stdVals.length} runs)</span>`;
-        html += `<span><span class="dot mt"></span> MT avg: <strong>${mtVals.length ? avg(mtVals).toFixed(2) + 's' : 'N/A'}</strong> (${mtVals.length} runs)</span>`;
-        if (stdVals.length && mtVals.length) {
-            const diff = ((1 - avg(mtVals)/avg(stdVals)) * 100);
-            html += `<span>Diff: <strong>${diff > 0 ? '+' : ''}${diff.toFixed(1)}%</strong> ${diff > 0 ? ' faster' : ' slower'}</span>`;
-        } else if (mtVals.length === 0) {
-            html += `<span class="muted">No successful MT data for this metric</span>`;
+        const sv = stdS.map(d => d.value), mv = mtS.map(d => d.value);
+        let html = `<span><span class="dot std"></span> Std avg: <strong>${sv.length ? avg(sv).toFixed(0) + ' ms' : 'N/A'}</strong> (${sv.length})</span>`;
+        html += `<span><span class="dot mt"></span> MT avg: <strong>${mv.length ? avg(mv).toFixed(0) + ' ms' : 'N/A'}</strong> (${mv.length})</span>`;
+        if (sv.length && mv.length) {
+            const d = ((1 - avg(mv)/avg(sv)) * 100);
+            html += `<span>${d > 0 ? '↓' : '↑'} <strong>${Math.abs(d).toFixed(1)}%</strong> ${d > 0 ? 'faster' : 'slower'}</span>`;
+        } else if (mv.length === 0) {
+            html += `<span class="muted">No successful MT data</span>`;
         }
         document.getElementById('mtSummary').innerHTML = html;
     }
 
     // ── Trend ──
     function renderTrend() {
-        const scenario = document.getElementById('trendScenario').value;
+        const sc = document.getElementById('trendScenario').value;
         const metric = document.getElementById('trendMetric').value;
-        const series = getSeries(scenario, metric);
+        const series = getSeries(sc, metric);
         const vals = series.map(d => d.value);
         const mean = avg(vals);
 
@@ -193,26 +226,29 @@
             data: {
                 labels: series.map(d => d.date),
                 datasets: [
-                    { label: short(scenario), data: vals, borderColor: CLR.std, backgroundColor: CLR.fill, fill: true, tension: 0.3, pointRadius: 1.5, borderWidth: 1.5 },
-                    { label: `Avg (${mean.toFixed(2)}s)`, data: vals.map(() => mean), borderColor: CLR.avg, borderDash: [5,3], pointRadius: 0, fill: false, borderWidth: 1 }
+                    { label: short(sc), data: vals, borderColor: CLR.line, backgroundColor: CLR.lineFill, fill: true, tension: 0.3, pointRadius: 1.5, borderWidth: 1.5 },
+                    { label: `Avg (${mean.toFixed(0)} ms)`, data: vals.map(() => mean), borderColor: CLR.avg, borderDash: [5,3], pointRadius: 0, fill: false, borderWidth: 1 }
                 ]
             },
-            options: chartOpts(unitLabel(metric))
+            options: chartOpts()
         });
+
+        // Stats
+        const statsEl = document.getElementById('trendStats');
+        if (vals.length) {
+            statsEl.innerHTML = `
+                <div class="stat"><div class="stat-value">${avg(vals).toFixed(0)}</div><div class="stat-label">Avg (ms)</div></div>
+                <div class="stat"><div class="stat-value">${Math.min(...vals).toFixed(0)}</div><div class="stat-label">Min (ms)</div></div>
+                <div class="stat"><div class="stat-value">${Math.max(...vals).toFixed(0)}</div><div class="stat-label">Max (ms)</div></div>
+                <div class="stat"><div class="stat-value">${vals.length}</div><div class="stat-label">Runs</div></div>`;
+        } else {
+            statsEl.innerHTML = '';
+        }
     }
 
-    // ── Resource Averages ──
+    // ── Resources ──
     function renderResources() {
         const grid = document.getElementById('resourceGrid');
-        const allScenarios = scenarios();
-        
-        // Compute global averages across all scenarios
-        const withMetrics = DATA.filter(d => d.resourceMetrics);
-        if (withMetrics.length === 0) {
-            grid.innerHTML = '<p class="muted">No resource metrics available</p>';
-            return;
-        }
-
         const metrics = [
             { key: 'benchmarks-cpu-global-avg', label: 'CPU Global', unit: '%' },
             { key: 'benchmarks-working-set-avg', label: 'Working Set', unit: 'MB' },
@@ -220,95 +256,168 @@
             { key: 'benchmarks-cpu-avg', label: 'CPU Process', unit: '%' }
         ];
 
-        // Per-scenario resource averages
         let html = '';
-        for (const sc of allScenarios) {
-            const records = withMetrics.filter(d => d.scenario === sc);
-            if (records.length === 0) continue;
-            
+        for (const sc of scenarioList()) {
+            const recs = DATA.filter(d => d.scenario === sc && d.resourceMetrics);
+            if (!recs.length) continue;
+
             html += `<div class="resource-card"><h4>${short(sc)}</h4>`;
             for (const m of metrics) {
-                const vals = records.map(r => r.resourceMetrics[m.key]).filter(v => v != null);
-                if (vals.length === 0) continue;
-                const a = avg(vals);
-                const mn = Math.min(...vals);
-                const mx = Math.max(...vals);
-                html += `<div style="margin-bottom:0.3rem"><span class="resource-val">${a.toFixed(1)}</span> <span class="resource-range">${m.unit} ${m.label} (${mn.toFixed(0)}–${mx.toFixed(0)})</span></div>`;
+                const vals = recs.map(r => r.resourceMetrics[m.key]).filter(v => v != null);
+                if (!vals.length) continue;
+                html += `<div class="resource-row">
+                    <span class="resource-metric">${m.label}</span>
+                    <span><span class="resource-val">${avg(vals).toFixed(1)}</span> <span class="resource-range">${m.unit} (${Math.min(...vals).toFixed(0)}–${Math.max(...vals).toFixed(0)})</span></span>
+                </div>`;
             }
-            html += `<div class="resource-range">${records.length} runs</div></div>`;
+            html += `<div class="resource-range" style="margin-top:4px">${recs.length} runs</div></div>`;
         }
-        grid.innerHTML = html;
+        grid.innerHTML = html || '<p class="muted" style="padding:14px">No resource metrics available</p>';
     }
 
-    // ── All Scenarios Comparison ──
+    // ── Comparison ──
     function renderComp() {
-        const allSc = scenarios();
-        const values = allSc.map(s => {
+        const scs = scenarioList();
+        const values = scs.map(s => {
             const latest = getLatest(s);
-            if (!latest || latest.results['build-time'] == null) return 0;
-            return +(latest.results['build-time'] / 1000).toFixed(2);
+            return (latest && latest.results['build-time'] != null) ? +latest.results['build-time'].toFixed(0) : 0;
         });
 
         if (CHARTS.comp) CHARTS.comp.destroy();
         CHARTS.comp = new Chart(document.getElementById('compChart'), {
             type: 'bar',
             data: {
-                labels: allSc.map(short),
-                datasets: [{ label: 'Build Time (s)', data: values, backgroundColor: BAR_CLR, borderRadius: 3 }]
+                labels: scs.map(short),
+                datasets: [{ label: 'Build Time (ms)', data: values, backgroundColor: CLR.bar, borderRadius: 3 }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y.toFixed(0)} ms` } }
+                },
                 scales: {
-                    x: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { display: false } },
-                    y: { ticks: { color: '#9ca3af' }, grid: { color: '#f3f4f6' }, title: { display: true, text: 'seconds', color: '#9ca3af' }, beginAtZero: true }
+                    x: { ticks: { color: '#8b949e', font: { size: 10 } }, grid: { display: false } },
+                    y: { ticks: { color: '#8b949e' }, grid: { color: '#f0f3f6' }, title: { display: true, text: 'ms', color: '#8b949e' }, beginAtZero: true }
                 }
             }
         });
     }
 
-    // ── Load asset data ──
-    async function loadAsset(assetName) {
+    // ── Health ──
+    function renderHealth() {
+        const scs = scenarioList();
+        const dates = [...new Set(DATA.map(d => d.date))].sort();
+
+        // Per-scenario health
+        let totalRuns = DATA.length;
+        let passed = DATA.filter(d => d.results['exit-code'] === 0).length;
+        let failed = DATA.filter(d => d.results['exit-code'] != null && d.results['exit-code'] !== 0).length;
+        let noData = totalRuns - passed - failed;
+
+        document.getElementById('healthStats').innerHTML = `
+            <div class="stat"><div class="stat-value">${totalRuns}</div><div class="stat-label">Total Runs</div></div>
+            <div class="stat"><div class="stat-value" style="color:var(--success)">${passed}</div><div class="stat-label">Passed</div></div>
+            <div class="stat"><div class="stat-value" style="color:var(--danger)">${failed}</div><div class="stat-label">Failed</div></div>
+            <div class="stat"><div class="stat-value">${(totalRuns > 0 ? (failed/totalRuns*100) : 0).toFixed(1)}%</div><div class="stat-label">Failure Rate</div></div>`;
+
+        // Health cards per scenario
+        let gridHtml = '';
+        for (const sc of scs) {
+            const recs = DATA.filter(d => d.scenario === sc);
+            const p = recs.filter(d => d.results['exit-code'] === 0).length;
+            const f = recs.filter(d => d.results['exit-code'] != null && d.results['exit-code'] !== 0).length;
+
+            // Recent streak
+            const sorted = recs.sort((a,b) => b.date.localeCompare(a.date));
+            let streak = 0, streakType = '';
+            for (const r of sorted) {
+                const ec = r.results['exit-code'];
+                const status = ec === 0 ? 'pass' : (ec != null ? 'fail' : 'unknown');
+                if (!streakType) streakType = status;
+                if (status === streakType) streak++;
+                else break;
+            }
+
+            const statusClass = f === 0 ? 'status-pass' : (p === 0 ? 'status-fail' : 'status-warn');
+            const statusText = f === 0 ? '✅ All passing' : (p === 0 ? '❌ All failing' : `⚠ ${f} failures`);
+
+            gridHtml += `<div class="health-item">
+                <h4>${short(sc)}</h4>
+                <div class="health-status ${statusClass}">${statusText}</div>
+                <div class="health-detail">${p}/${recs.length} passed · streak: ${streak} ${streakType}</div>
+            </div>`;
+        }
+        document.getElementById('healthGrid').innerHTML = gridHtml;
+
+        // Timeline heatmap
+        const recentDates = dates.slice(-30);
+        document.getElementById('timelineHeader').textContent = `Status Timeline (last ${recentDates.length} dates)`;
+
+        // Build lookup: scenario → date → exit-code
+        const lookup = {};
+        DATA.forEach(d => {
+            if (!lookup[d.scenario]) lookup[d.scenario] = {};
+            lookup[d.scenario][d.date] = d.results['exit-code'];
+        });
+
+        let tlHtml = '<div class="timeline-legend">';
+        tlHtml += '<div class="timeline-legend-item"><div class="tl-legend-dot tl-pass"></div> Pass</div>';
+        tlHtml += '<div class="timeline-legend-item"><div class="tl-legend-dot tl-fail"></div> Fail</div>';
+        tlHtml += '<div class="timeline-legend-item"><div class="tl-legend-dot tl-none"></div> No data</div>';
+        tlHtml += '</div>';
+
+        for (const sc of scs) {
+            tlHtml += `<div class="timeline-row">
+                <div class="timeline-label" title="${sc}">${short(sc)}</div>
+                <div class="timeline-dots">`;
+            for (const date of recentDates) {
+                const ec = lookup[sc]?.[date];
+                let cls, title;
+                if (ec === 0) { cls = 'tl-pass'; title = `${date}: Pass`; }
+                else if (ec != null) { cls = 'tl-fail'; title = `${date}: Failed (exit ${ec})`; }
+                else { cls = 'tl-none'; title = `${date}: No data`; }
+                tlHtml += `<div class="tl-dot ${cls}" title="${title}"></div>`;
+            }
+            tlHtml += '</div></div>';
+        }
+        document.getElementById('timelineContainer').innerHTML = tlHtml;
+    }
+
+    // ── Load asset ──
+    async function loadAsset(name) {
         document.getElementById('loadingMsg').textContent = 'Loading...';
-        const resp = await fetch(`data/${assetName}.json`);
+        const resp = await fetch(`data/${name}.json`);
         DATA = await resp.json();
         document.getElementById('loadingMsg').textContent = '';
 
-        // Populate scenario dropdown
         const sel = document.getElementById('trendScenario');
         sel.innerHTML = '';
-        scenarios().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = short(s); sel.appendChild(o); });
+        scenarioList().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = short(s); sel.appendChild(o); });
 
-        // Update header
         const dates = [...new Set(DATA.map(d => d.date))].sort();
-        document.getElementById('headerMeta').textContent = `${assetName} · ${DATA.length} runs · ${dates[0]} to ${dates[dates.length-1]}`;
+        document.getElementById('headerMeta').textContent = `${name} · ${DATA.length} runs · ${dates[0]} to ${dates[dates.length-1]}`;
         document.getElementById('footerInfo').textContent = `${DATA.length} runs · ${dates[0]} to ${dates[dates.length-1]} · MSBuild PerfStar CI`;
 
-        renderMt();
-        renderTrend();
-        renderResources();
-        renderComp();
+        renderMt(); renderTrend(); renderResources(); renderComp(); renderHealth();
     }
 
     // ── Init ──
     async function init() {
         const resp = await fetch('data/manifest.json');
         MANIFEST = await resp.json();
+        MANIFEST.sort((a, b) => b.records - a.records);
 
         const sel = document.getElementById('assetSelect');
-        // Sort by record count descending for relevance
-        MANIFEST.sort((a, b) => b.records - a.records);
         MANIFEST.forEach(a => {
-            if (a.name === 'sample-orchard-core') return; // skip junk
+            if (a.name === 'sample-orchard-core') return;
             const o = document.createElement('option');
             o.value = a.name;
             o.textContent = `${a.name} (${a.records})`;
             sel.appendChild(o);
         });
-
         sel.addEventListener('change', () => loadAsset(sel.value));
 
-        // Default to orchard-core
         sel.value = 'orchard-core';
         await loadAsset('orchard-core');
     }
