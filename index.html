@@ -94,7 +94,6 @@
                     <select id="mtMetric">
                         <option value="build-time" selected>Build Time</option>
                         <option value="evaluation-time">Evaluation Time</option>
-                        <option value="benchmarks/build-time">Crank Build Time</option>
                     </select>
                 </div>
                 <div class="chart-wrapper"><canvas id="mtChart"></canvas></div>
@@ -111,18 +110,18 @@
                         <option value="evaluation-time">Evaluation Time</option>
                         <option value="evaluation-time-pass1">Eval Pass 1</option>
                         <option value="evaluation-time-pass5">Eval Pass 5</option>
-                        <option value="benchmarks/build-time">Crank Build Time</option>
                     </select>
                 </div>
                 <div class="chart-wrapper"><canvas id="trendChart"></canvas></div>
                 <div class="stats-bar" id="trendStats"></div>
             </div>
 
-            <!-- Resource Usage -->
+            <!-- Resource Usage (hidden until real CPU/memory monitoring is added)
             <div class="card" id="resourcePanel">
                 <div class="card-header"><span class="card-title">Resource Usage — Standard vs MT</span><span class="card-subtitle">Average CPU &amp; memory per build type</span></div>
                 <div class="resource-grid" id="resourceGrid"></div>
             </div>
+            -->
 
             <!-- Comparison -->
             <div class="card">
@@ -414,7 +413,7 @@
         scenarioList().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = short(s); sel.appendChild(o); });
         if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
 
-        renderMt(); renderTrend(); renderResources(); renderComp();
+        renderMt(); renderTrend(); renderComp();
     }
 
     // ── MT vs Standard ──
@@ -662,7 +661,7 @@
     /* ── Load asset (for Trends / Health) ── */
     async function loadAsset(name) {
         document.getElementById('loadingMsg').textContent = 'Loading...';
-        const resp = await fetch(`data/${name}.json`);
+        const resp = await fetch(`data/aggregated/${name}.json`);
         DATA_ALL = await resp.json();
         document.getElementById('loadingMsg').textContent = '';
         applyTimeFilter();

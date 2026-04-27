@@ -1,0 +1,321 @@
+[
+  {
+    "name": "blazorwasm-app",
+    "records": 26,
+    "scenarios": [
+      "blazorwasm-app-inc-build-dotnet",
+      "blazorwasm-app-rebuild-dotnet"
+    ],
+    "firstDate": "2023-08-30",
+    "latestDate": "2023-10-11"
+  },
+  {
+    "name": "class-lib",
+    "records": 26,
+    "scenarios": [
+      "class-lib-inc-build-dotnet",
+      "class-lib-rebuild-dotnet"
+    ],
+    "firstDate": "2023-08-30",
+    "latestDate": "2023-10-11"
+  },
+  {
+    "name": "csproj-class-lib",
+    "records": 156,
+    "scenarios": [
+      "csproj-class-lib-inc-build-msbuild",
+      "csproj-class-lib-rebuild-msbuild"
+    ],
+    "firstDate": "2023-11-10",
+    "latestDate": "2024-04-17"
+  },
+  {
+    "name": "csproj-console-app",
+    "records": 176,
+    "scenarios": [
+      "csproj-console-app-inc-build-msbuild",
+      "csproj-console-app-rebuild-msbuild"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2024-04-17"
+  },
+  {
+    "name": "csproj-web-app",
+    "records": 168,
+    "scenarios": [
+      "csproj-web-app-inc-build-msbuild",
+      "csproj-web-app-rebuild-msbuild"
+    ],
+    "firstDate": "2023-11-10",
+    "latestDate": "2024-04-17"
+  },
+  {
+    "name": "csproj-win-forms-app",
+    "records": 168,
+    "scenarios": [
+      "csproj-win-forms-app-inc-build-msbuild",
+      "csproj-win-forms-app-rebuild-msbuild"
+    ],
+    "firstDate": "2023-11-10",
+    "latestDate": "2024-04-17"
+  },
+  {
+    "name": "csproj-wpf-app",
+    "records": 168,
+    "scenarios": [
+      "csproj-wpf-app-inc-build-msbuild",
+      "csproj-wpf-app-rebuild-msbuild"
+    ],
+    "firstDate": "2023-11-10",
+    "latestDate": "2024-04-17"
+  },
+  {
+    "name": "eshop-on-blazor-modified",
+    "records": 1238,
+    "scenarios": [
+      "eshop-on-blazor-modified-inc-build-dotnet",
+      "eshop-on-blazor-modified-inc-build-mt-dotnet",
+      "eshop-on-blazor-modified-rebuild-dotnet",
+      "eshop-on-blazor-modified-rebuild-mt-dotnet"
+    ],
+    "firstDate": "2023-09-09",
+    "latestDate": "2026-01-21"
+  },
+  {
+    "name": "net-console-app",
+    "records": 32,
+    "scenarios": [
+      "net-console-app-inc-build-dotnet",
+      "net-console-app-rebuild-dotnet"
+    ],
+    "firstDate": "2023-08-11",
+    "latestDate": "2023-10-11"
+  },
+  {
+    "name": "net48-class-lib",
+    "records": 154,
+    "scenarios": [
+      "net48-class-lib-inc-build-msbuild",
+      "net48-class-lib-rebuild-msbuild"
+    ],
+    "firstDate": "2023-11-10",
+    "latestDate": "2024-04-17"
+  },
+  {
+    "name": "net48-win-forms-app",
+    "records": 168,
+    "scenarios": [
+      "net48-win-forms-app-inc-build-msbuild",
+      "net48-win-forms-app-rebuild-msbuild"
+    ],
+    "firstDate": "2023-11-10",
+    "latestDate": "2024-04-17"
+  },
+  {
+    "name": "net48-wpf-app",
+    "records": 168,
+    "scenarios": [
+      "net48-wpf-app-inc-build-msbuild",
+      "net48-wpf-app-rebuild-msbuild"
+    ],
+    "firstDate": "2023-11-10",
+    "latestDate": "2024-04-17"
+  },
+  {
+    "name": "net6-blazorwasm-app",
+    "records": 923,
+    "scenarios": [
+      "net6-blazorwasm-app-inc-build-dotnet",
+      "net6-blazorwasm-app-rebuild-dotnet"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2025-12-13"
+  },
+  {
+    "name": "net6-class-lib",
+    "records": 1089,
+    "scenarios": [
+      "net6-class-lib-inc-build-dotnet",
+      "net6-class-lib-inc-build-msbuild",
+      "net6-class-lib-rebuild-dotnet",
+      "net6-class-lib-rebuild-msbuild"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2025-12-13"
+  },
+  {
+    "name": "net6-console-app",
+    "records": 1108,
+    "scenarios": [
+      "net6-console-app-inc-build-dotnet",
+      "net6-console-app-inc-build-msbuild",
+      "net6-console-app-rebuild-dotnet",
+      "net6-console-app-rebuild-msbuild"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2025-12-13"
+  },
+  {
+    "name": "net6-web-app",
+    "records": 658,
+    "scenarios": [
+      "net6-web-app-inc-build-dotnet",
+      "net6-web-app-inc-build-msbuild",
+      "net6-web-app-rebuild-dotnet",
+      "net6-web-app-rebuild-msbuild"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2025-12-13"
+  },
+  {
+    "name": "net6-win-forms-app",
+    "records": 658,
+    "scenarios": [
+      "net6-win-forms-app-inc-build-dotnet",
+      "net6-win-forms-app-inc-build-msbuild",
+      "net6-win-forms-app-rebuild-dotnet",
+      "net6-win-forms-app-rebuild-msbuild"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2025-12-13"
+  },
+  {
+    "name": "net6-wpf-app",
+    "records": 658,
+    "scenarios": [
+      "net6-wpf-app-inc-build-dotnet",
+      "net6-wpf-app-inc-build-msbuild",
+      "net6-wpf-app-rebuild-dotnet",
+      "net6-wpf-app-rebuild-msbuild"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2025-12-13"
+  },
+  {
+    "name": "net8-blazorwasm-app",
+    "records": 1658,
+    "scenarios": [
+      "net8-blazorwasm-app-inc-build-binlog-dotnet",
+      "net8-blazorwasm-app-inc-build-dotnet",
+      "net8-blazorwasm-app-inc-build-mt-dotnet",
+      "net8-blazorwasm-app-rebuild-binlog-dotnet",
+      "net8-blazorwasm-app-rebuild-dotnet",
+      "net8-blazorwasm-app-rebuild-mt-dotnet"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2026-01-21"
+  },
+  {
+    "name": "net8-class-lib",
+    "records": 977,
+    "scenarios": [
+      "net8-class-lib-inc-build-dotnet",
+      "net8-class-lib-rebuild-dotnet"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2026-01-21"
+  },
+  {
+    "name": "net8-console-app",
+    "records": 2378,
+    "scenarios": [
+      "net8-console-app-inc-build-binlog-dotnet",
+      "net8-console-app-inc-build-check-dotnet",
+      "net8-console-app-inc-build-dotnet",
+      "net8-console-app-inc-build-mt-binlog-dotnet",
+      "net8-console-app-inc-build-mt-dotnet",
+      "net8-console-app-rebuild-binlog-dotnet",
+      "net8-console-app-rebuild-check-dotnet",
+      "net8-console-app-rebuild-dotnet",
+      "net8-console-app-rebuild-mt-binlog-dotnet",
+      "net8-console-app-rebuild-mt-dotnet"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2026-01-21"
+  },
+  {
+    "name": "net8-web-app",
+    "records": 503,
+    "scenarios": [
+      "net8-web-app-inc-build-dotnet",
+      "net8-web-app-rebuild-dotnet"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2026-01-21"
+  },
+  {
+    "name": "net8-win-forms-app",
+    "records": 506,
+    "scenarios": [
+      "net8-win-forms-app-inc-build-dotnet",
+      "net8-win-forms-app-rebuild-dotnet"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2026-01-21"
+  },
+  {
+    "name": "net8-wpf-app",
+    "records": 511,
+    "scenarios": [
+      "net8-wpf-app-inc-build-dotnet",
+      "net8-wpf-app-rebuild-dotnet"
+    ],
+    "firstDate": "2023-10-14",
+    "latestDate": "2026-01-21"
+  },
+  {
+    "name": "orchard-core",
+    "records": 687,
+    "scenarios": [
+      "orchard-core-inc-build-binlog-dotnet",
+      "orchard-core-inc-build-check-dotnet",
+      "orchard-core-inc-build-dotnet",
+      "orchard-core-inc-build-mt-dotnet",
+      "orchard-core-rebuild-binlog-dotnet",
+      "orchard-core-rebuild-check-dotnet",
+      "orchard-core-rebuild-dotnet",
+      "orchard-core-rebuild-mt-dotnet"
+    ],
+    "firstDate": "2025-04-14",
+    "latestDate": "2026-01-21"
+  },
+  {
+    "name": "very-large-net8-console-app",
+    "records": 167,
+    "scenarios": [
+      "very-large-net8-console-app-restore-dotnet"
+    ],
+    "firstDate": "2025-06-28",
+    "latestDate": "2026-01-21"
+  },
+  {
+    "name": "web-app",
+    "records": 26,
+    "scenarios": [
+      "web-app-inc-build-dotnet",
+      "web-app-rebuild-dotnet"
+    ],
+    "firstDate": "2023-08-30",
+    "latestDate": "2023-10-11"
+  },
+  {
+    "name": "win-forms-app",
+    "records": 26,
+    "scenarios": [
+      "win-forms-app-inc-build-dotnet",
+      "win-forms-app-rebuild-dotnet"
+    ],
+    "firstDate": "2023-08-30",
+    "latestDate": "2023-10-11"
+  },
+  {
+    "name": "wpf-app",
+    "records": 26,
+    "scenarios": [
+      "wpf-app-inc-build-dotnet",
+      "wpf-app-rebuild-dotnet"
+    ],
+    "firstDate": "2023-08-30",
+    "latestDate": "2023-10-11"
+  }
+]
