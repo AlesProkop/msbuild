@@ -967,6 +967,88 @@ namespace Microsoft.Build.UnitTests
 
         #endregion
 
+        #region Forward Compatibility Replay Tests
+
+        [Fact]
+        public void OpenBuildEventsReader_ThrowsForIncompatibleVersion()
+        {
+            // fileFormatVersion > current AND minimumReaderVersion > current => fatal
+            var stream = new MemoryStream();
+            using var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true);
+            writer.Write(BinaryLogger.FileFormatVersion + 10); // fileFormatVersion
+            writer.Write(BinaryLogger.FileFormatVersion + 5);  // minimumReaderVersion (too high)
+            writer.Flush();
+            stream.Position = 0;
+
+            using var reader = new BinaryReader(stream);
+            Assert.Throws<NotSupportedException>(() =>
+                BinaryLogReplayEventSource.OpenBuildEventsReader(reader, closeInput: false, allowForwardCompatibility: true));
+
+            // Satisfy the ExpectFile constraint from the test fixture.
+            File.Create(_logFile).Dispose();
+        }
+
+        [Fact]
+        public void OpenBuildEventsReader_SucceedsForForwardCompatibleVersion()
+        {
+            // fileFormatVersion > current but minimumReaderVersion <= current => should succeed
+            var stream = new MemoryStream();
+            using var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true);
+            writer.Write(BinaryLogger.FileFormatVersion + 5);         // fileFormatVersion (newer)
+            writer.Write(BinaryLogger.ForwardCompatibilityMinimalVersion); // minimumReaderVersion (compatible)
+            writer.Flush();
+            stream.Position = 0;
+
+            using var reader = new BinaryReader(stream);
+            using var eventsReader = BinaryLogReplayEventSource.OpenBuildEventsReader(reader, closeInput: false, allowForwardCompatibility: true);
+            eventsReader.ShouldNotBeNull();
+            eventsReader.FileFormatVersion.ShouldBe(BinaryLogger.FileFormatVersion + 5);
+
+            File.Create(_logFile).Dispose();
+        }
+
+        [Fact]
+        public void OpenBuildEventsReader_ThrowsWithoutForwardCompatibility()
+        {
+            // fileFormatVersion > current, allowForwardCompatibility = false => fatal even if minimumReaderVersion is ok
+            var stream = new MemoryStream();
+            using var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true);
+            writer.Write(BinaryLogger.FileFormatVersion + 5);         // fileFormatVersion (newer)
+            writer.Write(BinaryLogger.ForwardCompatibilityMinimalVersion); // minimumReaderVersion (compatible)
+            writer.Flush();
+            stream.Position = 0;
+
+            using var reader = new BinaryReader(stream);
+            Assert.Throws<NotSupportedException>(() =>
+                BinaryLogReplayEventSource.OpenBuildEventsReader(reader, closeInput: false, allowForwardCompatibility: false));
+
+            File.Create(_logFile).Dispose();
+        }
+
+        [Fact]
+        public void FormatVersionMismatchWarning_NullForCurrentVersion()
+        {
+            using var env = TestEnvironment.Create();
+            env.SetEnvironmentVariable("MSBUILDTARGETOUTPUTLOGGING", "1");
+
+            var binaryLogger = new BinaryLogger { Parameters = _logFile };
+
+            using (ProjectCollection collection = new())
+            {
+                Project project = ObjectModelHelpers.CreateInMemoryProject(collection, s_testProject);
+                project.Build(new ILogger[] { binaryLogger }).ShouldBeTrue();
+            }
+
+            var replayEventSource = new BinaryLogReplayEventSource();
+            replayEventSource.RecoverableReadError += _ => { };
+            replayEventSource.BuildFinished += (_, _) => { };
+            replayEventSource.Replay(_logFile);
+
+            replayEventSource.FormatVersionMismatchWarning.ShouldBeNull();
+        }
+
+        #endregion
+
         public void Dispose()
         {
             _env.Dispose();
