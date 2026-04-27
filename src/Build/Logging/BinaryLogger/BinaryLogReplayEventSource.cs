@@ -72,8 +72,8 @@ namespace Microsoft.Build.Logging
         /// <summary>
         /// After replay, contains a warning message if the binlog was produced by a newer version of MSBuild; null otherwise.
         /// </summary>
-        public string? FormatVersionMismatchWarning => _fileFormatVersion > BinaryLogger.FileFormatVersion
-            ? ResourceUtilities.FormatResourceStringStripCodeAndKeyword("BinlogFormatVersionMismatch", _fileFormatVersion, BinaryLogger.FileFormatVersion)
+        public string? FormatVersionMismatchWarning => _fileFormatVersion is int version && version > BinaryLogger.FileFormatVersion
+            ? ResourceUtilities.FormatResourceStringStripCodeAndKeyword("BinlogFormatVersionMismatch", version, BinaryLogger.FileFormatVersion)
             : null;
 
         /// Touches the <see cref="ItemGroupLoggingHelper"/> static constructor

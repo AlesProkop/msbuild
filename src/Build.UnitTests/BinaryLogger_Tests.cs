@@ -981,7 +981,7 @@ namespace Microsoft.Build.UnitTests
             stream.Position = 0;
 
             using var reader = new BinaryReader(stream);
-            Assert.Throws<NotSupportedException>(() =>
+            Should.Throw<NotSupportedException>(() =>
                 BinaryLogReplayEventSource.OpenBuildEventsReader(reader, closeInput: false, allowForwardCompatibility: true));
 
             // Satisfy the ExpectFile constraint from the test fixture.
@@ -1019,7 +1019,7 @@ namespace Microsoft.Build.UnitTests
             stream.Position = 0;
 
             using var reader = new BinaryReader(stream);
-            Assert.Throws<NotSupportedException>(() =>
+            Should.Throw<NotSupportedException>(() =>
                 BinaryLogReplayEventSource.OpenBuildEventsReader(reader, closeInput: false, allowForwardCompatibility: false));
 
             File.Create(_logFile).Dispose();
@@ -1028,8 +1028,7 @@ namespace Microsoft.Build.UnitTests
         [Fact]
         public void FormatVersionMismatchWarning_NullForCurrentVersion()
         {
-            using var env = TestEnvironment.Create();
-            env.SetEnvironmentVariable("MSBUILDTARGETOUTPUTLOGGING", "1");
+            _env.SetEnvironmentVariable("MSBUILDTARGETOUTPUTLOGGING", "1");
 
             var binaryLogger = new BinaryLogger { Parameters = _logFile };
 
