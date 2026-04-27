@@ -69,6 +69,13 @@ namespace Microsoft.Build.Logging
         public int FileFormatVersion => _fileFormatVersion ?? throw new InvalidOperationException(ResourceUtilities.GetResourceString("Binlog_Source_VersionUninitialized"));
         public int MinimumReaderVersion => _minimumReaderVersion ?? throw new InvalidOperationException(ResourceUtilities.GetResourceString("Binlog_Source_VersionUninitialized"));
 
+        /// <summary>
+        /// After replay, contains a warning message if the binlog was produced by a newer version of MSBuild; null otherwise.
+        /// </summary>
+        public string? FormatVersionMismatchWarning => _fileFormatVersion > BinaryLogger.FileFormatVersion
+            ? ResourceUtilities.FormatResourceStringStripCodeAndKeyword("BinlogFormatVersionMismatch", _fileFormatVersion, BinaryLogger.FileFormatVersion)
+            : null;
+
         /// Touches the <see cref="ItemGroupLoggingHelper"/> static constructor
         /// to ensure it initializes <see cref="TaskParameterEventArgs.MessageGetter"/>
         /// and <see cref="TaskParameterEventArgs.DictionaryFactory"/>
@@ -197,7 +204,7 @@ namespace Microsoft.Build.Logging
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> indicating the replay should stop as soon as possible.</param>
         public void Replay(string sourceFilePath, CancellationToken cancellationToken)
         {
-            using var eventsReader = OpenBuildEventsReader(sourceFilePath);
+            using var eventsReader = OpenBuildEventsReader(OpenReader(sourceFilePath), true, AllowForwardCompatibility);
             Replay(eventsReader, cancellationToken);
         }
 
