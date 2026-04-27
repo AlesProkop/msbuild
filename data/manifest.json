@@ -71,7 +71,7 @@
   },
   {
     "name": "eshop-on-blazor-modified",
-    "records": 1242,
+    "records": 1246,
     "scenarios": [
       "eshop-on-blazor-modified-inc-build-dotnet",
       "eshop-on-blazor-modified-inc-build-mt-dotnet",
@@ -193,7 +193,7 @@
   },
   {
     "name": "net8-blazorwasm-app",
-    "records": 1664,
+    "records": 1670,
     "scenarios": [
       "net8-blazorwasm-app-inc-build-binlog-dotnet",
       "net8-blazorwasm-app-inc-build-dotnet",
@@ -207,7 +207,7 @@
   },
   {
     "name": "net8-class-lib",
-    "records": 979,
+    "records": 981,
     "scenarios": [
       "net8-class-lib-inc-build-dotnet",
       "net8-class-lib-rebuild-dotnet"
@@ -217,7 +217,7 @@
   },
   {
     "name": "net8-console-app",
-    "records": 2388,
+    "records": 2398,
     "scenarios": [
       "net8-console-app-inc-build-binlog-dotnet",
       "net8-console-app-inc-build-check-dotnet",
@@ -265,7 +265,7 @@
   },
   {
     "name": "orchard-core",
-    "records": 695,
+    "records": 703,
     "scenarios": [
       "orchard-core-inc-build-binlog-dotnet",
       "orchard-core-inc-build-check-dotnet",
@@ -281,7 +281,7 @@
   },
   {
     "name": "very-large-net8-console-app",
-    "records": 168,
+    "records": 169,
     "scenarios": [
       "very-large-net8-console-app-restore-dotnet"
     ],
