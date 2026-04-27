@@ -1,0 +1,32 @@
+{
+  "date": "2025-03-27",
+  "scenario": "net6-class-lib-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20250327.1.t",
+  "branch": "refs/heads/perf/remove-gc_fixed",
+  "ciRunReason": "ResourceTrigger",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.407",
+    "aspNetCoreVersion": "8.0.14+25ef4aa38b77",
+    "netCoreAppVersion": "8.0.14+1584e493603c",
+    "msbuild-version": "17.15.0.17707",
+    "msbuild-display-version": "17.15.0.17707",
+    "evaluation-time": 461.8,
+    "evaluation-time-globbing": 5.2,
+    "evaluation-time-pass0": 8.0,
+    "evaluation-time-pass1": 262.9,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 47.9,
+    "evaluation-time-pass3dot1": 41.3,
+    "evaluation-time-pass4": 4.0,
+    "evaluation-time-pass5": 92.8,
+    "exit-code": 0.0,
+    "build-time": 1160.7172899999998,
+    "info/test-asset": "Net6ClassLib",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

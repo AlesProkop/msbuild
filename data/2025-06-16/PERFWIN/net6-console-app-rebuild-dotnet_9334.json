@@ -1,0 +1,32 @@
+{
+  "date": "2025-06-16",
+  "scenario": "net6-console-app-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20250616.1.t",
+  "branch": "refs/heads/perf/restore-experiment",
+  "ciRunReason": "ResourceTrigger",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.411",
+    "aspNetCoreVersion": "8.0.17+fa4d80b76c24",
+    "netCoreAppVersion": "8.0.17+77545d6fd5ca",
+    "msbuild-version": "17.15.0.31604",
+    "msbuild-display-version": "17.15.0.31604",
+    "evaluation-time": 458.4,
+    "evaluation-time-globbing": 2.0,
+    "evaluation-time-pass0": 8.0,
+    "evaluation-time-pass1": 262.3,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 48.4,
+    "evaluation-time-pass3dot1": 37.0,
+    "evaluation-time-pass4": 4.0,
+    "evaluation-time-pass5": 93.7,
+    "exit-code": 0.0,
+    "build-time": 1236.50307,
+    "info/test-asset": "Net6ConsoleApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "date": "2024-01-11",
+  "scenario": "net6-wpf-app-inc-build-msbuild",
+  "perfstarCIBuildNumber": "20240111.2",
+  "branch": "refs/heads/perf/no-changes",
+  "ciRunReason": "ResourceTrigger",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "7.0.405",
+    "aspNetCoreVersion": "7.0.15+c49ccc8727c6",
+    "netCoreAppVersion": "7.0.15+8f4568cdaa2f",
+    "msbuild-version": "17.10.0.6105",
+    "msbuild-display-version": "MSBuild version 17.10.0-preview-24061-05+1725b247e for .NET Framework",
+    "exit-code": 1.0,
+    "failure-description": "First build finished with non zero exit code.",
+    "info/test-asset": "Net6WpfApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "MSBuild",
+    "info/test-version": 0.0
+  }
+}

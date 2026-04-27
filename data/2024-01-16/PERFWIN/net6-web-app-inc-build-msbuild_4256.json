@@ -1,0 +1,21 @@
+{
+  "date": "2024-01-16",
+  "scenario": "net6-web-app-inc-build-msbuild",
+  "perfstarCIBuildNumber": "20240116.2",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Manual",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "7.0.405",
+    "aspNetCoreVersion": "7.0.15+c49ccc8727c6",
+    "netCoreAppVersion": "7.0.15+8f4568cdaa2f",
+    "msbuild-version": "17.10.0.6601",
+    "msbuild-display-version": "MSBuild version 17.10.0-preview-24066-01+d0af670c2 for .NET Framework",
+    "exit-code": 1.0,
+    "failure-description": "First build finished with non zero exit code.",
+    "info/test-asset": "Net6WebApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "MSBuild",
+    "info/test-version": 0.0
+  }
+}

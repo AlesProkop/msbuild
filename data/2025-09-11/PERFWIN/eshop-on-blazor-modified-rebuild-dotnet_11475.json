@@ -1,0 +1,33 @@
+{
+  "date": "2025-09-11",
+  "scenario": "eshop-on-blazor-modified-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20250911.3.t",
+  "branch": "refs/heads/perf/AR-May/all-tasks-to-TH-except-message",
+  "ciRunReason": "ResourceTrigger",
+  "machineID": "PERFWIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.2.25460.104",
+    "aspNetCoreVersion": "10.0.0-rc.2.25460.104+eac14590f69f",
+    "netCoreAppVersion": "10.0.0-rc.2.25460.104+eac14590f69f",
+    "msbuild-version": "17.15.0.46103",
+    "msbuild-display-version": "17.15.0.46103",
+    "evaluation-time": 607.9,
+    "evaluation-time-globbing": 7.0,
+    "evaluation-time-pass0": 6.9,
+    "evaluation-time-pass1": 337.2,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 56.8,
+    "evaluation-time-pass3dot1": 97.7,
+    "evaluation-time-pass4": 4.1,
+    "evaluation-time-pass5": 100.5,
+    "exit-code": 0.0,
+    "build-time": 2148.2805999999996,
+    "info/test-asset": "eShopOnBlazor-modified",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.100-rc.2.25460.104"
+  }
+}

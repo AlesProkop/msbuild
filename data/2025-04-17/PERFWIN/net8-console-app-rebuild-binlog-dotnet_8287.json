@@ -1,0 +1,32 @@
+{
+  "date": "2025-04-17",
+  "scenario": "net8-console-app-rebuild-binlog-dotnet",
+  "perfstarCIBuildNumber": "20250415.2.t",
+  "branch": "refs/heads/perf/dev/chcasta/prop-intern",
+  "ciRunReason": "ResourceTrigger",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.408",
+    "aspNetCoreVersion": "8.0.15+8899cb30120d",
+    "netCoreAppVersion": "8.0.15+50c4cb9fc31c",
+    "msbuild-version": "17.15.0.21517",
+    "msbuild-display-version": "17.15.0.21517",
+    "evaluation-time": 488.9,
+    "evaluation-time-globbing": 6.0,
+    "evaluation-time-pass0": 6.2,
+    "evaluation-time-pass1": 278.8,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 51.1,
+    "evaluation-time-pass3dot1": 44.7,
+    "evaluation-time-pass4": 4.6,
+    "evaluation-time-pass5": 99.0,
+    "exit-code": 0.0,
+    "build-time": 1323.48528,
+    "info/test-asset": "Net8ConsoleApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "date": "2025-08-20",
+  "scenario": "net8-console-app-rebuild-check-dotnet",
+  "perfstarCIBuildNumber": "20250820.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "PERFLIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.2.25419.109",
+    "aspNetCoreVersion": "10.0.0-rc.2.25419.109+ebcfe0b69600",
+    "netCoreAppVersion": "10.0.0-rc.2.25419.109+ebcfe0b69600",
+    "msbuild-version": "17.15.0.42004",
+    "msbuild-display-version": "17.15.0.42004",
+    "evaluation-time": 528.0,
+    "evaluation-time-globbing": 2.0,
+    "evaluation-time-pass0": 35.0,
+    "evaluation-time-pass1": 278.0,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 54.0,
+    "evaluation-time-pass3dot1": 60.0,
+    "evaluation-time-pass4": 5.0,
+    "evaluation-time-pass5": 91.0,
+    "exit-code": 0.0,
+    "build-time": 1412.2112,
+    "info/test-asset": "Net8ConsoleApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 0.0,
+    "info/iterations-number": 1.0,
+    "dotnet-version": "10.0.100-rc.2.25419.109"
+  }
+}

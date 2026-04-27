@@ -1,0 +1,24 @@
+{
+  "date": "2025-09-27",
+  "scenario": "eshop-on-blazor-modified-inc-build-mt-dotnet",
+  "perfstarCIBuildNumber": "20250927.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "PERFLIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rtm.25476.104",
+    "aspNetCoreVersion": "10.0.0-rtm.25476.104+e1eaf1bbd970",
+    "netCoreAppVersion": "10.0.0-rtm.25476.104+e1eaf1bbd970",
+    "msbuild-version": "18.0.0.47601",
+    "msbuild-display-version": "18.0.0.47601",
+    "exit-code": 1.0,
+    "failure-description": "First build finished with non zero exit code.",
+    "info/test-asset": "eShopOnBlazor-modified",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.100-rtm.25476.104"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "date": "2025-12-10",
+  "scenario": "very-large-net8-console-app-restore-dotnet",
+  "perfstarCIBuildNumber": "20251210.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "PERFWIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rtm.25513.102",
+    "aspNetCoreVersion": "10.0.0-rtm.25513.102+b502b6eeec0d",
+    "netCoreAppVersion": "10.0.0-rtm.25513.102+b502b6eeec0d",
+    "msbuild-version": "18.3.0.60805",
+    "msbuild-display-version": "18.3.0.60805"
+  }
+}

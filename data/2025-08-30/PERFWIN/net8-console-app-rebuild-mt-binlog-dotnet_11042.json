@@ -1,0 +1,33 @@
+{
+  "date": "2025-08-30",
+  "scenario": "net8-console-app-rebuild-mt-binlog-dotnet",
+  "perfstarCIBuildNumber": "20250830.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "PERFLIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.2.25429.103",
+    "aspNetCoreVersion": "10.0.0-rc.2.25429.103+f53e1cf04cf5",
+    "netCoreAppVersion": "10.0.0-rc.2.25429.103+f53e1cf04cf5",
+    "msbuild-version": "17.15.0.42907",
+    "msbuild-display-version": "17.15.0.42907",
+    "evaluation-time": 498.0,
+    "evaluation-time-globbing": 2.0,
+    "evaluation-time-pass0": 9.5,
+    "evaluation-time-pass1": 272.1,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 52.1,
+    "evaluation-time-pass3dot1": 60.1,
+    "evaluation-time-pass4": 4.3,
+    "evaluation-time-pass5": 95.6,
+    "exit-code": 0.0,
+    "build-time": 1787.8396,
+    "info/test-asset": "Net8ConsoleApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.100-rc.1.25427.104"
+  }
+}

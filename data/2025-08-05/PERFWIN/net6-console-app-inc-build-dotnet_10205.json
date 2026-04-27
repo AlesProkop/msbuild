@@ -1,0 +1,28 @@
+{
+  "date": "2025-08-05",
+  "scenario": "net6-console-app-inc-build-dotnet",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.1.25401.103",
+    "aspNetCoreVersion": "10.0.0-rc.1.25401.103+8b29a1682219",
+    "netCoreAppVersion": "10.0.0-rc.1.25401.103+8b29a1682219",
+    "msbuild-version": "17.15.0.40503",
+    "msbuild-display-version": "17.15.0.40503",
+    "evaluation-time": 527.7,
+    "evaluation-time-globbing": 3.0,
+    "evaluation-time-pass0": 7.4,
+    "evaluation-time-pass1": 296.4,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 55.5,
+    "evaluation-time-pass3dot1": 46.7,
+    "evaluation-time-pass4": 4.0,
+    "evaluation-time-pass5": 112.6,
+    "exit-code": 0.0,
+    "build-time": 1394.8228200000003,
+    "info/test-asset": "Net6ConsoleApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.100-rc.1.25401.103"
+  }
+}

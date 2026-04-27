@@ -1,0 +1,32 @@
+{
+  "date": "2025-04-05",
+  "scenario": "net6-blazorwasm-app-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20250405.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.407",
+    "aspNetCoreVersion": "8.0.14+25ef4aa38b77",
+    "netCoreAppVersion": "8.0.14+1584e493603c",
+    "msbuild-version": "17.15.0.20404",
+    "msbuild-display-version": "17.15.0.20404",
+    "evaluation-time": 629.3,
+    "evaluation-time-globbing": 8.1,
+    "evaluation-time-pass0": 6.2,
+    "evaluation-time-pass1": 369.0,
+    "evaluation-time-pass2": 4.5,
+    "evaluation-time-pass3": 57.9,
+    "evaluation-time-pass3dot1": 77.9,
+    "evaluation-time-pass4": 4.1,
+    "evaluation-time-pass5": 107.3,
+    "exit-code": 0.0,
+    "build-time": 2122.9081,
+    "info/test-asset": "Net6BlazorWasmApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

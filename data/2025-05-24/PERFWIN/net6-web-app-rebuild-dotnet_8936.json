@@ -1,0 +1,32 @@
+{
+  "date": "2025-05-24",
+  "scenario": "net6-web-app-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20250524.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.410",
+    "aspNetCoreVersion": "8.0.16+4ae1269bff83",
+    "netCoreAppVersion": "8.0.16+efd5742bb5dd",
+    "msbuild-version": "17.15.0.27303",
+    "msbuild-display-version": "17.15.0.27303",
+    "evaluation-time": 618.8,
+    "evaluation-time-globbing": 6.0,
+    "evaluation-time-pass0": 6.2,
+    "evaluation-time-pass1": 337.1,
+    "evaluation-time-pass2": 5.0,
+    "evaluation-time-pass3": 73.2,
+    "evaluation-time-pass3dot1": 71.4,
+    "evaluation-time-pass4": 4.2,
+    "evaluation-time-pass5": 119.2,
+    "exit-code": 0.0,
+    "build-time": 1574.9298600000002,
+    "info/test-asset": "Net6WebApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

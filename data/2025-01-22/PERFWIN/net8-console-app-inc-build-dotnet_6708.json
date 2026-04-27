@@ -1,0 +1,22 @@
+{
+  "date": "2025-01-22",
+  "scenario": "net8-console-app-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20250122.1",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Unspecified",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.405",
+    "aspNetCoreVersion": "8.0.12+31d685b2d9a8",
+    "netCoreAppVersion": "8.0.12+89ef51c5d8f5",
+    "msbuild-version": "17.14.0.7203",
+    "msbuild-display-version": "17.14.0.7203",
+    "exit-code": 1.0,
+    "failure-description": "Restore finished with non zero exit code.",
+    "info/test-asset": "Net8ConsoleApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 0.0,
+    "dotnet-version": "9.0.200"
+  }
+}

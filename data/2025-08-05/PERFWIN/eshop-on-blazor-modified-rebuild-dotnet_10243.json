@@ -1,0 +1,28 @@
+{
+  "date": "2025-08-05",
+  "scenario": "eshop-on-blazor-modified-rebuild-dotnet",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.1.25401.103",
+    "aspNetCoreVersion": "10.0.0-rc.1.25401.103+8b29a1682219",
+    "netCoreAppVersion": "10.0.0-rc.1.25401.103+8b29a1682219",
+    "msbuild-version": "17.15.0.40503",
+    "msbuild-display-version": "17.15.0.40503",
+    "evaluation-time": 573.5,
+    "evaluation-time-globbing": 6.1,
+    "evaluation-time-pass0": 31.8,
+    "evaluation-time-pass1": 280.6,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 64.5,
+    "evaluation-time-pass3dot1": 84.2,
+    "evaluation-time-pass4": 5.0,
+    "evaluation-time-pass5": 103.3,
+    "exit-code": 0.0,
+    "build-time": 1949.05151,
+    "info/test-asset": "eShopOnBlazor-modified",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.100-rc.1.25401.103"
+  }
+}

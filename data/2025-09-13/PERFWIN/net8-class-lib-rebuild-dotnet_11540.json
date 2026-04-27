@@ -1,0 +1,33 @@
+{
+  "date": "2025-09-13",
+  "scenario": "net8-class-lib-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20250913.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "PERFLIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.2.25462.108",
+    "aspNetCoreVersion": "10.0.0-rc.2.25462.108+63fff006cdda",
+    "netCoreAppVersion": "10.0.0-rc.2.25462.108+63fff006cdda",
+    "msbuild-version": "17.15.0.46201",
+    "msbuild-display-version": "17.15.0.46201",
+    "evaluation-time": 470.1,
+    "evaluation-time-globbing": 2.0,
+    "evaluation-time-pass0": 9.0,
+    "evaluation-time-pass1": 259.6,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 49.6,
+    "evaluation-time-pass3dot1": 45.1,
+    "evaluation-time-pass4": 18.3,
+    "evaluation-time-pass5": 84.3,
+    "exit-code": 0.0,
+    "build-time": 1269.18752,
+    "info/test-asset": "Net8ClassLib",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.100-rc.2.25462.108"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "date": "2025-09-20",
+  "scenario": "orchard-core-rebuild-binlog-dotnet",
+  "perfstarCIBuildNumber": "20250920.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "PERFWIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.2.25468.104",
+    "aspNetCoreVersion": "10.0.0-rc.2.25468.104+2dea164f01d3",
+    "netCoreAppVersion": "10.0.0-rc.2.25468.104+2dea164f01d3",
+    "msbuild-version": "18.0.0.46901",
+    "msbuild-display-version": "18.0.0.46901"
+  }
+}

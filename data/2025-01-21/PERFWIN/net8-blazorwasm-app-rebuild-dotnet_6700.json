@@ -1,0 +1,22 @@
+{
+  "date": "2025-01-21",
+  "scenario": "net8-blazorwasm-app-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20250121.2",
+  "branch": "refs/heads/perf/dev/erarndt/weakStringCache",
+  "ciRunReason": "ResourceTrigger",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.405",
+    "aspNetCoreVersion": "8.0.12+31d685b2d9a8",
+    "netCoreAppVersion": "8.0.12+89ef51c5d8f5",
+    "msbuild-version": "17.14.0.7112",
+    "msbuild-display-version": "17.14.0.7112",
+    "exit-code": 1.0,
+    "failure-description": "Restore finished with non zero exit code.",
+    "info/test-asset": "Net8BlazorWasmApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 0.0,
+    "dotnet-version": "9.0.200"
+  }
+}

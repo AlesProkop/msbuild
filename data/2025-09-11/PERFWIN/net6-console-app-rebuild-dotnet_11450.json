@@ -1,0 +1,33 @@
+{
+  "date": "2025-09-11",
+  "scenario": "net6-console-app-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20250911.3.t",
+  "branch": "refs/heads/perf/AR-May/all-tasks-to-TH-except-message",
+  "ciRunReason": "ResourceTrigger",
+  "machineID": "PERFWIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.2.25460.104",
+    "aspNetCoreVersion": "10.0.0-rc.2.25460.104+eac14590f69f",
+    "netCoreAppVersion": "10.0.0-rc.2.25460.104+eac14590f69f",
+    "msbuild-version": "17.15.0.46103",
+    "msbuild-display-version": "17.15.0.46103",
+    "evaluation-time": 518.6,
+    "evaluation-time-globbing": 2.9,
+    "evaluation-time-pass0": 7.0,
+    "evaluation-time-pass1": 293.9,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 50.6,
+    "evaluation-time-pass3dot1": 50.1,
+    "evaluation-time-pass4": 4.0,
+    "evaluation-time-pass5": 108.5,
+    "exit-code": 0.0,
+    "build-time": 1385.9698700000001,
+    "info/test-asset": "Net6ConsoleApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.100-rc.2.25460.104"
+  }
+}

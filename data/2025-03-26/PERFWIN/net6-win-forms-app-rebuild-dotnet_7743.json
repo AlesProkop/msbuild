@@ -1,0 +1,32 @@
+{
+  "date": "2025-03-26",
+  "scenario": "net6-win-forms-app-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20250326.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.407",
+    "aspNetCoreVersion": "8.0.14+25ef4aa38b77",
+    "netCoreAppVersion": "8.0.14+1584e493603c",
+    "msbuild-version": "17.15.0.17505",
+    "msbuild-display-version": "17.15.0.17505",
+    "evaluation-time": 534.9,
+    "evaluation-time-globbing": 6.0,
+    "evaluation-time-pass0": 6.4,
+    "evaluation-time-pass1": 299.2,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 47.9,
+    "evaluation-time-pass3dot1": 64.4,
+    "evaluation-time-pass4": 4.0,
+    "evaluation-time-pass5": 108.7,
+    "exit-code": 0.0,
+    "build-time": 1368.7847900000002,
+    "info/test-asset": "Net6WinFormsApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

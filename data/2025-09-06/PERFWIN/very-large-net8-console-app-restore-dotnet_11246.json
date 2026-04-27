@@ -1,0 +1,33 @@
+{
+  "date": "2025-09-06",
+  "scenario": "very-large-net8-console-app-restore-dotnet",
+  "perfstarCIBuildNumber": "20250906.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "PERFLIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.2.25454.107",
+    "aspNetCoreVersion": "10.0.0-rc.2.25454.107+96384f46287c",
+    "netCoreAppVersion": "10.0.0-rc.2.25454.107+96384f46287c",
+    "msbuild-version": "17.15.0.45502",
+    "msbuild-display-version": "17.15.0.45502",
+    "evaluation-time": 350.8,
+    "evaluation-time-globbing": 0.0,
+    "evaluation-time-pass0": 9.0,
+    "evaluation-time-pass1": 194.2,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 43.0,
+    "evaluation-time-pass3dot1": 46.2,
+    "evaluation-time-pass4": 4.0,
+    "evaluation-time-pass5": 50.0,
+    "exit-code": 0.0,
+    "build-time": 1030.1516399999998,
+    "info/test-asset": "very-large-net8-console-app",
+    "info/test-scenario": "Restore",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 5.0,
+    "dotnet-version": "10.0.100-rc.2.25454.107"
+  }
+}

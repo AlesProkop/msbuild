@@ -1,0 +1,23 @@
+{
+  "date": "2025-07-30",
+  "scenario": "net6-web-app-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20250730.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.412",
+    "aspNetCoreVersion": "8.0.18+cea5fa610dba",
+    "netCoreAppVersion": "8.0.18+ef853a710526",
+    "msbuild-version": "",
+    "msbuild-display-version": "",
+    "exit-code": 1.0,
+    "failure-description": "Restore finished with non zero exit code.",
+    "info/test-asset": "Net6WebApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "date": "2025-03-25",
+  "scenario": "net8-web-app-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20250325.1.t",
+  "branch": "refs/heads/perf/ignoremissingimports",
+  "ciRunReason": "ResourceTrigger",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.407",
+    "aspNetCoreVersion": "8.0.14+25ef4aa38b77",
+    "netCoreAppVersion": "8.0.14+1584e493603c",
+    "msbuild-version": "17.15.0.17507",
+    "msbuild-display-version": "17.15.0.17507",
+    "evaluation-time": 614.4,
+    "evaluation-time-globbing": 6.0,
+    "evaluation-time-pass0": 6.5,
+    "evaluation-time-pass1": 326.0,
+    "evaluation-time-pass2": 4.5,
+    "evaluation-time-pass3": 90.8,
+    "evaluation-time-pass3dot1": 69.7,
+    "evaluation-time-pass4": 4.0,
+    "evaluation-time-pass5": 110.3,
+    "exit-code": 0.0,
+    "build-time": 1530.78098,
+    "info/test-asset": "Net8WebApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

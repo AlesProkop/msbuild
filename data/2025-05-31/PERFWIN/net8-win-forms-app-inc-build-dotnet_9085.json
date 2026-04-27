@@ -1,0 +1,32 @@
+{
+  "date": "2025-05-31",
+  "scenario": "net8-win-forms-app-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20250531.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.410",
+    "aspNetCoreVersion": "8.0.16+4ae1269bff83",
+    "netCoreAppVersion": "8.0.16+efd5742bb5dd",
+    "msbuild-version": "17.15.0.27904",
+    "msbuild-display-version": "17.15.0.27904",
+    "evaluation-time": 520.8,
+    "evaluation-time-globbing": 6.0,
+    "evaluation-time-pass0": 6.7,
+    "evaluation-time-pass1": 299.1,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 49.5,
+    "evaluation-time-pass3dot1": 64.7,
+    "evaluation-time-pass4": 4.0,
+    "evaluation-time-pass5": 93.2,
+    "exit-code": 0.0,
+    "build-time": 1316.76978,
+    "info/test-asset": "Net8WinFormsApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "date": "2025-05-30",
+  "scenario": "net8-blazorwasm-app-inc-build-binlog-dotnet",
+  "perfstarCIBuildNumber": "20250530.1.t",
+  "branch": "refs/heads/perf/issue-11872-add-regex-cache",
+  "ciRunReason": "ResourceTrigger",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.410",
+    "aspNetCoreVersion": "8.0.16+4ae1269bff83",
+    "netCoreAppVersion": "8.0.16+efd5742bb5dd",
+    "msbuild-version": "17.15.0.28002",
+    "msbuild-display-version": "17.15.0.28002",
+    "evaluation-time": 591.0,
+    "evaluation-time-globbing": 9.0,
+    "evaluation-time-pass0": 32.2,
+    "evaluation-time-pass1": 312.5,
+    "evaluation-time-pass2": 4.9,
+    "evaluation-time-pass3": 61.7,
+    "evaluation-time-pass3dot1": 72.9,
+    "evaluation-time-pass4": 5.0,
+    "evaluation-time-pass5": 99.7,
+    "exit-code": 0.0,
+    "build-time": 2009.45462,
+    "info/test-asset": "Net8BlazorWasmApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

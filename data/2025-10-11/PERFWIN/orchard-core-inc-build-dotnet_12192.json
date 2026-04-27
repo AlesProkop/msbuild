@@ -1,0 +1,33 @@
+{
+  "date": "2025-10-11",
+  "scenario": "orchard-core-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20251011.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "PERFWIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rtm.25510.110",
+    "aspNetCoreVersion": "10.0.0-rtm.25510.110+d7b32678f494",
+    "netCoreAppVersion": "10.0.0-rtm.25510.110+d7b32678f494",
+    "msbuild-version": "18.1.0.51001",
+    "msbuild-display-version": "18.1.0.51001",
+    "evaluation-time": 130020.0,
+    "evaluation-time-globbing": 13060.0,
+    "evaluation-time-pass0": 407.0,
+    "evaluation-time-pass1": 45258.0,
+    "evaluation-time-pass2": 257.0,
+    "evaluation-time-pass3": 16932.0,
+    "evaluation-time-pass3dot1": 31025.0,
+    "evaluation-time-pass4": 1361.0,
+    "evaluation-time-pass5": 34634.0,
+    "exit-code": 0.0,
+    "build-time": 61803.076,
+    "info/test-asset": "OrchardCore",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 1.0,
+    "dotnet-version": "10.0.100-rtm.25510.110"
+  }
+}

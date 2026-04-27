@@ -1,0 +1,32 @@
+{
+  "date": "2025-05-28",
+  "scenario": "net8-web-app-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20250528.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.410",
+    "aspNetCoreVersion": "8.0.16+4ae1269bff83",
+    "netCoreAppVersion": "8.0.16+efd5742bb5dd",
+    "msbuild-version": "17.15.0.27801",
+    "msbuild-display-version": "17.15.0.27801",
+    "evaluation-time": 611.1,
+    "evaluation-time-globbing": 6.0,
+    "evaluation-time-pass0": 6.5,
+    "evaluation-time-pass1": 338.7,
+    "evaluation-time-pass2": 5.0,
+    "evaluation-time-pass3": 78.9,
+    "evaluation-time-pass3dot1": 70.0,
+    "evaluation-time-pass4": 4.0,
+    "evaluation-time-pass5": 106.3,
+    "exit-code": 0.0,
+    "build-time": 1560.9113200000002,
+    "info/test-asset": "Net8WebApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "date": "2023-09-13",
+  "scenario": "blazorwasm-app-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20230913.1",
+  "branch": "sdk-main",
+  "schemaVersion": "1",
+  "results": {
+    "netSdkVersion": "7.0.401",
+    "aspNetCoreVersion": "7.0.11+70048beee894",
+    "netCoreAppVersion": "7.0.11+ecb34f85ec92",
+    "msbuild-version": "17.7.3.40206",
+    "build-time": 1530.2641,
+    "exit-code": 0.0,
+    "info/test-asset": "BlazorWasmAppTemplateAsset",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet"
+  }
+}

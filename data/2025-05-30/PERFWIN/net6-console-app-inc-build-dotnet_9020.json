@@ -1,0 +1,32 @@
+{
+  "date": "2025-05-30",
+  "scenario": "net6-console-app-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20250530.1.t",
+  "branch": "refs/heads/perf/issue-11872-add-regex-cache",
+  "ciRunReason": "ResourceTrigger",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.410",
+    "aspNetCoreVersion": "8.0.16+4ae1269bff83",
+    "netCoreAppVersion": "8.0.16+efd5742bb5dd",
+    "msbuild-version": "17.15.0.28002",
+    "msbuild-display-version": "17.15.0.28002",
+    "evaluation-time": 464.0,
+    "evaluation-time-globbing": 5.1,
+    "evaluation-time-pass0": 8.0,
+    "evaluation-time-pass1": 262.5,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 48.1,
+    "evaluation-time-pass3dot1": 41.8,
+    "evaluation-time-pass4": 7.0,
+    "evaluation-time-pass5": 91.8,
+    "exit-code": 0.0,
+    "build-time": 1194.36557,
+    "info/test-asset": "Net6ConsoleApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

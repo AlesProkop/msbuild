@@ -1,0 +1,24 @@
+{
+  "date": "2025-11-05",
+  "scenario": "net8-console-app-inc-build-binlog-dotnet",
+  "perfstarCIBuildNumber": "20251105.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "PERFLIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rtm.25513.102",
+    "aspNetCoreVersion": "10.0.0-rtm.25513.102+b502b6eeec0d",
+    "netCoreAppVersion": "10.0.0-rtm.25513.102+b502b6eeec0d",
+    "msbuild-version": "18.1.0.55404",
+    "msbuild-display-version": "MSBuild version 18.1.0-preview-25554-04+27c7c81bb for .NET",
+    "exit-code": 1.0,
+    "failure-description": "Restore finished with non zero exit code.",
+    "info/test-asset": "Net8ConsoleApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.101"
+  }
+}

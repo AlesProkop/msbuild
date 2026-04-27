@@ -1,0 +1,33 @@
+{
+  "date": "2025-08-23",
+  "scenario": "net8-web-app-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20250823.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "PERFWIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.2.25420.109",
+    "aspNetCoreVersion": "10.0.0-rc.2.25420.109+619d5633513d",
+    "netCoreAppVersion": "10.0.0-rc.2.25420.109+619d5633513d",
+    "msbuild-version": "17.15.0.42205",
+    "msbuild-display-version": "17.15.0.42205",
+    "evaluation-time": 652.4,
+    "evaluation-time-globbing": 6.4,
+    "evaluation-time-pass0": 7.1,
+    "evaluation-time-pass1": 389.9,
+    "evaluation-time-pass2": 5.0,
+    "evaluation-time-pass3": 59.7,
+    "evaluation-time-pass3dot1": 77.6,
+    "evaluation-time-pass4": 5.0,
+    "evaluation-time-pass5": 105.5,
+    "exit-code": 0.0,
+    "build-time": 1693.1755799999999,
+    "info/test-asset": "Net8WebApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.100-rc.2.25420.109"
+  }
+}

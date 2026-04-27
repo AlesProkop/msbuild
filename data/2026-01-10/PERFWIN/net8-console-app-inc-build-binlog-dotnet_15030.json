@@ -1,0 +1,33 @@
+{
+  "date": "2026-01-10",
+  "scenario": "net8-console-app-inc-build-binlog-dotnet",
+  "perfstarCIBuildNumber": "20260110.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "PERFLIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rtm.25513.102",
+    "aspNetCoreVersion": "10.0.0-rtm.25513.102+b502b6eeec0d",
+    "netCoreAppVersion": "10.0.0-rtm.25513.102+b502b6eeec0d",
+    "msbuild-version": "18.0.0.51402",
+    "msbuild-display-version": "18.0.0.51402",
+    "evaluation-time": 395.8,
+    "evaluation-time-globbing": 1.0,
+    "evaluation-time-pass0": 38.4,
+    "evaluation-time-pass1": 202.1,
+    "evaluation-time-pass2": 1.0,
+    "evaluation-time-pass3": 31.8,
+    "evaluation-time-pass3dot1": 41.9,
+    "evaluation-time-pass4": 2.0,
+    "evaluation-time-pass5": 77.3,
+    "exit-code": 0.0,
+    "build-time": 944.38419,
+    "info/test-asset": "Net8ConsoleApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.100-rtm.25513.102"
+  }
+}

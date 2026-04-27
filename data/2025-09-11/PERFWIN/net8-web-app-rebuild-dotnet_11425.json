@@ -1,0 +1,33 @@
+{
+  "date": "2025-09-11",
+  "scenario": "net8-web-app-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20250911.3.t",
+  "branch": "refs/heads/perf/AR-May/all-tasks-to-TH-except-message",
+  "ciRunReason": "ResourceTrigger",
+  "machineID": "PERFWIN",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.2.25460.104",
+    "aspNetCoreVersion": "10.0.0-rc.2.25460.104+eac14590f69f",
+    "netCoreAppVersion": "10.0.0-rc.2.25460.104+eac14590f69f",
+    "msbuild-version": "17.15.0.46103",
+    "msbuild-display-version": "17.15.0.46103",
+    "evaluation-time": 643.7,
+    "evaluation-time-globbing": 6.0,
+    "evaluation-time-pass0": 7.3,
+    "evaluation-time-pass1": 375.9,
+    "evaluation-time-pass2": 5.0,
+    "evaluation-time-pass3": 67.9,
+    "evaluation-time-pass3dot1": 76.4,
+    "evaluation-time-pass4": 5.0,
+    "evaluation-time-pass5": 104.2,
+    "exit-code": 0.0,
+    "build-time": 1707.7487,
+    "info/test-asset": "Net8WebApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.100-rc.2.25460.104"
+  }
+}

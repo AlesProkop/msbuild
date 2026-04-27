@@ -1,0 +1,32 @@
+{
+  "date": "2025-04-15",
+  "scenario": "net8-class-lib-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20250415.2.t",
+  "branch": "refs/heads/perf/dev/chcasta/prop-intern",
+  "ciRunReason": "ResourceTrigger",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.408",
+    "aspNetCoreVersion": "8.0.15+8899cb30120d",
+    "netCoreAppVersion": "8.0.15+50c4cb9fc31c",
+    "msbuild-version": "17.15.0.21517",
+    "msbuild-display-version": "17.15.0.21517",
+    "evaluation-time": 493.5,
+    "evaluation-time-globbing": 6.0,
+    "evaluation-time-pass0": 6.4,
+    "evaluation-time-pass1": 281.9,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 47.5,
+    "evaluation-time-pass3dot1": 42.9,
+    "evaluation-time-pass4": 3.9,
+    "evaluation-time-pass5": 106.7,
+    "exit-code": 0.0,
+    "build-time": 1252.79085,
+    "info/test-asset": "Net8ClassLib",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "9.0.200"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "date": "2025-02-01",
+  "scenario": "net8-win-forms-app-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20250201.1",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "8.0.405",
+    "aspNetCoreVersion": "8.0.12+31d685b2d9a8",
+    "netCoreAppVersion": "8.0.12+89ef51c5d8f5",
+    "msbuild-version": "17.14.0.8102",
+    "msbuild-display-version": "17.14.0.8102",
+    "exit-code": 1.0,
+    "failure-description": "Restore finished with non zero exit code.",
+    "info/test-asset": "Net8WinFormsApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 0.0,
+    "dotnet-version": "9.0.200"
+  }
+}

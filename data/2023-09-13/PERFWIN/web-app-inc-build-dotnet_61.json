@@ -1,0 +1,18 @@
+{
+  "date": "2023-09-13",
+  "scenario": "web-app-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20230913.1",
+  "branch": "sdk-main",
+  "schemaVersion": "1",
+  "results": {
+    "netSdkVersion": "7.0.401",
+    "aspNetCoreVersion": "7.0.11+70048beee894",
+    "netCoreAppVersion": "7.0.11+ecb34f85ec92",
+    "msbuild-version": "17.7.3.40206",
+    "build-time": 933.7721,
+    "exit-code": 0.0,
+    "info/test-asset": "WebAppTemplateAsset",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet"
+  }
+}

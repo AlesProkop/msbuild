@@ -1,0 +1,32 @@
+{
+  "date": "2025-08-12",
+  "scenario": "net8-wpf-app-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20250812.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "schemaVersion": "2",
+  "results": {
+    "netSdkVersion": "10.0.100-rc.1.25411.101",
+    "aspNetCoreVersion": "10.0.0-rc.1.25411.101+1024bb78fd2f",
+    "netCoreAppVersion": "10.0.0-rc.1.25411.101+1024bb78fd2f",
+    "msbuild-version": "17.15.0.40708",
+    "msbuild-display-version": "17.15.0.40708",
+    "evaluation-time": 626.7,
+    "evaluation-time-globbing": 6.0,
+    "evaluation-time-pass0": 7.8,
+    "evaluation-time-pass1": 351.5,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 67.6,
+    "evaluation-time-pass3dot1": 82.6,
+    "evaluation-time-pass4": 5.0,
+    "evaluation-time-pass5": 106.9,
+    "exit-code": 0.0,
+    "build-time": 1752.6091899999997,
+    "info/test-asset": "Net8WpfApp",
+    "info/test-scenario": "IncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.100-rc.1.25411.101"
+  }
+}
