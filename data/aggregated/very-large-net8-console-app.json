@@ -4148,6 +4148,34 @@
   {
     "date": "2026-04-27",
     "scenario": "very-large-net8-console-app-restore-dotnet",
-    "results": {}
+    "perfstarCIBuildNumber": "20260427.6.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "results": {
+      "netSdkVersion": "10.0.203",
+      "aspNetCoreVersion": "10.0.7+b16286c2284f",
+      "netCoreAppVersion": "10.0.7+b16286c2284f",
+      "msbuild-version": "18.7.0.22711",
+      "msbuild-display-version": "18.7.0.22711",
+      "evaluation-time": 398.8,
+      "evaluation-time-globbing": 0.0,
+      "evaluation-time-pass0": 3.0,
+      "evaluation-time-pass1": 228.8,
+      "evaluation-time-pass2": 1.0,
+      "evaluation-time-pass3": 57.4,
+      "evaluation-time-pass3dot1": 38.8,
+      "evaluation-time-pass4": 2.0,
+      "evaluation-time-pass5": 65.4,
+      "exit-code": 0.0,
+      "build-time": 1144.41916,
+      "info/test-asset": "very-large-net8-console-app",
+      "info/test-scenario": "Restore",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 5.0,
+      "dotnet-version": "11.0.100-preview.5.26226.111"
+    }
   }
 ]

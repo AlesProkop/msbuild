@@ -3445,22 +3445,13 @@
       "staleDays": 0,
       "hasMt": true,
       "incBuild": {
-        "p50": null,
+        "p50": 3790.57651,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 3,
         "samplesPrior30d": 0,
-        "passRate": 71.1,
+        "passRate": 71.5,
         "totalRuns": 842,
         "sparkline": [
-          {
-            "v": 1627.25426
-          },
-          {
-            "v": 1807.25321
-          },
-          {
-            "v": 1595.62574
-          },
           {
             "v": 1749.4948
           },
@@ -3541,26 +3532,26 @@
           },
           {
             "v": 1741.66201
+          },
+          {
+            "v": 3708.50047
+          },
+          {
+            "v": 3790.57651
+          },
+          {
+            "v": 13035.53016
           }
         ]
       },
       "rebuild": {
-        "p50": null,
+        "p50": 4921.28836,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 3,
         "samplesPrior30d": 0,
-        "passRate": 69.6,
+        "passRate": 69.9,
         "totalRuns": 828,
         "sparkline": [
-          {
-            "v": 1873.6159900000002
-          },
-          {
-            "v": 2270.0914199999997
-          },
-          {
-            "v": 1842.89247
-          },
           {
             "v": 2262.2944700000003
           },
@@ -3641,8 +3632,27 @@
           },
           {
             "v": 2263.8862799999997
+          },
+          {
+            "v": 4819.346369999999
+          },
+          {
+            "v": 4921.28836
+          },
+          {
+            "v": 14157.36923
           }
         ]
+      },
+      "mt": {
+        "incBuild": {
+          "p50": 13035.53016,
+          "speedupPct": -251.5
+        },
+        "rebuild": {
+          "p50": 14157.36923,
+          "speedupPct": -193.8
+        }
       }
     },
     {
@@ -3652,16 +3662,13 @@
       "staleDays": 0,
       "hasMt": false,
       "incBuild": {
-        "p50": null,
+        "p50": 1844.7230100000002,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 1,
         "samplesPrior30d": 0,
-        "passRate": 78.8,
+        "passRate": 79.0,
         "totalRuns": 490,
         "sparkline": [
-          {
-            "v": 906.82803
-          },
           {
             "v": 943.46245
           },
@@ -3748,20 +3755,20 @@
           },
           {
             "v": 945.01061
+          },
+          {
+            "v": 1844.7230100000002
           }
         ]
       },
       "rebuild": {
-        "p50": null,
+        "p50": 1893.75163,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 1,
         "samplesPrior30d": 0,
-        "passRate": 78.8,
+        "passRate": 79.0,
         "totalRuns": 491,
         "sparkline": [
-          {
-            "v": 968.8632100000002
-          },
           {
             "v": 934.9080299999999
           },
@@ -3848,6 +3855,9 @@
           },
           {
             "v": 968.84765
+          },
+          {
+            "v": 1893.75163
           }
         ]
       }
@@ -3859,28 +3869,13 @@
       "staleDays": 0,
       "hasMt": true,
       "incBuild": {
-        "p50": null,
+        "p50": 1952.5423,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 5,
         "samplesPrior30d": 0,
-        "passRate": 67.0,
+        "passRate": 67.4,
         "totalRuns": 1209,
         "sparkline": [
-          {
-            "v": 971.5913899999999
-          },
-          {
-            "v": 939.0353599999999
-          },
-          {
-            "v": 917.2562300000002
-          },
-          {
-            "v": 990.3145199999999
-          },
-          {
-            "v": 971.5487499999999
-          },
           {
             "v": 977.6164
           },
@@ -3955,32 +3950,32 @@
           },
           {
             "v": 912.2848900000001
+          },
+          {
+            "v": 3095.5628300000003
+          },
+          {
+            "v": 1916.56672
+          },
+          {
+            "v": 1952.5423
+          },
+          {
+            "v": 1894.2083599999999
+          },
+          {
+            "v": 3224.05736
           }
         ]
       },
       "rebuild": {
-        "p50": null,
+        "p50": 2037.6537,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 5,
         "samplesPrior30d": 0,
-        "passRate": 68.0,
+        "passRate": 68.4,
         "totalRuns": 1189,
         "sparkline": [
-          {
-            "v": 988.9809599999999
-          },
-          {
-            "v": 1051.61205
-          },
-          {
-            "v": 1020.8517
-          },
-          {
-            "v": 1084.4059
-          },
-          {
-            "v": 959.7398500000002
-          },
           {
             "v": 987.0460100000003
           },
@@ -4055,8 +4050,33 @@
           },
           {
             "v": 1068.825
+          },
+          {
+            "v": 1995.29045
+          },
+          {
+            "v": 1970.3924199999994
+          },
+          {
+            "v": 2037.6537
+          },
+          {
+            "v": 3408.7312999999995
+          },
+          {
+            "v": 3515.8919
           }
         ]
+      },
+      "mt": {
+        "incBuild": {
+          "p50": 3095.5628300000003,
+          "speedupPct": -61.5
+        },
+        "rebuild": {
+          "p50": 3408.7312999999995,
+          "speedupPct": -70.8
+        }
       }
     },
     {
@@ -4066,16 +4086,13 @@
       "staleDays": 0,
       "hasMt": false,
       "incBuild": {
-        "p50": null,
+        "p50": 2547.51475,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 1,
         "samplesPrior30d": 0,
-        "passRate": 79.4,
+        "passRate": 79.8,
         "totalRuns": 253,
         "sparkline": [
-          {
-            "v": 1619.83727
-          },
           {
             "v": 1626.0761200000002
           },
@@ -4162,20 +4179,20 @@
           },
           {
             "v": 1212.1048399999997
+          },
+          {
+            "v": 2547.51475
           }
         ]
       },
       "rebuild": {
-        "p50": null,
+        "p50": 2663.40113,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 1,
         "samplesPrior30d": 0,
-        "passRate": 79.4,
+        "passRate": 79.8,
         "totalRuns": 252,
         "sparkline": [
-          {
-            "v": 1703.08211
-          },
           {
             "v": 1703.1178
           },
@@ -4262,6 +4279,9 @@
           },
           {
             "v": 1289.0861099999997
+          },
+          {
+            "v": 2663.40113
           }
         ]
       }
@@ -4273,16 +4293,13 @@
       "staleDays": 0,
       "hasMt": false,
       "incBuild": {
-        "p50": null,
+        "p50": 1975.62267,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 1,
         "samplesPrior30d": 0,
-        "passRate": 79.1,
+        "passRate": 79.5,
         "totalRuns": 254,
         "sparkline": [
-          {
-            "v": 1429.27813
-          },
           {
             "v": 1418.3197400000001
           },
@@ -4369,20 +4386,20 @@
           },
           {
             "v": 1018.39126
+          },
+          {
+            "v": 1975.62267
           }
         ]
       },
       "rebuild": {
-        "p50": null,
+        "p50": 2050.7407599999997,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 1,
         "samplesPrior30d": 0,
-        "passRate": 79.1,
+        "passRate": 79.5,
         "totalRuns": 254,
         "sparkline": [
-          {
-            "v": 1471.9152200000003
-          },
           {
             "v": 1464.25646
           },
@@ -4469,6 +4486,9 @@
           },
           {
             "v": 1070.39938
+          },
+          {
+            "v": 2050.7407599999997
           }
         ]
       }
@@ -4480,16 +4500,13 @@
       "staleDays": 0,
       "hasMt": false,
       "incBuild": {
-        "p50": null,
+        "p50": 2932.3622299999997,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 1,
         "samplesPrior30d": 0,
-        "passRate": 81.1,
+        "passRate": 81.5,
         "totalRuns": 254,
         "sparkline": [
-          {
-            "v": 1676.0796599999999
-          },
           {
             "v": 1680.76453
           },
@@ -4576,20 +4593,20 @@
           },
           {
             "v": 1276.13266
+          },
+          {
+            "v": 2932.3622299999997
           }
         ]
       },
       "rebuild": {
-        "p50": null,
+        "p50": 2992.671,
         "regressionPct": null,
-        "samplesLast7d": 0,
+        "samplesLast7d": 1,
         "samplesPrior30d": 0,
-        "passRate": 79.2,
+        "passRate": 79.5,
         "totalRuns": 259,
         "sparkline": [
-          {
-            "v": 1712.39591
-          },
           {
             "v": 1709.2573500000003
           },
@@ -4676,6 +4693,9 @@
           },
           {
             "v": 1298.4648499999998
+          },
+          {
+            "v": 2992.671
           }
         ]
       }
