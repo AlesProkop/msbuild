@@ -4143,7 +4143,35 @@
   {
     "date": "2026-04-27",
     "scenario": "very-large-net8-console-app-restore-dotnet",
-    "results": {}
+    "perfstarCIBuildNumber": "20260427.6.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "GOLDLIN",
+    "schemaVersion": "2",
+    "results": {
+      "netSdkVersion": "10.0.203",
+      "aspNetCoreVersion": "10.0.7+b16286c2284f",
+      "netCoreAppVersion": "10.0.7+b16286c2284f",
+      "msbuild-version": "18.3.3.22005",
+      "msbuild-display-version": "18.3.3.22005",
+      "evaluation-time": 601.8,
+      "evaluation-time-globbing": 0.0,
+      "evaluation-time-pass0": 20.2,
+      "evaluation-time-pass1": 325.2,
+      "evaluation-time-pass2": 1.0,
+      "evaluation-time-pass3": 92.0,
+      "evaluation-time-pass3dot1": 64.2,
+      "evaluation-time-pass4": 5.0,
+      "evaluation-time-pass5": 90.2,
+      "exit-code": 0.0,
+      "build-time": 1869.56874,
+      "info/test-asset": "very-large-net8-console-app",
+      "info/test-scenario": "Restore",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 5.0,
+      "dotnet-version": "10.0.203"
+    }
   },
   {
     "date": "2026-04-27",

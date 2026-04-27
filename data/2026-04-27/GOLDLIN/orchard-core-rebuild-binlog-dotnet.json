@@ -1,7 +1,33 @@
 ﻿{
     "date":  "2026-04-27",
     "scenario":  "orchard-core-rebuild-binlog-dotnet",
+    "perfstarCIBuildNumber":  "20260427.6.s",
+    "branch":  "refs/heads/main",
+    "ciRunReason":  "Schedule",
+    "machineID":  "GOLDLIN",
+    "schemaVersion":  "2",
     "results":  {
-
+                    "netSdkVersion":  "10.0.203",
+                    "aspNetCoreVersion":  "10.0.7+b16286c2284f",
+                    "netCoreAppVersion":  "10.0.7+b16286c2284f",
+                    "msbuild-version":  "18.3.3.22005",
+                    "msbuild-display-version":  "18.3.3.22005",
+                    "evaluation-time":  258140.0,
+                    "evaluation-time-globbing":  3908.0,
+                    "evaluation-time-pass0":  587.0,
+                    "evaluation-time-pass1":  117340.0,
+                    "evaluation-time-pass2":  637.0,
+                    "evaluation-time-pass3":  32467.0,
+                    "evaluation-time-pass3dot1":  34358.0,
+                    "evaluation-time-pass4":  3456.0,
+                    "evaluation-time-pass5":  68511.0,
+                    "exit-code":  0.0,
+                    "build-time":  107225.8482,
+                    "info/test-asset":  "OrchardCore",
+                    "info/test-scenario":  "Rebuild",
+                    "info/msbuild-app":  "Dotnet",
+                    "info/test-version":  1.0,
+                    "info/iterations-number":  1.0,
+                    "dotnet-version":  "10.0.203"
                 }
 }
