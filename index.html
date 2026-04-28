@@ -281,7 +281,7 @@
                 <td>${winInc ? sparklineSvg(winInc.sparkline) : '<span class="muted">—</span>'}</td>
                 <td class="num">${linInc ? fmtMs(linInc.p50) : '—'}</td>
                 <td>${linInc ? sparklineSvg(linInc.sparkline) : '<span class="muted">—</span>'}</td>
-                <td>${healthBadge(a.incBuild?.passRate)}</td>
+                <td>${healthBadge(a.incBuild?.passRate30d ?? a.incBuild?.passRate)}</td>
             </tr>`;
         }
 
