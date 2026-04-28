@@ -374,7 +374,9 @@
             .sort((a,b) => a.date.localeCompare(b.date))
             .map(d => ({
                 date: d.date, value: toMs(d.results[metric], metric), exitCode: d.results['exit-code'],
-                msbuildVersion: d.results['msbuild-version'] || d.results['msbuild-display-version'] || '',
+                timestamp: d.timestamp || '',
+                msbuildVersion: d.results['msbuild-version'] || '',
+                msbuildDisplayVersion: d.results['msbuild-display-version'] || '',
                 sdkVersion: d.results['netSdkVersion'] || '',
                 runtimeVersion: d.results['netCoreAppVersion'] || '',
                 dotnetVersion: d.results['dotnet-version'] || ''
@@ -392,8 +394,18 @@
         const el = document.getElementById(containerId);
         if (!el || !point) { if (el) el.innerHTML = ''; return; }
         const runtimeHash = extractCommitHash(point.runtimeVersion);
+        const msbuildHash = extractCommitHash(point.msbuildDisplayVersion);
         const parts = [`<strong>${point.date}</strong> — ${point.value?.toFixed(1)} ms`];
-        parts.push(`<span class="detail-label">MSBuild:</span> ${point.msbuildVersion || '—'}`);
+        if (point.msbuildVersion) {
+            if (msbuildHash) {
+                const link = `https://github.com/dotnet/msbuild/commit/${msbuildHash}`;
+                parts.push(`<span class="detail-label">MSBuild:</span> <a href="${link}" target="_blank" rel="noopener">${point.msbuildVersion}</a>`);
+            } else {
+                const until = point.timestamp || `${point.date}T23:59:59Z`;
+                const logLink = `https://github.com/dotnet/msbuild/commits/main?until=${until}`;
+                parts.push(`<span class="detail-label">MSBuild:</span> <a href="${logLink}" target="_blank" rel="noopener">${point.msbuildVersion}</a>`);
+            }
+        }
         if (point.sdkVersion) {
             const sdkClean = point.sdkVersion.replace(/-rtm\..+$/, '');
             const vmrLink = `https://github.com/dotnet/dotnet/releases/tag/v${sdkClean}`;
@@ -402,10 +414,12 @@
         if (point.runtimeVersion) {
             const display = point.runtimeVersion;
             if (runtimeHash) {
-                const link = `https://github.com/dotnet/runtime/commit/${runtimeHash}`;
+                const link = `https://github.com/dotnet/dotnet/commit/${runtimeHash}`;
                 parts.push(`<span class="detail-label">Runtime:</span> <a href="${link}" target="_blank" rel="noopener">${display}</a>`);
             } else {
-                parts.push(`<span class="detail-label">Runtime:</span> ${display}`);
+                const until = point.timestamp || `${point.date}T23:59:59Z`;
+                const logLink = `https://github.com/dotnet/dotnet/commits/main?until=${until}`;
+                parts.push(`<span class="detail-label">Runtime:</span> <a href="${logLink}" target="_blank" rel="noopener">${display}</a>`);
             }
         }
         el.innerHTML = `<div class="point-detail">${parts.join('<span class="detail-sep">·</span>')}</div>`;
@@ -447,6 +461,7 @@
                             if (pt.msbuildVersion) lines.push(`  MSBuild: ${pt.msbuildVersion}`);
                             if (pt.sdkVersion) lines.push(`  SDK: ${pt.sdkVersion}`);
                             if (pt.runtimeVersion) lines.push(`  Runtime: ${pt.runtimeVersion}`);
+                            if (lines.length) lines.push('  (click for links)');
                             return lines.length ? ['', ...lines] : '';
                         }
                     }
