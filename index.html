@@ -31,18 +31,18 @@
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">Cross-Asset Performance — Incremental Build</span>
-                    <span class="card-subtitle">P50 build time (last 30 days), 7-day trend vs prior 30-day baseline, pass rate</span>
+                    <span class="card-subtitle">Canonical metric (MT where available) · P50 incremental build · Per-platform</span>
                 </div>
                 <div class="table-wrapper">
                     <table class="summary-table" id="summaryTable">
                         <thead>
                             <tr>
                                 <th>Asset</th>
-                                <th>P50 Build</th>
-                                <th>Trend (30d)</th>
-                                <th>7d vs Prior</th>
+                                <th>🪟 P50</th>
+                                <th>🪟 Trend</th>
+                                <th>🐧 P50</th>
+                                <th>🐧 Trend</th>
                                 <th>Health</th>
-                                <th>Runs</th>
                             </tr>
                         </thead>
                         <tbody id="summaryBody"></tbody>
@@ -50,14 +50,7 @@
                 </div>
             </div>
 
-            <!-- MT Performance Section -->
-            <div class="card" id="mtOverviewCard">
-                <div class="card-header">
-                    <span class="card-title">Multithreaded Performance</span>
-                    <span class="card-subtitle">MT speedup vs standard for assets with multithreaded data</span>
-                </div>
-                <div id="mtOverviewContent"></div>
-            </div>
+
         </div>
     </div>
 
@@ -69,6 +62,12 @@
                 <div class="controls-row">
                     <label>Asset:</label>
                     <select id="assetSelect"></select>
+                    <label>Platform:</label>
+                    <select id="platformFilter">
+                        <option value="all" selected>All Platforms</option>
+                        <option value="windows">🪟 Windows</option>
+                        <option value="linux">🐧 Linux</option>
+                    </select>
                     <label>Time Range:</label>
                     <select id="timeRange">
                         <option value="all" selected>All Time</option>
@@ -211,26 +210,31 @@
        ══════════════════════════════════════════════ */
     function renderOverview() {
         if (!SUMMARY) return;
-        const assets = SUMMARY.assets;
+        const allAssets = SUMMARY.assets;
+        const active = allAssets.filter(a => !a.archived);
+        const archived = allAssets.filter(a => a.archived);
 
-        // ── Regression Banner ──
-        const withRegr = assets.filter(a =>
-            a.incBuild?.regressionPct != null &&
-            a.incBuild.samplesLast7d >= 3 &&
-            a.incBuild.samplesPrior30d >= 5
-        );
-        const regressions = withRegr.filter(a => a.incBuild.regressionPct > 5);
-        const improvements = withRegr.filter(a => a.incBuild.regressionPct < -5);
+        // ── Regression Banner (per-platform, active assets only) ──
+        const regressions = [];
+        const improvements = [];
+        for (const a of active) {
+            for (const [plat, icon] of [['windows', '🪟'], ['linux', '🐧']]) {
+                const inc = a.platforms?.[plat]?.incBuild;
+                if (!inc || inc.regressionPct == null || inc.samplesLast7d < 3 || inc.samplesPrior30d < 5) continue;
+                if (inc.regressionPct > 5) regressions.push({ name: a.name, plat, icon, pct: inc.regressionPct });
+                if (inc.regressionPct < -5) improvements.push({ name: a.name, plat, icon, pct: inc.regressionPct });
+            }
+        }
 
         let bannerHtml = '';
         if (regressions.length === 0) {
             bannerHtml += `<div class="banner banner-ok">
                 <span class="banner-icon">✅</span>
-                <div><strong>All Clear</strong> — No regressions detected across ${withRegr.length} assets (7-day P50 vs prior 30-day P50)</div>
+                <div><strong>All Clear</strong> — No regressions detected across ${active.length} active assets</div>
             </div>`;
         } else {
-            const items = regressions.map(a =>
-                `<span class="banner-item">${a.name}: <strong>+${a.incBuild.regressionPct.toFixed(1)}%</strong></span>`
+            const items = regressions.map(r =>
+                `<span class="banner-item">${r.icon} ${r.name}: <strong>+${r.pct.toFixed(1)}%</strong></span>`
             ).join('');
             bannerHtml += `<div class="banner banner-alert">
                 <span class="banner-icon">🔴</span>
@@ -239,8 +243,8 @@
             </div>`;
         }
         if (improvements.length > 0) {
-            const items = improvements.map(a =>
-                `<span class="banner-item">${a.name}: <strong>${a.incBuild.regressionPct.toFixed(1)}%</strong></span>`
+            const items = improvements.map(r =>
+                `<span class="banner-item">${r.icon} ${r.name}: <strong>${r.pct.toFixed(1)}%</strong></span>`
             ).join('');
             bannerHtml += `<div class="banner banner-improvement">
                 <span class="banner-icon">🚀</span>
@@ -249,38 +253,76 @@
             </div>`;
         }
 
-        // ── Stale Data Warning ──
-        const staleAssets = assets.filter(a => a.stale);
-        if (staleAssets.length > 0) {
-            const maxStaleDays = Math.max(...staleAssets.map(a => a.staleDays));
+        // Stale warning for active assets
+        const staleActive = active.filter(a => a.stale);
+        if (staleActive.length > 0) {
+            const maxStaleDays = Math.max(...staleActive.map(a => a.staleDays));
             bannerHtml = `<div class="banner banner-stale">
                 <span class="banner-icon">⏳</span>
-                <div><strong>Stale Data</strong> — ${staleAssets.length === assets.length ? 'All' : staleAssets.length + '/' + assets.length} assets have no data in the last 30 days (up to ${maxStaleDays} days old). Showing stats relative to last available data.</div>
+                <div><strong>Stale Data</strong> — ${staleActive.length === active.length ? 'All' : staleActive.length + '/' + active.length} active assets have no data in the last 30 days (up to ${maxStaleDays} days old).</div>
             </div>` + bannerHtml;
         }
 
         document.getElementById('regressionContent').innerHTML = bannerHtml;
 
-        // ── Summary Table ──
+        // ── Summary Table with platform columns ──
         let tbody = '';
-        for (const a of assets) {
-            const inc = a.incBuild;
-            if (!inc) continue;
-            const samplesOk = inc.samplesLast7d >= 3 && inc.samplesPrior30d >= 5;
+        for (const a of active) {
+            const winInc = a.platforms?.windows?.incBuild;
+            const linInc = a.platforms?.linux?.incBuild;
+            if (!winInc && !linInc && !a.incBuild) continue;
 
             tbody += `<tr class="summary-row" data-asset="${a.name}">
                 <td class="asset-name">
                     <span class="asset-link">${a.name}</span>
-                    ${a.hasMt ? '<span class="tag tag-mt">MT</span>' : ''}
+                    ${a.canonical === 'mt' ? '<span class="tag tag-mt">MT</span>' : ''}
                 </td>
-                <td class="num">${fmtMs(inc.p50)}</td>
-                <td>${sparklineSvg(inc.sparkline)}</td>
-                <td>${regressionBadge(inc.regressionPct, samplesOk)}</td>
-                <td>${healthBadge(inc.passRate)}</td>
-                <td class="num muted">${inc.totalRuns}</td>
+                <td class="num">${winInc ? fmtMs(winInc.p50) : '—'}</td>
+                <td>${winInc ? sparklineSvg(winInc.sparkline) : '<span class="muted">—</span>'}</td>
+                <td class="num">${linInc ? fmtMs(linInc.p50) : '—'}</td>
+                <td>${linInc ? sparklineSvg(linInc.sparkline) : '<span class="muted">—</span>'}</td>
+                <td>${healthBadge(a.incBuild?.passRate)}</td>
             </tr>`;
         }
+
+        // Archived assets toggle
+        if (archived.length > 0) {
+            tbody += `<tr class="archived-toggle-row">
+                <td colspan="6">
+                    <button class="archived-toggle" id="archivedToggle">Show ${archived.length} archived assets ▸</button>
+                </td>
+            </tr>`;
+            for (const a of archived) {
+                const inc = a.incBuild;
+                if (!inc) continue;
+                tbody += `<tr class="summary-row archived-row" data-asset="${a.name}" style="display:none">
+                    <td class="asset-name">
+                        <span class="asset-link">${a.name}</span>
+                        <span class="tag tag-archived">ARCHIVED</span>
+                    </td>
+                    <td class="num">${fmtMs(inc.p50)}</td>
+                    <td>${sparklineSvg(inc.sparkline)}</td>
+                    <td class="num muted">—</td>
+                    <td><span class="muted">—</span></td>
+                    <td>${healthBadge(inc.passRate)}</td>
+                </tr>`;
+            }
+        }
+
         document.getElementById('summaryBody').innerHTML = tbody;
+
+        // Archived toggle handler
+        const toggleBtn = document.getElementById('archivedToggle');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const rows = document.querySelectorAll('.archived-row');
+                const showing = rows[0]?.style.display !== 'none';
+                rows.forEach(r => r.style.display = showing ? 'none' : '');
+                toggleBtn.textContent = showing
+                    ? `Show ${archived.length} archived assets ▸`
+                    : `Hide ${archived.length} archived assets ▾`;
+            });
+        }
 
         // Click row → switch to Trends for that asset
         document.querySelectorAll('.summary-row').forEach(row => {
@@ -292,44 +334,10 @@
             });
         });
 
-        // ── MT Performance Section ──
-        const mtAssets = assets.filter(a => a.mt && (a.mt.incBuild || a.mt.rebuild));
-        if (mtAssets.length === 0) {
-            document.getElementById('mtOverviewCard').style.display = 'none';
-        } else {
-            document.getElementById('mtOverviewCard').style.display = '';
-            let mtHtml = '<div class="mt-overview-grid">';
-            for (const a of mtAssets) {
-                mtHtml += `<div class="mt-overview-item">
-                    <div class="mt-overview-name">${a.name}</div>`;
-                if (a.mt.incBuild) {
-                    const sp = a.mt.incBuild.speedupPct;
-                    const cls = sp > 0 ? 'faster' : (sp < -2 ? 'slower' : 'neutral');
-                    mtHtml += `<div class="mt-overview-row">
-                        <span class="mt-label">Inc Build</span>
-                        <span class="mt-speedup-badge ${cls}">${sp > 0 ? '▼' : '▲'} ${Math.abs(sp).toFixed(1)}% ${sp > 0 ? 'faster' : 'slower'}</span>
-                        <span class="mt-times">${fmtMs(a.incBuild?.p50)} → ${fmtMs(a.mt.incBuild.p50)}</span>
-                    </div>`;
-                }
-                if (a.mt.rebuild) {
-                    const sp = a.mt.rebuild.speedupPct;
-                    const cls = sp > 0 ? 'faster' : (sp < -2 ? 'slower' : 'neutral');
-                    mtHtml += `<div class="mt-overview-row">
-                        <span class="mt-label">Rebuild</span>
-                        <span class="mt-speedup-badge ${cls}">${sp > 0 ? '▼' : '▲'} ${Math.abs(sp).toFixed(1)}% ${sp > 0 ? 'faster' : 'slower'}</span>
-                        <span class="mt-times">${fmtMs(a.rebuild?.p50)} → ${fmtMs(a.mt.rebuild.p50)}</span>
-                    </div>`;
-                }
-                mtHtml += '</div>';
-            }
-            mtHtml += '</div>';
-            document.getElementById('mtOverviewContent').innerHTML = mtHtml;
-        }
-
         // ── Header meta ──
-        const dates = assets.map(a => a.latestDate).filter(Boolean).sort();
+        const dates = active.map(a => a.latestDate).filter(Boolean).sort();
         document.getElementById('headerMeta').textContent =
-            `${assets.length} assets · Latest data: ${dates[dates.length - 1] || 'N/A'}`;
+            `${active.length} active assets · ${archived.length} archived · Latest: ${dates[dates.length - 1] || 'N/A'}`;
     }
 
     /* ══════════════════════════════════════════════
@@ -393,15 +401,24 @@
 
     function applyTimeFilter() {
         const range = document.getElementById('timeRange').value;
-        if (range === 'all' || !DATA_ALL.length) {
-            DATA = [...DATA_ALL];
-        } else {
+        const platform = document.getElementById('platformFilter').value;
+        let filtered = [...DATA_ALL];
+
+        if (range !== 'all' && filtered.length) {
             const now = new Date();
             const days = { '30d': 30, '90d': 90, '6m': 180, '1y': 365, '2y': 730, '3y': 1095 }[range] || 0;
             now.setDate(now.getDate() - days);
             const cutoff = now.toISOString().slice(0, 10);
-            DATA = DATA_ALL.filter(d => d.date >= cutoff);
+            filtered = filtered.filter(d => d.date >= cutoff);
         }
+
+        if (platform !== 'all') {
+            const patterns = { windows: /PERFWIN|GOLDWIN/i, linux: /PERFLIN|GOLDLIN/i };
+            const re = patterns[platform];
+            if (re) filtered = filtered.filter(d => re.test(d.machineID || ''));
+        }
+
+        DATA = filtered;
         renderTrends();
         renderHealth();
     }
@@ -670,27 +687,38 @@
     /* ── Init ── */
     async function init() {
         try {
-            // Load summary for Overview
+            // Load summary for Overview + asset selector
             const summResp = await fetch('data/summary.json');
             SUMMARY = await summResp.json();
             renderOverview();
 
-            // Load manifest for Trends asset selector
-            const manResp = await fetch('data/manifest.json');
-            MANIFEST = await manResp.json();
-            MANIFEST.sort((a, b) => b.records - a.records);
-
+            // Populate asset selector from summary (grouped active/archived)
             const sel = document.getElementById('assetSelect');
-            MANIFEST.forEach(a => {
-                if (a.name === 'sample-orchard-core') return;
+            const sorted = [...SUMMARY.assets].sort((a, b) => a.name.localeCompare(b.name));
+            const activeList = sorted.filter(a => !a.archived);
+            const archivedList = sorted.filter(a => a.archived);
+
+            for (const a of activeList) {
                 const o = document.createElement('option');
                 o.value = a.name;
-                o.textContent = `${a.name} (${a.records})`;
+                o.textContent = a.name;
                 sel.appendChild(o);
-            });
+            }
+            if (archivedList.length > 0) {
+                const grp = document.createElement('optgroup');
+                grp.label = `Archived (${archivedList.length})`;
+                for (const a of archivedList) {
+                    const o = document.createElement('option');
+                    o.value = a.name;
+                    o.textContent = a.name;
+                    grp.appendChild(o);
+                }
+                sel.appendChild(grp);
+            }
             sel.addEventListener('change', () => loadAsset(sel.value));
 
-            const defaultAsset = MANIFEST.find(a => a.name === 'net8-console-app')?.name || MANIFEST[0].name;
+            const defaultAsset = activeList.find(a => a.name === 'net8-console-app')?.name
+                || activeList[0]?.name || sorted[0]?.name;
             sel.value = defaultAsset;
             await loadAsset(defaultAsset);
         } catch (err) {
@@ -703,6 +731,7 @@
     document.getElementById('mtMetric').addEventListener('change', renderMt);
     document.getElementById('trendScenario').addEventListener('change', renderTrend);
     document.getElementById('trendMetric').addEventListener('change', renderTrend);
+    document.getElementById('platformFilter').addEventListener('change', applyTimeFilter);
     document.getElementById('timeRange').addEventListener('change', applyTimeFilter);
 
     init();
