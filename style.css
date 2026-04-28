@@ -33,6 +33,8 @@ header {
 }
 header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
 header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+.repo-link { font-size: 12px; opacity: 0.75; color: inherit; text-decoration: none; margin-top: 2px; display: inline-block; }
+.repo-link:hover { opacity: 1; text-decoration: underline; }
 
 /* ── Tabs ── */
 .tabs {
@@ -133,6 +135,19 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     color: var(--text);
     font-size: 13px;
 }
+
+/* ── Chip multiselect ── */
+.chip-group { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px; border-radius: 12px;
+    font-size: 12px; cursor: pointer; user-select: none;
+    border: 1.5px solid var(--border); color: var(--text-muted);
+    background: var(--bg); transition: all 0.15s;
+}
+.chip input { display: none; }
+.chip.active { border-color: var(--chip-color, #0969da); color: var(--chip-color, #0969da); background: color-mix(in srgb, var(--chip-color, #0969da) 8%, var(--bg)); font-weight: 600; }
+.chip:hover { border-color: var(--chip-color, #0969da); }
 
 /* ── Charts ── */
 .chart-wrapper { position: relative; height: 340px; padding: 14px; }

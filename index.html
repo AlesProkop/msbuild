@@ -11,6 +11,7 @@
     <header>
         <h1>📊 MSBuild Performance Dashboard</h1>
         <p id="headerMeta">Loading summary...</p>
+        <a href="https://github.com/alesprokop/msbuild/tree/perf/dashboard" target="_blank" rel="noopener" class="repo-link">🔗 Repository</a>
     </header>
 
     <div class="tabs">
@@ -102,9 +103,9 @@
 
             <!-- Performance Trend -->
             <div class="card">
-                <div class="card-header"><span class="card-title">Performance Trend</span><span class="card-subtitle">Single scenario metric over time with average line</span></div>
+                <div class="card-header"><span class="card-title">Performance Trend</span><span class="card-subtitle">Compare scenarios over time</span></div>
                 <div class="controls-row">
-                    <select id="trendScenario"></select>
+                    <div id="trendScenarioChips" class="chip-group"></div>
                     <select id="trendMetric">
                         <option value="build-time" selected>Build Time</option>
                         <option value="evaluation-time">Evaluation Time</option>
@@ -163,6 +164,7 @@
         mt: '#0969da', mtFill: 'rgba(9,105,218,0.06)',
         avg: '#9a6700', bar: '#0969da', barMt: '#8250df'
     };
+    const TREND_COLORS = ['#0969da','#cf222e','#1a7f37','#8250df','#bf8700','#656d76','#e16f24','#0550ae','#6e7781','#953800'];
 
     /* ── Helpers ── */
     function short(s) { return s.replace(/^.*?-(?=inc-build|rebuild)/, '').replace('-dotnet',''); }
@@ -514,11 +516,19 @@
     }
 
     function renderTrends() {
-        const sel = document.getElementById('trendScenario');
-        const prev = sel.value;
-        sel.innerHTML = '';
-        scenarioList().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = short(s); sel.appendChild(o); });
-        if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
+        const container = document.getElementById('trendScenarioChips');
+        const prevSelected = [...container.querySelectorAll('input:checked')].map(i => i.value);
+        container.innerHTML = '';
+        scenarioList().forEach((s, i) => {
+            const id = `tsc_${i}`;
+            const checked = prevSelected.length ? prevSelected.includes(s) : i === 0;
+            const color = TREND_COLORS[i % TREND_COLORS.length];
+            container.innerHTML += `<label class="chip${checked ? ' active' : ''}" style="--chip-color:${color}"><input type="checkbox" value="${s}" id="${id}" ${checked ? 'checked' : ''}>${short(s)}</label>`;
+        });
+        container.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
+            cb.closest('.chip').classList.toggle('active', cb.checked);
+            renderTrend();
+        }));
 
         renderMt(); renderTrend(); renderComp();
     }
@@ -567,34 +577,56 @@
 
     // ── Trend ──
     function renderTrend() {
-        const sc = document.getElementById('trendScenario').value;
+        const selected = [...document.querySelectorAll('#trendScenarioChips input:checked')].map(i => i.value);
         const metric = document.getElementById('trendMetric').value;
-        if (!sc) return;
-        const series = getSeries(sc, metric);
-        const vals = series.map(d => d.value);
-        const mean = avg(vals);
+        if (!selected.length) {
+            if (CHARTS.trend) CHARTS.trend.destroy();
+            document.getElementById('trendStats').innerHTML = '';
+            return;
+        }
+
+        const allSeries = selected.map(sc => ({ scenario: sc, data: getSeries(sc, metric) }));
+        const allDates = [...new Set(allSeries.flatMap(s => s.data.map(d => d.date)))].sort();
+        const datasets = [];
+        const allPointsByDate = {};
+
+        allSeries.forEach((s, i) => {
+            const color = TREND_COLORS[i % TREND_COLORS.length];
+            const valMap = Object.fromEntries(s.data.map(d => [d.date, d.value]));
+            const pointMap = Object.fromEntries(s.data.map(d => [d.date, d]));
+            allDates.forEach(date => { if (pointMap[date]) allPointsByDate[date] = pointMap[date]; });
+            datasets.push({
+                label: short(s.scenario),
+                data: allDates.map(d => valMap[d] ?? null),
+                borderColor: color,
+                backgroundColor: color + '10',
+                fill: false,
+                tension: 0.3,
+                pointRadius: 1.5,
+                borderWidth: 1.5,
+                spanGaps: true
+            });
+        });
+
+        const trendPoints = allDates.map(d => allPointsByDate[d] || null);
 
         if (CHARTS.trend) CHARTS.trend.destroy();
         CHARTS.trend = new Chart(document.getElementById('trendChart'), {
             type: 'line',
-            data: {
-                labels: series.map(d => d.date),
-                datasets: [
-                    { label: short(sc), data: vals, borderColor: CLR.line, backgroundColor: CLR.lineFill, fill: true, tension: 0.3, pointRadius: 1.5, borderWidth: 1.5 },
-                    { label: `Avg (${mean.toFixed(0)} ms)`, data: vals.map(() => mean), borderColor: CLR.avg, borderDash: [5,3], pointRadius: 0, fill: false, borderWidth: 1 }
-                ]
-            },
-            options: chartOpts(series)
+            data: { labels: allDates, datasets },
+            options: chartOpts(trendPoints)
         });
-        addChartClickHandler(CHARTS.trend, series, 'trendDetail');
-        const statsEl = document.getElementById('trendStats');
-        if (vals.length) {
-            statsEl.innerHTML = `
-                <div class="stat"><div class="stat-value">${avg(vals).toFixed(0)}</div><div class="stat-label">Avg (ms)</div></div>
-                <div class="stat"><div class="stat-value">${Math.min(...vals).toFixed(0)}</div><div class="stat-label">Min (ms)</div></div>
-                <div class="stat"><div class="stat-value">${Math.max(...vals).toFixed(0)}</div><div class="stat-label">Max (ms)</div></div>
-                <div class="stat"><div class="stat-value">${vals.length}</div><div class="stat-label">Runs</div></div>`;
-        } else { statsEl.innerHTML = ''; }
+        addChartClickHandler(CHARTS.trend, trendPoints, 'trendDetail');
+
+        let statsHtml = '';
+        allSeries.forEach((s, i) => {
+            const vals = s.data.map(d => d.value);
+            const color = TREND_COLORS[i % TREND_COLORS.length];
+            if (vals.length) {
+                statsHtml += `<div class="stat"><div class="stat-value" style="color:${color}">${avg(vals).toFixed(0)}</div><div class="stat-label">${short(s.scenario)} avg (ms)</div></div>`;
+            }
+        });
+        document.getElementById('trendStats').innerHTML = statsHtml;
     }
 
     // ── Resources ──
@@ -824,7 +856,6 @@
 
     document.getElementById('mtBuildType').addEventListener('change', renderMt);
     document.getElementById('mtMetric').addEventListener('change', renderMt);
-    document.getElementById('trendScenario').addEventListener('change', renderTrend);
     document.getElementById('trendMetric').addEventListener('change', renderTrend);
     document.getElementById('platformFilter').addEventListener('change', applyTimeFilter);
     document.getElementById('timeRange').addEventListener('change', applyTimeFilter);
