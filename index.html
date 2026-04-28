@@ -390,6 +390,12 @@
         return m ? m[1] : null;
     }
 
+    function majorVersion(versionStr) {
+        if (!versionStr) return 0;
+        const m = versionStr.match(/^(\d+)\./);
+        return m ? parseInt(m[1], 10) : 0;
+    }
+
     function renderPointDetail(point, containerId) {
         const el = document.getElementById(containerId);
         if (!el || !point) { if (el) el.innerHTML = ''; return; }
@@ -408,13 +414,22 @@
         }
         if (point.sdkVersion) {
             const sdkClean = point.sdkVersion.replace(/-rtm\..+$/, '');
-            const vmrLink = `https://github.com/dotnet/dotnet/releases/tag/v${sdkClean}`;
-            parts.push(`<span class="detail-label">SDK:</span> <a href="${vmrLink}" target="_blank" rel="noopener">${point.sdkVersion}</a>`);
+            const isPreview = /-(preview|rc|alpha|beta)/.test(sdkClean);
+            if (isPreview) {
+                const until = point.timestamp || `${point.date}T23:59:59Z`;
+                const logLink = `https://github.com/dotnet/sdk/commits/main?until=${until}`;
+                parts.push(`<span class="detail-label">SDK:</span> <a href="${logLink}" target="_blank" rel="noopener">${point.sdkVersion}</a>`);
+            } else {
+                const repo = majorVersion(sdkClean) >= 10 ? 'dotnet/dotnet' : 'dotnet/sdk';
+                const tagLink = `https://github.com/${repo}/releases/tag/v${sdkClean}`;
+                parts.push(`<span class="detail-label">SDK:</span> <a href="${tagLink}" target="_blank" rel="noopener">${point.sdkVersion}</a>`);
+            }
         }
         if (point.runtimeVersion) {
             const display = point.runtimeVersion;
             if (runtimeHash) {
-                const link = `https://github.com/dotnet/dotnet/commit/${runtimeHash}`;
+                const repo = majorVersion(point.runtimeVersion) >= 10 ? 'dotnet/dotnet' : 'dotnet/runtime';
+                const link = `https://github.com/${repo}/commit/${runtimeHash}`;
                 parts.push(`<span class="detail-label">Runtime:</span> <a href="${link}" target="_blank" rel="noopener">${display}</a>`);
             } else {
                 const until = point.timestamp || `${point.date}T23:59:59Z`;
