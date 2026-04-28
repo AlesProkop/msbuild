@@ -154,6 +154,43 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     letter-spacing: 0.4px;
 }
 
+/* Chart detail panel (click a data point) */
+.chart-detail {
+    min-height: 0;
+    padding: 0 14px;
+    transition: all 0.2s ease;
+}
+.point-detail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    margin: 6px 0;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+}
+.point-detail a {
+    color: var(--accent);
+    text-decoration: none;
+}
+.point-detail a:hover {
+    text-decoration: underline;
+}
+.detail-label {
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+.detail-sep {
+    color: var(--border);
+    margin: 0 4px;
+}
+
 /* ══════════════════════════════════════
    OVERVIEW — Banners
    ══════════════════════════════════════ */

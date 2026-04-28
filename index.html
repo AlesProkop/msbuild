@@ -96,6 +96,7 @@
                     </select>
                 </div>
                 <div class="chart-wrapper"><canvas id="mtChart"></canvas></div>
+                <div id="mtDetail" class="chart-detail"></div>
                 <div class="mt-summary" id="mtSummary"></div>
             </div>
 
@@ -112,6 +113,7 @@
                     </select>
                 </div>
                 <div class="chart-wrapper"><canvas id="trendChart"></canvas></div>
+                <div id="trendDetail" class="chart-detail"></div>
                 <div class="stats-bar" id="trendStats"></div>
             </div>
 
@@ -370,15 +372,61 @@
     function getSeries(scenario, metric) {
         return DATA.filter(d => d.scenario === scenario && d.results[metric] != null && d.results[metric] !== '')
             .sort((a,b) => a.date.localeCompare(b.date))
-            .map(d => ({ date: d.date, value: toMs(d.results[metric], metric), exitCode: d.results['exit-code'] }))
+            .map(d => ({
+                date: d.date, value: toMs(d.results[metric], metric), exitCode: d.results['exit-code'],
+                msbuildVersion: d.results['msbuild-version'] || d.results['msbuild-display-version'] || '',
+                sdkVersion: d.results['netSdkVersion'] || '',
+                runtimeVersion: d.results['netCoreAppVersion'] || '',
+                dotnetVersion: d.results['dotnet-version'] || ''
+            }))
             .filter(d => d.value !== null);
+    }
+
+    function extractCommitHash(versionStr) {
+        if (!versionStr) return null;
+        const m = versionStr.match(/\+([0-9a-f]{6,40})/i);
+        return m ? m[1] : null;
+    }
+
+    function renderPointDetail(point, containerId) {
+        const el = document.getElementById(containerId);
+        if (!el || !point) { if (el) el.innerHTML = ''; return; }
+        const runtimeHash = extractCommitHash(point.runtimeVersion);
+        const parts = [`<strong>${point.date}</strong> — ${point.value?.toFixed(1)} ms`];
+        parts.push(`<span class="detail-label">MSBuild:</span> ${point.msbuildVersion || '—'}`);
+        if (point.sdkVersion) {
+            const sdkClean = point.sdkVersion.replace(/-rtm\..+$/, '');
+            const vmrLink = `https://github.com/dotnet/dotnet/releases/tag/v${sdkClean}`;
+            parts.push(`<span class="detail-label">SDK:</span> <a href="${vmrLink}" target="_blank" rel="noopener">${point.sdkVersion}</a>`);
+        }
+        if (point.runtimeVersion) {
+            const display = point.runtimeVersion;
+            if (runtimeHash) {
+                const link = `https://github.com/dotnet/runtime/commit/${runtimeHash}`;
+                parts.push(`<span class="detail-label">Runtime:</span> <a href="${link}" target="_blank" rel="noopener">${display}</a>`);
+            } else {
+                parts.push(`<span class="detail-label">Runtime:</span> ${display}`);
+            }
+        }
+        el.innerHTML = `<div class="point-detail">${parts.join('<span class="detail-sep">·</span>')}</div>`;
+    }
+
+    function addChartClickHandler(chart, series, detailContainerId) {
+        chart.options.onClick = (evt) => {
+            const points = chart.getElementsAtEventForMode(evt, 'index', { intersect: false }, false);
+            if (points.length) {
+                const idx = points[0].index;
+                renderPointDetail(series[idx], detailContainerId);
+            }
+        };
+        chart.update();
     }
 
     function getLatest(scenario) {
         return DATA.filter(d => d.scenario === scenario).sort((a, b) => b.date.localeCompare(a.date))[0];
     }
 
-    function chartOpts() {
+    function chartOpts(versionData) {
         return {
             responsive: true, maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
@@ -389,7 +437,19 @@
                     titleColor: '#1f2328', bodyColor: '#1f2328',
                     borderColor: '#d8dee4', borderWidth: 1,
                     cornerRadius: 6, padding: 10,
-                    callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1)} ms` }
+                    callbacks: {
+                        label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1)} ms`,
+                        afterBody: (items) => {
+                            if (!versionData || !items.length) return '';
+                            const pt = versionData[items[0].dataIndex];
+                            if (!pt) return '';
+                            const lines = [];
+                            if (pt.msbuildVersion) lines.push(`  MSBuild: ${pt.msbuildVersion}`);
+                            if (pt.sdkVersion) lines.push(`  SDK: ${pt.sdkVersion}`);
+                            if (pt.runtimeVersion) lines.push(`  Runtime: ${pt.runtimeVersion}`);
+                            return lines.length ? ['', ...lines] : '';
+                        }
+                    }
                 }
             },
             scales: {
@@ -446,6 +506,9 @@
         const dates = [...new Set([...stdS.map(d=>d.date), ...mtS.map(d=>d.date)])].sort();
         const stdMap = Object.fromEntries(stdS.map(d => [d.date, d.value]));
         const mtMap = Object.fromEntries(mtS.map(d => [d.date, d.value]));
+        const mtMerged = Object.fromEntries(mtS.map(d => [d.date, d]));
+        const stdMerged = Object.fromEntries(stdS.map(d => [d.date, d]));
+        const mtPointsByDate = dates.map(d => mtMerged[d] || stdMerged[d] || null);
 
         if (CHARTS.mt) CHARTS.mt.destroy();
         CHARTS.mt = new Chart(document.getElementById('mtChart'), {
@@ -457,8 +520,9 @@
                     { label: 'Multithreaded', data: dates.map(d => mtMap[d] ?? null), borderColor: CLR.mt, backgroundColor: CLR.mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
                 ]
             },
-            options: chartOpts()
+            options: chartOpts(mtPointsByDate)
         });
+        addChartClickHandler(CHARTS.mt, mtPointsByDate, 'mtDetail');
 
         const sv = stdS.map(d => d.value), mv = mtS.map(d => d.value);
         let html = `<span><span class="dot std"></span> Std avg: <strong>${sv.length ? avg(sv).toFixed(0) + ' ms' : 'N/A'}</strong> (${sv.length})</span>`;
@@ -490,8 +554,9 @@
                     { label: `Avg (${mean.toFixed(0)} ms)`, data: vals.map(() => mean), borderColor: CLR.avg, borderDash: [5,3], pointRadius: 0, fill: false, borderWidth: 1 }
                 ]
             },
-            options: chartOpts()
+            options: chartOpts(series)
         });
+        addChartClickHandler(CHARTS.trend, series, 'trendDetail');
         const statsEl = document.getElementById('trendStats');
         if (vals.length) {
             statsEl.innerHTML = `
