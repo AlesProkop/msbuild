@@ -71,7 +71,7 @@
   },
   {
     "name": "eshop-on-blazor-modified",
-    "records": 1246,
+    "records": 1286,
     "scenarios": [
       "eshop-on-blazor-modified-inc-build-dotnet",
       "eshop-on-blazor-modified-inc-build-mt-dotnet",
@@ -193,7 +193,7 @@
   },
   {
     "name": "net8-blazorwasm-app",
-    "records": 1670,
+    "records": 1730,
     "scenarios": [
       "net8-blazorwasm-app-inc-build-binlog-dotnet",
       "net8-blazorwasm-app-inc-build-dotnet",
@@ -207,7 +207,7 @@
   },
   {
     "name": "net8-class-lib",
-    "records": 981,
+    "records": 1001,
     "scenarios": [
       "net8-class-lib-inc-build-dotnet",
       "net8-class-lib-rebuild-dotnet"
@@ -217,7 +217,7 @@
   },
   {
     "name": "net8-console-app",
-    "records": 2398,
+    "records": 2498,
     "scenarios": [
       "net8-console-app-inc-build-binlog-dotnet",
       "net8-console-app-inc-build-check-dotnet",
@@ -235,7 +235,7 @@
   },
   {
     "name": "net8-web-app",
-    "records": 505,
+    "records": 515,
     "scenarios": [
       "net8-web-app-inc-build-dotnet",
       "net8-web-app-rebuild-dotnet"
@@ -245,7 +245,7 @@
   },
   {
     "name": "net8-win-forms-app",
-    "records": 508,
+    "records": 518,
     "scenarios": [
       "net8-win-forms-app-inc-build-dotnet",
       "net8-win-forms-app-rebuild-dotnet"
@@ -255,7 +255,7 @@
   },
   {
     "name": "net8-wpf-app",
-    "records": 513,
+    "records": 523,
     "scenarios": [
       "net8-wpf-app-inc-build-dotnet",
       "net8-wpf-app-rebuild-dotnet"
@@ -265,7 +265,7 @@
   },
   {
     "name": "orchard-core",
-    "records": 703,
+    "records": 783,
     "scenarios": [
       "orchard-core-inc-build-binlog-dotnet",
       "orchard-core-inc-build-check-dotnet",
@@ -281,7 +281,7 @@
   },
   {
     "name": "very-large-net8-console-app",
-    "records": 169,
+    "records": 179,
     "scenarios": [
       "very-large-net8-console-app-restore-dotnet"
     ],

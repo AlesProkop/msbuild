@@ -1,0 +1,32 @@
+{
+  "date": "2026-03-07",
+  "scenario": "very-large-net8-console-app-restore-dotnet",
+  "perfstarCIBuildNumber": "20260307.1",
+  "branch": "main",
+  "machineID": "PERFWIN",
+  "schemaVersion": "1",
+  "results": {
+    "netSdkVersion": "10.0.103",
+    "aspNetCoreVersion": "10.0.3+c2435c3e0f46",
+    "netCoreAppVersion": "10.0.3+c2435c3e0f46",
+    "msbuild-version": "18.0.11.7603",
+    "msbuild-display-version": "18.0.11.7603",
+    "evaluation-time": 266.2,
+    "evaluation-time-globbing": 0.0,
+    "evaluation-time-pass0": 2.0,
+    "evaluation-time-pass1": 145.8,
+    "evaluation-time-pass2": 1.0,
+    "evaluation-time-pass3": 23.0,
+    "evaluation-time-pass3dot1": 26.2,
+    "evaluation-time-pass4": 2.0,
+    "evaluation-time-pass5": 65.4,
+    "exit-code": 0.0,
+    "build-time": 797.95308,
+    "info/test-asset": "very-large-net8-console-app",
+    "info/test-scenario": "Restore",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 5.0,
+    "dotnet-version": "10.0.103"
+  }
+}

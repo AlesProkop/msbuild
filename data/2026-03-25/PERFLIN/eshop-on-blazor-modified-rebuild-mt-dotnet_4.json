@@ -1,0 +1,23 @@
+{
+  "date": "2026-03-25",
+  "scenario": "eshop-on-blazor-modified-rebuild-mt-dotnet",
+  "perfstarCIBuildNumber": "20260325.1",
+  "branch": "main",
+  "machineID": "PERFLIN",
+  "schemaVersion": "1",
+  "results": {
+    "netSdkVersion": "10.0.201",
+    "aspNetCoreVersion": "10.0.5+a612c2a1056f",
+    "netCoreAppVersion": "10.0.5+a612c2a1056f",
+    "msbuild-version": "18.6.0.17512",
+    "msbuild-display-version": "18.6.0.17512",
+    "exit-code": 1.0,
+    "failure-description": "Restore finished with non zero exit code.",
+    "info/test-asset": "eShopOnBlazor-modified",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "11.0.100-preview.3.26174.112"
+  }
+}

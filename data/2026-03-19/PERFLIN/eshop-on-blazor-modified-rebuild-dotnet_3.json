@@ -1,0 +1,32 @@
+{
+  "date": "2026-03-19",
+  "scenario": "eshop-on-blazor-modified-rebuild-dotnet",
+  "perfstarCIBuildNumber": "20260319.1",
+  "branch": "main",
+  "machineID": "PERFLIN",
+  "schemaVersion": "1",
+  "results": {
+    "netSdkVersion": "10.0.201",
+    "aspNetCoreVersion": "10.0.5+a612c2a1056f",
+    "netCoreAppVersion": "10.0.5+a612c2a1056f",
+    "msbuild-version": "18.6.0.16909",
+    "msbuild-display-version": "18.6.0.16909",
+    "evaluation-time": 441.8,
+    "evaluation-time-globbing": 6.9,
+    "evaluation-time-pass0": 4.2,
+    "evaluation-time-pass1": 205.3,
+    "evaluation-time-pass2": 0.2,
+    "evaluation-time-pass3": 47.8,
+    "evaluation-time-pass3dot1": 91.8,
+    "evaluation-time-pass4": 3.0,
+    "evaluation-time-pass5": 87.1,
+    "exit-code": 0.0,
+    "build-time": 1607.1257699999996,
+    "info/test-asset": "eShopOnBlazor-modified",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "11.0.100-preview.3.26168.109"
+  }
+}

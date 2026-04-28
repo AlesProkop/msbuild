@@ -1,0 +1,32 @@
+{
+  "date": "2026-03-07",
+  "scenario": "net8-blazorwasm-app-rebuild-mt-dotnet",
+  "perfstarCIBuildNumber": "20260307.1",
+  "branch": "main",
+  "machineID": "PERFWIN",
+  "schemaVersion": "1",
+  "results": {
+    "netSdkVersion": "10.0.103",
+    "aspNetCoreVersion": "10.0.3+c2435c3e0f46",
+    "netCoreAppVersion": "10.0.3+c2435c3e0f46",
+    "msbuild-version": "18.0.11.7603",
+    "msbuild-display-version": "18.0.11.7603",
+    "evaluation-time": 503.8,
+    "evaluation-time-globbing": 15.3,
+    "evaluation-time-pass0": 2.0,
+    "evaluation-time-pass1": 275.3,
+    "evaluation-time-pass2": 2.0,
+    "evaluation-time-pass3": 37.2,
+    "evaluation-time-pass3dot1": 74.6,
+    "evaluation-time-pass4": 2.1,
+    "evaluation-time-pass5": 108.6,
+    "exit-code": 0.0,
+    "build-time": 2201.38432,
+    "info/test-asset": "Net8BlazorWasmApp",
+    "info/test-scenario": "Rebuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 10.0,
+    "dotnet-version": "10.0.103"
+  }
+}
