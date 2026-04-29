@@ -391,19 +391,17 @@
     function getMachineChangeAnnotations(versionData, dates) {
         if (!versionData || !dates || dates.length < 2) return {};
         const annotations = {};
-        // Detect generation changes (PERF* → GOLD*), not platform alternation
+        // Extract machine generation from ID (e.g., PERFWIN→PERF, GOLDLIN→GOLD)
         function machineGen(id) {
             if (!id) return '';
-            if (/PERF/i.test(id)) return 'PERF';
-            if (/GOLD/i.test(id)) return 'GOLD';
-            return id;
+            return id.replace(/(WIN|LIN)$/i, '');
         }
         let prevGen = '';
+        let lastAnnotationDate = '';
         for (let i = 0; i < dates.length; i++) {
             const pt = versionData[i];
             const gen = machineGen(pt?.machineID);
-            if (gen && prevGen && gen !== prevGen) {
-                const machine = pt.machineID;
+            if (gen && prevGen && gen !== prevGen && dates[i] !== lastAnnotationDate) {
                 annotations[`machine_${i}`] = {
                     type: 'line',
                     xMin: dates[i],
@@ -413,7 +411,7 @@
                     borderDash: [6, 4],
                     label: {
                         display: true,
-                        content: `→ ${machine}`,
+                        content: `→ ${gen}`,
                         position: 'start',
                         backgroundColor: 'rgba(130, 80, 223, 0.85)',
                         color: '#fff',
@@ -421,8 +419,7 @@
                         padding: 3
                     }
                 };
-                prevGen = gen;
-                break; // Only one line per generation transition
+                lastAnnotationDate = dates[i];
             }
             if (gen) prevGen = gen;
         }
