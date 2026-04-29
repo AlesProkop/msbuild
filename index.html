@@ -64,12 +64,6 @@
                 <div class="controls-row">
                     <label>Asset:</label>
                     <select id="assetSelect"></select>
-                    <label>Platform:</label>
-                    <select id="platformFilter">
-                        <option value="all" selected>All Platforms</option>
-                        <option value="windows">🪟 Windows</option>
-                        <option value="linux">🐧 Linux</option>
-                    </select>
                     <label>Time Range:</label>
                     <select id="timeRange">
                         <option value="all" selected>All Time</option>
@@ -97,8 +91,18 @@
                         <option value="evaluation-time">Evaluation Time</option>
                     </select>
                 </div>
-                <div class="chart-wrapper"><canvas id="mtChart"></canvas></div>
-                <div id="mtDetail" class="chart-detail"></div>
+                <div class="platform-charts">
+                    <div class="platform-chart">
+                        <div class="platform-label">🪟 Windows</div>
+                        <div class="chart-wrapper"><canvas id="mtChartWin"></canvas></div>
+                        <div id="mtDetailWin" class="chart-detail"></div>
+                    </div>
+                    <div class="platform-chart">
+                        <div class="platform-label">🐧 Linux</div>
+                        <div class="chart-wrapper" id="mtChartLinWrapper"><canvas id="mtChartLin"></canvas></div>
+                        <div id="mtDetailLin" class="chart-detail"></div>
+                    </div>
+                </div>
                 <div class="mt-summary" id="mtSummary"></div>
             </div>
 
@@ -114,8 +118,18 @@
                         <option value="evaluation-time-pass5">Eval Pass 5</option>
                     </select>
                 </div>
-                <div class="chart-wrapper"><canvas id="trendChart"></canvas></div>
-                <div id="trendDetail" class="chart-detail"></div>
+                <div class="platform-charts">
+                    <div class="platform-chart">
+                        <div class="platform-label">🪟 Windows</div>
+                        <div class="chart-wrapper"><canvas id="trendChartWin"></canvas></div>
+                        <div id="trendDetailWin" class="chart-detail"></div>
+                    </div>
+                    <div class="platform-chart">
+                        <div class="platform-label">🐧 Linux</div>
+                        <div class="chart-wrapper" id="trendChartLinWrapper"><canvas id="trendChartLin"></canvas></div>
+                        <div id="trendDetailLin" class="chart-detail"></div>
+                    </div>
+                </div>
                 <div class="stats-bar" id="trendStats"></div>
             </div>
 
@@ -129,7 +143,16 @@
             <!-- Comparison -->
             <div class="card">
                 <div class="card-header"><span class="card-title">Build Time — Standard vs MT</span><span class="card-subtitle">Latest build time for each scenario</span></div>
-                <div class="chart-wrapper"><canvas id="compChart"></canvas></div>
+                <div class="platform-charts">
+                    <div class="platform-chart">
+                        <div class="platform-label">🪟 Windows</div>
+                        <div class="chart-wrapper"><canvas id="compChartWin"></canvas></div>
+                    </div>
+                    <div class="platform-chart">
+                        <div class="platform-label">🐧 Linux</div>
+                        <div class="chart-wrapper" id="compChartLinWrapper"><canvas id="compChartLin"></canvas></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -155,8 +178,10 @@
     <script>
     /* ── Global state ── */
     let SUMMARY = null;        // from summary.json (Overview)
-    let DATA = [];             // filtered per-asset data (Trends/Health)
+    let DATA = [];             // filtered per-asset data (all platforms, time-filtered)
     let DATA_ALL = [];         // unfiltered per-asset data
+    let DATA_WIN = [];         // Windows-only (includes pre-machineID records)
+    let DATA_LIN = [];         // Linux-only
     let MANIFEST = [];
     const CHARTS = {};
 
@@ -370,8 +395,9 @@
         return +v;
     }
 
-    function getSeries(scenario, metric) {
-        return DATA.filter(d => d.scenario === scenario && d.results[metric] != null && d.results[metric] !== '')
+    function getSeries(scenario, metric, dataSource) {
+        const src = dataSource || DATA;
+        return src.filter(d => d.scenario === scenario && d.results[metric] != null && d.results[metric] !== '')
             .sort((a,b) => a.date.localeCompare(b.date))
             .map(d => ({
                 date: d.date, value: toMs(d.results[metric], metric), exitCode: d.results['exit-code'],
@@ -386,17 +412,6 @@
             .filter(d => d.value !== null);
     }
 
-    function isAllPlatforms() {
-        return document.getElementById('platformFilter').value === 'all';
-    }
-
-    function splitByPlatform(series) {
-        const win = series.filter(d => /WIN$/i.test(d.machineID));
-        const lin = series.filter(d => /LIN$/i.test(d.machineID));
-        const unknown = series.filter(d => !d.machineID || (!/WIN$/i.test(d.machineID) && !/LIN$/i.test(d.machineID)));
-        // Attach unknown (pre-machineID) records to Windows since those were Windows-only runs
-        return { win: [...unknown, ...win].sort((a,b) => a.date.localeCompare(b.date)), lin };
-    }
 
     function getMachineChangeAnnotations(versionData, dates) {
         if (!versionData || !dates || dates.length < 2) return {};
@@ -506,8 +521,9 @@
         chart.update();
     }
 
-    function getLatest(scenario) {
-        return DATA.filter(d => d.scenario === scenario).sort((a, b) => b.date.localeCompare(a.date))[0];
+    function getLatest(scenario, dataSource) {
+        const src = dataSource || DATA;
+        return src.filter(d => d.scenario === scenario).sort((a, b) => b.date.localeCompare(a.date))[0];
     }
 
     function chartOpts(versionData, dates) {
@@ -549,7 +565,6 @@
 
     function applyTimeFilter() {
         const range = document.getElementById('timeRange').value;
-        const platform = document.getElementById('platformFilter').value;
         let filtered = [...DATA_ALL];
 
         if (range !== 'all' && filtered.length) {
@@ -560,13 +575,9 @@
             filtered = filtered.filter(d => d.date >= cutoff);
         }
 
-        if (platform !== 'all') {
-            const patterns = { windows: /WIN$/i, linux: /LIN$/i };
-            const re = patterns[platform];
-            if (re) filtered = filtered.filter(d => !d.machineID || re.test(d.machineID));
-        }
-
         DATA = filtered;
+        DATA_WIN = filtered.filter(d => !d.machineID || /WIN$/i.test(d.machineID));
+        DATA_LIN = filtered.filter(d => /LIN$/i.test(d.machineID));
         renderTrends();
         renderHealth();
     }
@@ -597,52 +608,50 @@
         const bt = document.getElementById('mtBuildType').value;
         const metric = document.getElementById('mtMetric').value;
         const asset = assetPrefix();
-        const stdS = getSeries(`${asset}-${bt}-dotnet`, metric);
-        const mtS = getSeries(`${asset}-${bt}-mt-dotnet`, metric);
-        const allPlatforms = isAllPlatforms() && (stdS.some(d => d.machineID) || mtS.some(d => d.machineID));
+        const stdScenario = `${asset}-${bt}-dotnet`;
+        const mtScenario = `${asset}-${bt}-mt-dotnet`;
 
-        let datasets, dates, metaArray;
+        function renderMtPlatform(chartKey, canvasId, detailId, wrapperId, dataSource, platformLabel) {
+            const stdS = getSeries(stdScenario, metric, dataSource);
+            const mtS = getSeries(mtScenario, metric, dataSource);
+            const hasData = stdS.length > 0 || mtS.length > 0;
 
-        if (allPlatforms) {
-            const stdP = splitByPlatform(stdS);
-            const mtP = splitByPlatform(mtS);
-            dates = [...new Set([...stdS.map(d=>d.date), ...mtS.map(d=>d.date)])].sort();
+            if (wrapperId) {
+                const wrapper = document.getElementById(wrapperId);
+                if (wrapper) wrapper.parentElement.style.display = hasData ? '' : 'none';
+            }
+            if (!hasData) {
+                if (CHARTS[chartKey]) { CHARTS[chartKey].destroy(); CHARTS[chartKey] = null; }
+                return { stdS: [], mtS: [] };
+            }
 
-            function buildMap(arr) { return Object.fromEntries(arr.map(d => [d.date, d.value])); }
-            function buildPtMap(arr) { return Object.fromEntries(arr.map(d => [d.date, d])); }
-            const stdWinMap = buildMap(stdP.win), stdLinMap = buildMap(stdP.lin);
-            const mtWinMap = buildMap(mtP.win), mtLinMap = buildMap(mtP.lin);
-            const stdWinPt = buildPtMap(stdP.win), mtWinPt = buildPtMap(mtP.win);
-
-            metaArray = dates.map(d => mtWinPt[d] || stdWinPt[d] || null);
-            datasets = [
-                { label: '🪟 Standard', data: dates.map(d => stdWinMap[d] ?? null), borderColor: CLR.line, backgroundColor: CLR.lineFill, fill: false, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
-                { label: '🐧 Standard', data: dates.map(d => stdLinMap[d] ?? null), borderColor: CLR.line, fill: false, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5, borderDash: [5, 3] },
-                { label: '🪟 Multithreaded', data: dates.map(d => mtWinMap[d] ?? null), borderColor: CLR.mt, backgroundColor: CLR.mtFill, fill: false, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
-                { label: '🐧 Multithreaded', data: dates.map(d => mtLinMap[d] ?? null), borderColor: CLR.mt, fill: false, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5, borderDash: [5, 3] },
-            ];
-        } else {
-            dates = [...new Set([...stdS.map(d=>d.date), ...mtS.map(d=>d.date)])].sort();
+            const dates = [...new Set([...stdS.map(d=>d.date), ...mtS.map(d=>d.date)])].sort();
             const stdMap = Object.fromEntries(stdS.map(d => [d.date, d.value]));
             const mtMap = Object.fromEntries(mtS.map(d => [d.date, d.value]));
             const mtMerged = Object.fromEntries(mtS.map(d => [d.date, d]));
             const stdMerged = Object.fromEntries(stdS.map(d => [d.date, d]));
-            metaArray = dates.map(d => mtMerged[d] || stdMerged[d] || null);
-            datasets = [
+            const metaArray = dates.map(d => mtMerged[d] || stdMerged[d] || null);
+
+            const datasets = [
                 { label: 'Standard', data: dates.map(d => stdMap[d] ?? null), borderColor: CLR.line, backgroundColor: CLR.lineFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
                 { label: 'Multithreaded', data: dates.map(d => mtMap[d] ?? null), borderColor: CLR.mt, backgroundColor: CLR.mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
             ];
+
+            if (CHARTS[chartKey]) CHARTS[chartKey].destroy();
+            CHARTS[chartKey] = new Chart(document.getElementById(canvasId), {
+                type: 'line',
+                data: { labels: dates, datasets },
+                options: chartOpts(metaArray, dates)
+            });
+            addChartClickHandler(CHARTS[chartKey], metaArray, detailId);
+            return { stdS, mtS };
         }
 
-        if (CHARTS.mt) CHARTS.mt.destroy();
-        CHARTS.mt = new Chart(document.getElementById('mtChart'), {
-            type: 'line',
-            data: { labels: dates, datasets },
-            options: chartOpts(metaArray, dates)
-        });
-        addChartClickHandler(CHARTS.mt, metaArray, 'mtDetail');
+        const win = renderMtPlatform('mt_win', 'mtChartWin', 'mtDetailWin', null, DATA_WIN, 'Windows');
+        renderMtPlatform('mt_lin', 'mtChartLin', 'mtDetailLin', 'mtChartLinWrapper', DATA_LIN, 'Linux');
 
-        const sv = stdS.map(d => d.value), mv = mtS.map(d => d.value);
+        // Summary uses combined data
+        const sv = win.stdS.map(d => d.value), mv = win.mtS.map(d => d.value);
         let html = `<span><span class="dot std"></span> Std avg: <strong>${sv.length ? avg(sv).toFixed(0) + ' ms' : 'N/A'}</strong> (${sv.length})</span>`;
         html += `<span><span class="dot mt"></span> MT avg: <strong>${mv.length ? avg(mv).toFixed(0) + ' ms' : 'N/A'}</strong> (${mv.length})</span>`;
         if (sv.length && mv.length) {
@@ -658,42 +667,31 @@
         const selected = [...document.querySelectorAll('#trendScenarioChips input:checked')].map(i => i.value);
         const metric = document.getElementById('trendMetric').value;
         if (!selected.length) {
-            if (CHARTS.trend) CHARTS.trend.destroy();
+            if (CHARTS.trend_win) CHARTS.trend_win.destroy();
+            if (CHARTS.trend_lin) CHARTS.trend_lin.destroy();
             document.getElementById('trendStats').innerHTML = '';
             return;
         }
 
-        const allSeries = selected.map(sc => ({ scenario: sc, data: getSeries(sc, metric) }));
-        const allDates = [...new Set(allSeries.flatMap(s => s.data.map(d => d.date)))].sort();
-        const datasets = [];
-        const perDatasetMeta = [];
-        const allPlatforms = isAllPlatforms() && allSeries.some(s => s.data.some(d => d.machineID));
+        function renderTrendPlatform(chartKey, canvasId, detailId, wrapperId, dataSource) {
+            const allSeries = selected.map(sc => ({ scenario: sc, data: getSeries(sc, metric, dataSource) }));
+            const hasData = allSeries.some(s => s.data.length > 0);
 
-        allSeries.forEach((s, i) => {
-            const color = TREND_COLORS[i % TREND_COLORS.length];
+            if (wrapperId) {
+                const wrapper = document.getElementById(wrapperId);
+                if (wrapper) wrapper.parentElement.style.display = hasData ? '' : 'none';
+            }
+            if (!hasData) {
+                if (CHARTS[chartKey]) { CHARTS[chartKey].destroy(); CHARTS[chartKey] = null; }
+                return;
+            }
 
-            if (allPlatforms) {
-                const plat = splitByPlatform(s.data);
-                const winMap = Object.fromEntries(plat.win.map(d => [d.date, d.value]));
-                const linMap = Object.fromEntries(plat.lin.map(d => [d.date, d.value]));
-                const winPtMap = Object.fromEntries(plat.win.map(d => [d.date, d]));
-                const linPtMap = Object.fromEntries(plat.lin.map(d => [d.date, d]));
-                perDatasetMeta.push(allDates.map(d => winPtMap[d] || null));
-                perDatasetMeta.push(allDates.map(d => linPtMap[d] || null));
-                datasets.push({
-                    label: `🪟 ${short(s.scenario)}`,
-                    data: allDates.map(d => winMap[d] ?? null),
-                    borderColor: color, backgroundColor: color + '10',
-                    fill: false, tension: 0.3, pointRadius: 1.5, borderWidth: 1.5, spanGaps: true
-                });
-                datasets.push({
-                    label: `🐧 ${short(s.scenario)}`,
-                    data: allDates.map(d => linMap[d] ?? null),
-                    borderColor: color, backgroundColor: color + '10',
-                    fill: false, tension: 0.3, pointRadius: 1.5, borderWidth: 1.5, spanGaps: true,
-                    borderDash: [5, 3]
-                });
-            } else {
+            const allDates = [...new Set(allSeries.flatMap(s => s.data.map(d => d.date)))].sort();
+            const datasets = [];
+            const perDatasetMeta = [];
+
+            allSeries.forEach((s, i) => {
+                const color = TREND_COLORS[i % TREND_COLORS.length];
                 const valMap = Object.fromEntries(s.data.map(d => [d.date, d.value]));
                 const pointMap = Object.fromEntries(s.data.map(d => [d.date, d]));
                 perDatasetMeta.push(allDates.map(d => pointMap[d] || null));
@@ -703,25 +701,29 @@
                     borderColor: color, backgroundColor: color + '10',
                     fill: false, tension: 0.3, pointRadius: 1.5, borderWidth: 1.5, spanGaps: true
                 });
-            }
-        });
+            });
 
-        const trendPoints = perDatasetMeta[0] || [];
+            const trendPoints = perDatasetMeta[0] || [];
 
-        if (CHARTS.trend) CHARTS.trend.destroy();
-        CHARTS.trend = new Chart(document.getElementById('trendChart'), {
-            type: 'line',
-            data: { labels: allDates, datasets },
-            options: chartOpts(trendPoints, allDates)
-        });
-        addChartClickHandler(CHARTS.trend, perDatasetMeta, 'trendDetail', true);
+            if (CHARTS[chartKey]) CHARTS[chartKey].destroy();
+            CHARTS[chartKey] = new Chart(document.getElementById(canvasId), {
+                type: 'line',
+                data: { labels: allDates, datasets },
+                options: chartOpts(trendPoints, allDates)
+            });
+            addChartClickHandler(CHARTS[chartKey], perDatasetMeta, detailId, true);
+        }
 
+        renderTrendPlatform('trend_win', 'trendChartWin', 'trendDetailWin', null, DATA_WIN);
+        renderTrendPlatform('trend_lin', 'trendChartLin', 'trendDetailLin', 'trendChartLinWrapper', DATA_LIN);
+
+        // Stats (use Windows data which includes historical)
         let statsHtml = '';
-        allSeries.forEach((s, i) => {
-            const vals = s.data.map(d => d.value);
+        selected.forEach((sc, i) => {
+            const vals = getSeries(sc, metric, DATA_WIN).map(d => d.value);
             const color = TREND_COLORS[i % TREND_COLORS.length];
             if (vals.length) {
-                statsHtml += `<div class="stat"><div class="stat-value" style="color:${color}">${avg(vals).toFixed(0)}</div><div class="stat-label">${short(s.scenario)} avg (ms)</div></div>`;
+                statsHtml += `<div class="stat"><div class="stat-value" style="color:${color}">${avg(vals).toFixed(0)}</div><div class="stat-label">${short(sc)} avg (ms)</div></div>`;
             }
         });
         document.getElementById('trendStats').innerHTML = statsHtml;
@@ -782,38 +784,55 @@
     function renderComp() {
         const pairs = getScenarioPairs();
         const labels = pairs.map(p => p.label);
-        const stdVals = pairs.map(p => {
-            if (!p.std) return null;
-            const l = getLatest(p.std);
-            return (l && l.results['build-time'] != null) ? +l.results['build-time'] : null;
-        });
-        const mtVals = pairs.map(p => {
-            if (!p.mt) return null;
-            const l = getLatest(p.mt);
-            return (l && l.results['build-time'] != null) ? +l.results['build-time'] : null;
-        });
-        if (CHARTS.comp) CHARTS.comp.destroy();
-        CHARTS.comp = new Chart(document.getElementById('compChart'), {
-            type: 'bar',
-            data: {
-                labels,
-                datasets: [
-                    { label: 'Standard', data: stdVals, backgroundColor: CLR.bar, borderRadius: 3 },
-                    { label: 'Multithreaded', data: mtVals, backgroundColor: CLR.barMt, borderRadius: 3 }
-                ]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#656d76', font: { size: 11 } } },
-                    tooltip: { callbacks: { label: ctx => ctx.parsed.y != null ? ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(0)} ms` : '' } }
-                },
-                scales: {
-                    x: { ticks: { color: '#8b949e', font: { size: 10 } }, grid: { display: false } },
-                    y: { ticks: { color: '#8b949e' }, grid: { color: '#f0f3f6' }, title: { display: true, text: 'ms', color: '#8b949e' }, beginAtZero: true }
-                }
+
+        function renderCompPlatform(chartKey, canvasId, wrapperId, dataSource) {
+            const stdVals = pairs.map(p => {
+                if (!p.std) return null;
+                const l = getLatest(p.std, dataSource);
+                return (l && l.results['build-time'] != null) ? +l.results['build-time'] : null;
+            });
+            const mtVals = pairs.map(p => {
+                if (!p.mt) return null;
+                const l = getLatest(p.mt, dataSource);
+                return (l && l.results['build-time'] != null) ? +l.results['build-time'] : null;
+            });
+            const hasData = stdVals.some(v => v != null) || mtVals.some(v => v != null);
+
+            if (wrapperId) {
+                const wrapper = document.getElementById(wrapperId);
+                if (wrapper) wrapper.parentElement.style.display = hasData ? '' : 'none';
             }
-        });
+            if (!hasData) {
+                if (CHARTS[chartKey]) { CHARTS[chartKey].destroy(); CHARTS[chartKey] = null; }
+                return;
+            }
+
+            if (CHARTS[chartKey]) CHARTS[chartKey].destroy();
+            CHARTS[chartKey] = new Chart(document.getElementById(canvasId), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Standard', data: stdVals, backgroundColor: CLR.bar, borderRadius: 3 },
+                        { label: 'Multithreaded', data: mtVals, backgroundColor: CLR.barMt, borderRadius: 3 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#656d76', font: { size: 11 } } },
+                        tooltip: { callbacks: { label: ctx => ctx.parsed.y != null ? ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(0)} ms` : '' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#8b949e', font: { size: 10 } }, grid: { display: false } },
+                        y: { ticks: { color: '#8b949e' }, grid: { color: '#f0f3f6' }, title: { display: true, text: 'ms', color: '#8b949e' }, beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        renderCompPlatform('comp_win', 'compChartWin', null, DATA_WIN);
+        renderCompPlatform('comp_lin', 'compChartLin', 'compChartLinWrapper', DATA_LIN);
     }
 
     /* ══════════════════════════════════════════════
@@ -859,8 +878,14 @@
 
         const recentDates = dates.slice(-30);
         document.getElementById('timelineHeader').textContent = `Status Timeline — Standard vs MT (last ${recentDates.length} dates)`;
+        // Key by scenario+date — keep worst exit code if multiple platforms have data on same date
         const lookup = {};
-        DATA.forEach(d => { if (!lookup[d.scenario]) lookup[d.scenario] = {}; lookup[d.scenario][d.date] = d.results['exit-code']; });
+        DATA.forEach(d => {
+            if (!lookup[d.scenario]) lookup[d.scenario] = {};
+            const prev = lookup[d.scenario][d.date];
+            const ec = d.results['exit-code'];
+            if (prev == null || (ec != null && ec !== 0)) lookup[d.scenario][d.date] = ec;
+        });
 
         let tlHtml = `<div class="timeline-legend">
             <div class="timeline-legend-item"><div class="tl-legend-dot tl-pass"></div> Pass</div>
@@ -955,7 +980,6 @@
     document.getElementById('mtBuildType').addEventListener('change', renderMt);
     document.getElementById('mtMetric').addEventListener('change', renderMt);
     document.getElementById('trendMetric').addEventListener('change', renderTrend);
-    document.getElementById('platformFilter').addEventListener('change', applyTimeFilter);
     document.getElementById('timeRange').addEventListener('change', applyTimeFilter);
 
     init();

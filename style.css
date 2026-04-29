@@ -151,6 +151,17 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
 
 /* ── Charts ── */
 .chart-wrapper { position: relative; height: 340px; padding: 14px; }
+.platform-charts { display: flex; flex-direction: column; gap: 0; }
+.platform-chart { position: relative; }
+.platform-chart .chart-wrapper { height: 260px; }
+.platform-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 8px 14px 0;
+    border-top: 1px solid var(--border);
+}
+.platform-chart:first-child .platform-label { border-top: none; }
 
 /* ── Stats bar ── */
 .stats-bar {
