@@ -367,8 +367,6 @@
 
     function toMs(v, metric) {
         if (v == null || v === '') return null;
-        if (metric === 'evaluation-time' || metric.startsWith('evaluation-time-'))
-            return +(v / 1000).toFixed(1);
         return +v;
     }
 
@@ -483,12 +481,14 @@
         el.innerHTML = `<div class="point-detail">${parts.join('<span class="detail-sep">·</span>')}</div>`;
     }
 
-    function addChartClickHandler(chart, series, detailContainerId) {
+    function addChartClickHandler(chart, series, detailContainerId, perDataset) {
         chart.options.onClick = (evt) => {
             const points = chart.getElementsAtEventForMode(evt, 'index', { intersect: false }, false);
             if (points.length) {
                 const idx = points[0].index;
-                renderPointDetail(series[idx], detailContainerId);
+                const dsIdx = points[0].datasetIndex;
+                const point = perDataset ? (series[dsIdx]?.[idx] || series[0]?.[idx]) : series[idx];
+                renderPointDetail(point, detailContainerId);
             }
         };
         chart.update();
@@ -549,9 +549,9 @@
         }
 
         if (platform !== 'all') {
-            const patterns = { windows: /PERFWIN|GOLDWIN/i, linux: /PERFLIN|GOLDLIN/i };
+            const patterns = { windows: /WIN$/i, linux: /LIN$/i };
             const re = patterns[platform];
-            if (re) filtered = filtered.filter(d => re.test(d.machineID || ''));
+            if (re) filtered = filtered.filter(d => !d.machineID || re.test(d.machineID));
         }
 
         DATA = filtered;
@@ -632,13 +632,13 @@
         const allSeries = selected.map(sc => ({ scenario: sc, data: getSeries(sc, metric) }));
         const allDates = [...new Set(allSeries.flatMap(s => s.data.map(d => d.date)))].sort();
         const datasets = [];
-        const allPointsByDate = {};
+        const perDatasetMeta = [];
 
         allSeries.forEach((s, i) => {
             const color = TREND_COLORS[i % TREND_COLORS.length];
             const valMap = Object.fromEntries(s.data.map(d => [d.date, d.value]));
             const pointMap = Object.fromEntries(s.data.map(d => [d.date, d]));
-            allDates.forEach(date => { if (pointMap[date]) allPointsByDate[date] = pointMap[date]; });
+            perDatasetMeta.push(allDates.map(d => pointMap[d] || null));
             datasets.push({
                 label: short(s.scenario),
                 data: allDates.map(d => valMap[d] ?? null),
@@ -652,7 +652,8 @@
             });
         });
 
-        const trendPoints = allDates.map(d => allPointsByDate[d] || null);
+        // For shared tooltip/annotations, use first dataset's metadata as representative
+        const trendPoints = perDatasetMeta[0] || [];
 
         if (CHARTS.trend) CHARTS.trend.destroy();
         CHARTS.trend = new Chart(document.getElementById('trendChart'), {
@@ -660,7 +661,7 @@
             data: { labels: allDates, datasets },
             options: chartOpts(trendPoints, allDates)
         });
-        addChartClickHandler(CHARTS.trend, trendPoints, 'trendDetail');
+        addChartClickHandler(CHARTS.trend, perDatasetMeta, 'trendDetail', true);
 
         let statsHtml = '';
         allSeries.forEach((s, i) => {
