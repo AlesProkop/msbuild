@@ -386,6 +386,18 @@
             .filter(d => d.value !== null);
     }
 
+    function isAllPlatforms() {
+        return document.getElementById('platformFilter').value === 'all';
+    }
+
+    function splitByPlatform(series) {
+        const win = series.filter(d => /WIN$/i.test(d.machineID));
+        const lin = series.filter(d => /LIN$/i.test(d.machineID));
+        const unknown = series.filter(d => !d.machineID || (!/WIN$/i.test(d.machineID) && !/LIN$/i.test(d.machineID)));
+        // Attach unknown (pre-machineID) records to Windows since those were Windows-only runs
+        return { win: [...unknown, ...win].sort((a,b) => a.date.localeCompare(b.date)), lin };
+    }
+
     function getMachineChangeAnnotations(versionData, dates) {
         if (!versionData || !dates || dates.length < 2) return {};
         const annotations = {};
@@ -587,26 +599,48 @@
         const asset = assetPrefix();
         const stdS = getSeries(`${asset}-${bt}-dotnet`, metric);
         const mtS = getSeries(`${asset}-${bt}-mt-dotnet`, metric);
-        const dates = [...new Set([...stdS.map(d=>d.date), ...mtS.map(d=>d.date)])].sort();
-        const stdMap = Object.fromEntries(stdS.map(d => [d.date, d.value]));
-        const mtMap = Object.fromEntries(mtS.map(d => [d.date, d.value]));
-        const mtMerged = Object.fromEntries(mtS.map(d => [d.date, d]));
-        const stdMerged = Object.fromEntries(stdS.map(d => [d.date, d]));
-        const mtPointsByDate = dates.map(d => mtMerged[d] || stdMerged[d] || null);
+        const allPlatforms = isAllPlatforms() && (stdS.some(d => d.machineID) || mtS.some(d => d.machineID));
+
+        let datasets, dates, metaArray;
+
+        if (allPlatforms) {
+            const stdP = splitByPlatform(stdS);
+            const mtP = splitByPlatform(mtS);
+            dates = [...new Set([...stdS.map(d=>d.date), ...mtS.map(d=>d.date)])].sort();
+
+            function buildMap(arr) { return Object.fromEntries(arr.map(d => [d.date, d.value])); }
+            function buildPtMap(arr) { return Object.fromEntries(arr.map(d => [d.date, d])); }
+            const stdWinMap = buildMap(stdP.win), stdLinMap = buildMap(stdP.lin);
+            const mtWinMap = buildMap(mtP.win), mtLinMap = buildMap(mtP.lin);
+            const stdWinPt = buildPtMap(stdP.win), mtWinPt = buildPtMap(mtP.win);
+
+            metaArray = dates.map(d => mtWinPt[d] || stdWinPt[d] || null);
+            datasets = [
+                { label: '🪟 Standard', data: dates.map(d => stdWinMap[d] ?? null), borderColor: CLR.line, backgroundColor: CLR.lineFill, fill: false, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
+                { label: '🐧 Standard', data: dates.map(d => stdLinMap[d] ?? null), borderColor: CLR.line, fill: false, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5, borderDash: [5, 3] },
+                { label: '🪟 Multithreaded', data: dates.map(d => mtWinMap[d] ?? null), borderColor: CLR.mt, backgroundColor: CLR.mtFill, fill: false, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
+                { label: '🐧 Multithreaded', data: dates.map(d => mtLinMap[d] ?? null), borderColor: CLR.mt, fill: false, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5, borderDash: [5, 3] },
+            ];
+        } else {
+            dates = [...new Set([...stdS.map(d=>d.date), ...mtS.map(d=>d.date)])].sort();
+            const stdMap = Object.fromEntries(stdS.map(d => [d.date, d.value]));
+            const mtMap = Object.fromEntries(mtS.map(d => [d.date, d.value]));
+            const mtMerged = Object.fromEntries(mtS.map(d => [d.date, d]));
+            const stdMerged = Object.fromEntries(stdS.map(d => [d.date, d]));
+            metaArray = dates.map(d => mtMerged[d] || stdMerged[d] || null);
+            datasets = [
+                { label: 'Standard', data: dates.map(d => stdMap[d] ?? null), borderColor: CLR.line, backgroundColor: CLR.lineFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
+                { label: 'Multithreaded', data: dates.map(d => mtMap[d] ?? null), borderColor: CLR.mt, backgroundColor: CLR.mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
+            ];
+        }
 
         if (CHARTS.mt) CHARTS.mt.destroy();
         CHARTS.mt = new Chart(document.getElementById('mtChart'), {
             type: 'line',
-            data: {
-                labels: dates,
-                datasets: [
-                    { label: 'Standard', data: dates.map(d => stdMap[d] ?? null), borderColor: CLR.line, backgroundColor: CLR.lineFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
-                    { label: 'Multithreaded', data: dates.map(d => mtMap[d] ?? null), borderColor: CLR.mt, backgroundColor: CLR.mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
-                ]
-            },
-            options: chartOpts(mtPointsByDate, dates)
+            data: { labels: dates, datasets },
+            options: chartOpts(metaArray, dates)
         });
-        addChartClickHandler(CHARTS.mt, mtPointsByDate, 'mtDetail');
+        addChartClickHandler(CHARTS.mt, metaArray, 'mtDetail');
 
         const sv = stdS.map(d => d.value), mv = mtS.map(d => d.value);
         let html = `<span><span class="dot std"></span> Std avg: <strong>${sv.length ? avg(sv).toFixed(0) + ' ms' : 'N/A'}</strong> (${sv.length})</span>`;
@@ -633,26 +667,45 @@
         const allDates = [...new Set(allSeries.flatMap(s => s.data.map(d => d.date)))].sort();
         const datasets = [];
         const perDatasetMeta = [];
+        const allPlatforms = isAllPlatforms() && allSeries.some(s => s.data.some(d => d.machineID));
 
         allSeries.forEach((s, i) => {
             const color = TREND_COLORS[i % TREND_COLORS.length];
-            const valMap = Object.fromEntries(s.data.map(d => [d.date, d.value]));
-            const pointMap = Object.fromEntries(s.data.map(d => [d.date, d]));
-            perDatasetMeta.push(allDates.map(d => pointMap[d] || null));
-            datasets.push({
-                label: short(s.scenario),
-                data: allDates.map(d => valMap[d] ?? null),
-                borderColor: color,
-                backgroundColor: color + '10',
-                fill: false,
-                tension: 0.3,
-                pointRadius: 1.5,
-                borderWidth: 1.5,
-                spanGaps: true
-            });
+
+            if (allPlatforms) {
+                const plat = splitByPlatform(s.data);
+                const winMap = Object.fromEntries(plat.win.map(d => [d.date, d.value]));
+                const linMap = Object.fromEntries(plat.lin.map(d => [d.date, d.value]));
+                const winPtMap = Object.fromEntries(plat.win.map(d => [d.date, d]));
+                const linPtMap = Object.fromEntries(plat.lin.map(d => [d.date, d]));
+                perDatasetMeta.push(allDates.map(d => winPtMap[d] || null));
+                perDatasetMeta.push(allDates.map(d => linPtMap[d] || null));
+                datasets.push({
+                    label: `🪟 ${short(s.scenario)}`,
+                    data: allDates.map(d => winMap[d] ?? null),
+                    borderColor: color, backgroundColor: color + '10',
+                    fill: false, tension: 0.3, pointRadius: 1.5, borderWidth: 1.5, spanGaps: true
+                });
+                datasets.push({
+                    label: `🐧 ${short(s.scenario)}`,
+                    data: allDates.map(d => linMap[d] ?? null),
+                    borderColor: color, backgroundColor: color + '10',
+                    fill: false, tension: 0.3, pointRadius: 1.5, borderWidth: 1.5, spanGaps: true,
+                    borderDash: [5, 3]
+                });
+            } else {
+                const valMap = Object.fromEntries(s.data.map(d => [d.date, d.value]));
+                const pointMap = Object.fromEntries(s.data.map(d => [d.date, d]));
+                perDatasetMeta.push(allDates.map(d => pointMap[d] || null));
+                datasets.push({
+                    label: short(s.scenario),
+                    data: allDates.map(d => valMap[d] ?? null),
+                    borderColor: color, backgroundColor: color + '10',
+                    fill: false, tension: 0.3, pointRadius: 1.5, borderWidth: 1.5, spanGaps: true
+                });
+            }
         });
 
-        // For shared tooltip/annotations, use first dataset's metadata as representative
         const trendPoints = perDatasetMeta[0] || [];
 
         if (CHARTS.trend) CHARTS.trend.destroy();
