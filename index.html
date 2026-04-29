@@ -6,6 +6,7 @@
     <title>MSBuild PerfStar Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
 </head>
 <body>
     <header>
@@ -377,6 +378,7 @@
             .map(d => ({
                 date: d.date, value: toMs(d.results[metric], metric), exitCode: d.results['exit-code'],
                 timestamp: d.timestamp || '',
+                machineID: d.machineID || '',
                 msbuildVersion: d.results['msbuild-version'] || '',
                 msbuildDisplayVersion: d.results['msbuild-display-version'] || '',
                 sdkVersion: d.results['netSdkVersion'] || '',
@@ -384,6 +386,47 @@
                 dotnetVersion: d.results['dotnet-version'] || ''
             }))
             .filter(d => d.value !== null);
+    }
+
+    function getMachineChangeAnnotations(versionData, dates) {
+        if (!versionData || !dates || dates.length < 2) return {};
+        const annotations = {};
+        // Detect generation changes (PERF* → GOLD*), not platform alternation
+        function machineGen(id) {
+            if (!id) return '';
+            if (/PERF/i.test(id)) return 'PERF';
+            if (/GOLD/i.test(id)) return 'GOLD';
+            return id;
+        }
+        let prevGen = '';
+        for (let i = 0; i < dates.length; i++) {
+            const pt = versionData[i];
+            const gen = machineGen(pt?.machineID);
+            if (gen && prevGen && gen !== prevGen) {
+                const machine = pt.machineID;
+                annotations[`machine_${i}`] = {
+                    type: 'line',
+                    xMin: dates[i],
+                    xMax: dates[i],
+                    borderColor: 'rgba(130, 80, 223, 0.6)',
+                    borderWidth: 2,
+                    borderDash: [6, 4],
+                    label: {
+                        display: true,
+                        content: `→ ${machine}`,
+                        position: 'start',
+                        backgroundColor: 'rgba(130, 80, 223, 0.85)',
+                        color: '#fff',
+                        font: { size: 10 },
+                        padding: 3
+                    }
+                };
+                prevGen = gen;
+                break; // Only one line per generation transition
+            }
+            if (gen) prevGen = gen;
+        }
+        return annotations;
     }
 
     function extractCommitHash(versionStr) {
@@ -404,6 +447,7 @@
         const runtimeHash = extractCommitHash(point.runtimeVersion);
         const msbuildHash = extractCommitHash(point.msbuildDisplayVersion);
         const parts = [`<strong>${point.date}</strong> — ${point.value?.toFixed(1)} ms`];
+        if (point.machineID) parts.push(`<span class="detail-label">Machine:</span> ${point.machineID}`);
         if (point.msbuildVersion) {
             if (msbuildHash) {
                 const link = `https://github.com/dotnet/msbuild/commit/${msbuildHash}`;
@@ -457,11 +501,13 @@
         return DATA.filter(d => d.scenario === scenario).sort((a, b) => b.date.localeCompare(a.date))[0];
     }
 
-    function chartOpts(versionData) {
+    function chartOpts(versionData, dates) {
+        const annotations = getMachineChangeAnnotations(versionData, dates);
         return {
             responsive: true, maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
             plugins: {
+                annotation: { annotations },
                 legend: { labels: { color: '#656d76', font: { size: 11 } } },
                 tooltip: {
                     backgroundColor: 'rgba(255,255,255,0.97)',
@@ -475,6 +521,7 @@
                             const pt = versionData[items[0].dataIndex];
                             if (!pt) return '';
                             const lines = [];
+                            if (pt.machineID) lines.push(`  Machine: ${pt.machineID}`);
                             if (pt.msbuildVersion) lines.push(`  MSBuild: ${pt.msbuildVersion}`);
                             if (pt.sdkVersion) lines.push(`  SDK: ${pt.sdkVersion}`);
                             if (pt.runtimeVersion) lines.push(`  Runtime: ${pt.runtimeVersion}`);
@@ -560,7 +607,7 @@
                     { label: 'Multithreaded', data: dates.map(d => mtMap[d] ?? null), borderColor: CLR.mt, backgroundColor: CLR.mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
                 ]
             },
-            options: chartOpts(mtPointsByDate)
+            options: chartOpts(mtPointsByDate, dates)
         });
         addChartClickHandler(CHARTS.mt, mtPointsByDate, 'mtDetail');
 
@@ -614,7 +661,7 @@
         CHARTS.trend = new Chart(document.getElementById('trendChart'), {
             type: 'line',
             data: { labels: allDates, datasets },
-            options: chartOpts(trendPoints)
+            options: chartOpts(trendPoints, allDates)
         });
         addChartClickHandler(CHARTS.trend, trendPoints, 'trendDetail');
 
