@@ -4694,18 +4694,18 @@
   {
     "date": "2026-04-29",
     "scenario": "very-large-net8-console-app-restore-dotnet",
-    "perfstarCIBuildNumber": "20260429.3.s",
+    "perfstarCIBuildNumber": "20260429.5.s",
     "branch": "refs/heads/main",
     "ciRunReason": "Schedule",
     "machineID": "GOLDWIN",
     "schemaVersion": "2",
-    "timestamp": "2026-04-29T11:39:00.1995080Z",
+    "timestamp": "2026-04-29T14:35:29.5550656Z",
     "results": {
       "netSdkVersion": "10.0.203",
       "aspNetCoreVersion": "10.0.7+b16286c2284f",
       "netCoreAppVersion": "10.0.7+b16286c2284f",
-      "msbuild-version": "18.7.0.22811",
-      "msbuild-display-version": "18.7.0.22811"
+      "msbuild-version": "18.7.0.22901",
+      "msbuild-display-version": "18.7.0.22901"
     }
   }
 ]
