@@ -1,0 +1,25 @@
+﻿{
+    "date":  "2026-04-30",
+    "scenario":  "net8-console-app-inc-build-mt-dotnet",
+    "perfstarCIBuildNumber":  "20260430.2.s",
+    "branch":  "refs/heads/main",
+    "ciRunReason":  "Schedule",
+    "machineID":  "GOLDLIN",
+    "schemaVersion":  "2",
+    "timestamp":  "2026-04-30T07:36:49.4607694Z",
+    "results":  {
+                    "netSdkVersion":  "10.0.203",
+                    "aspNetCoreVersion":  "10.0.7+b16286c2284f",
+                    "netCoreAppVersion":  "10.0.7+b16286c2284f",
+                    "msbuild-version":  "18.7.0.22901",
+                    "msbuild-display-version":  "18.7.0.22901",
+                    "exit-code":  1.0,
+                    "failure-description":  "First build finished with non zero exit code.",
+                    "info/test-asset":  "Net8ConsoleApp",
+                    "info/test-scenario":  "IncrementalBuild",
+                    "info/msbuild-app":  "Dotnet",
+                    "info/test-version":  1.0,
+                    "info/iterations-number":  10.0,
+                    "dotnet-version":  "10.0.300-preview.0.26217.116"
+                }
+}
