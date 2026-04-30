@@ -176,6 +176,24 @@
     <div class="view" id="view-health">
         <div class="layout">
             <div class="card">
+                <div class="controls-row">
+                    <label>Asset:</label>
+                    <select id="healthAssetSelect"></select>
+                    <label>Time Range:</label>
+                    <select id="healthTimeRange">
+                        <option value="all" selected>All Time</option>
+                        <option value="3y">Last 3 Years</option>
+                        <option value="2y">Last 2 Years</option>
+                        <option value="1y">Last Year</option>
+                        <option value="6m">Last 6 Months</option>
+                        <option value="90d">Last 90 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                    </select>
+                    <span id="healthLoadingMsg" style="font-size:12px;color:var(--text-subtle);font-style:italic"></span>
+                </div>
+            </div>
+
+            <div class="card">
                 <div class="card-header"><span class="card-title">Test Health Summary</span><span class="card-subtitle">Pass/fail rates across all scenarios</span></div>
                 <div class="health-sections" id="healthStats"></div>
                 <div class="health-sections" id="healthGrid"></div>
@@ -198,6 +216,11 @@
     let DATA_WIN = [];         // Windows-only
     let DATA_LIN = [];         // Linux-only
     let DATA_UNKNOWN = [];     // Historical records without machine/platform data
+    let HEALTH_DATA = [];
+    let HEALTH_DATA_ALL = [];
+    let HEALTH_WIN = [];
+    let HEALTH_LIN = [];
+    let HEALTH_UNKNOWN = [];
     let SHOW_UNKNOWN_TRENDS = false;
     let MANIFEST = [];
     const CHARTS = {};
@@ -215,7 +238,8 @@
         if (!DATA.length) return '';
         return DATA[0].scenario.replace(/-(inc-build|rebuild).*$/, '');
     }
-    function scenarioList() { return [...new Set(DATA.map(d => d.scenario))].sort(); }
+    function scenarioListFor(data) { return [...new Set(data.map(d => d.scenario))].sort(); }
+    function scenarioList() { return scenarioListFor(DATA); }
     function platformOf(d) {
         const id = (d.machineID || '').toString();
         if (/WIN$/i.test(id)) return 'windows';
@@ -448,8 +472,8 @@
     /* ══════════════════════════════════════════════
        TRENDS — per-asset deep dive (loads on demand)
        ══════════════════════════════════════════════ */
-    function getScenarioPairs() {
-        const scs = scenarioList();
+    function getScenarioPairsFor(data) {
+        const scs = scenarioListFor(data);
         const mtSet = new Set(scs.filter(s => s.includes('-mt-')));
         const stdScs = scs.filter(s => !s.includes('-mt-'));
         const pairs = [], matched = new Set();
@@ -463,6 +487,10 @@
             if (!matched.has(mt)) pairs.push({ std: null, mt, label: short(mt) });
         }
         return pairs;
+    }
+
+    function getScenarioPairs() {
+        return getScenarioPairsFor(DATA);
     }
 
     function toMs(v, metric) {
@@ -655,7 +683,6 @@
         DATA_LIN = filtered.filter(d => platformOf(d) === 'linux');
         DATA_UNKNOWN = filtered.filter(d => platformOf(d) === 'unknown');
         renderTrends();
-        renderHealth();
     }
 
     function renderTrends() {
@@ -675,6 +702,25 @@
 
         updateNoMachineToggle();
         renderMt(); renderTrend(); renderComp();
+    }
+
+    function applyHealthTimeFilter() {
+        const range = document.getElementById('healthTimeRange').value;
+        let filtered = [...HEALTH_DATA_ALL];
+
+        if (range !== 'all' && filtered.length) {
+            const now = new Date();
+            const days = { '30d': 30, '90d': 90, '6m': 180, '1y': 365, '2y': 730, '3y': 1095 }[range] || 0;
+            now.setDate(now.getDate() - days);
+            const cutoff = now.toISOString().slice(0, 10);
+            filtered = filtered.filter(d => d.date >= cutoff);
+        }
+
+        HEALTH_DATA = filtered;
+        HEALTH_WIN = filtered.filter(d => platformOf(d) === 'windows');
+        HEALTH_LIN = filtered.filter(d => platformOf(d) === 'linux');
+        HEALTH_UNKNOWN = filtered.filter(d => platformOf(d) === 'unknown');
+        renderHealth();
     }
 
     // ── MT vs Standard ──
@@ -725,23 +771,30 @@
         }
 
         const win = renderMtPlatform('mt_win', 'mtChartWin', 'mtDetailWin', null, DATA_WIN, 'Windows');
-        renderMtPlatform('mt_lin', 'mtChartLin', 'mtDetailLin', 'mtChartLinWrapper', DATA_LIN, 'Linux');
+        const lin = renderMtPlatform('mt_lin', 'mtChartLin', 'mtDetailLin', 'mtChartLinWrapper', DATA_LIN, 'Linux');
+        let unknown = { stdS: [], mtS: [] };
         if (SHOW_UNKNOWN_TRENDS) {
-            renderMtPlatform('mt_unknown', 'mtChartUnknown', 'mtDetailUnknown', 'mtChartUnknownWrapper', DATA_UNKNOWN, 'Historical / no machine');
+            unknown = renderMtPlatform('mt_unknown', 'mtChartUnknown', 'mtDetailUnknown', 'mtChartUnknownWrapper', DATA_UNKNOWN, 'Historical / no machine');
         } else {
             hideChart('mt_unknown', 'mtChartUnknownWrapper');
         }
 
-        // Summary uses Windows data to match the primary platform chart.
-        const sv = win.stdS.map(d => d.value), mv = win.mtS.map(d => d.value);
-        let html = `<span><span class="dot std"></span> Std avg: <strong>${sv.length ? avg(sv).toFixed(0) + ' ms' : 'N/A'}</strong> (${sv.length})</span>`;
-        html += `<span><span class="dot mt"></span> MT avg: <strong>${mv.length ? avg(mv).toFixed(0) + ' ms' : 'N/A'}</strong> (${mv.length})</span>`;
-        if (sv.length && mv.length) {
-            const d = ((1 - avg(mv)/avg(sv)) * 100);
-            const badge = d > 0 ? 'faster' : 'slower';
-            html += `<span class="mt-speedup ${badge}">${d > 0 ? '▼' : '▲'} ${Math.abs(d).toFixed(1)}% ${badge}</span>`;
+        function mtSummaryLine(icon, label, result) {
+            const sv = result.stdS.map(d => d.value), mv = result.mtS.map(d => d.value);
+            let html = `<div class="platform-summary"><strong>${icon} ${label}</strong>
+                <span><span class="dot std"></span> Std avg: <strong>${sv.length ? avg(sv).toFixed(0) + ' ms' : 'N/A'}</strong> (${sv.length})</span>
+                <span><span class="dot mt"></span> MT avg: <strong>${mv.length ? avg(mv).toFixed(0) + ' ms' : 'N/A'}</strong> (${mv.length})</span>`;
+            if (sv.length && mv.length) {
+                const d = ((1 - avg(mv)/avg(sv)) * 100);
+                const badge = d > 0 ? 'faster' : 'slower';
+                html += `<span class="mt-speedup ${badge}">${d > 0 ? '▼' : '▲'} ${Math.abs(d).toFixed(1)}% ${badge}</span>`;
+            }
+            return html + '</div>';
         }
-        document.getElementById('mtSummary').innerHTML = html;
+        document.getElementById('mtSummary').innerHTML =
+            mtSummaryLine('🪟', 'Windows', win) +
+            mtSummaryLine('🐧', 'Linux', lin) +
+            (SHOW_UNKNOWN_TRENDS ? mtSummaryLine('🕘', 'No machine', unknown) : '');
     }
 
     // ── Trend ──
@@ -805,15 +858,24 @@
             hideChart('trend_unknown', 'trendChartUnknownWrapper');
         }
 
-        // Stats use Windows data to match the primary platform chart.
         let statsHtml = '';
-        selected.forEach((sc, i) => {
-            const vals = getSeries(sc, metric, DATA_WIN).map(d => d.value);
-            const color = TREND_COLORS[i % TREND_COLORS.length];
-            if (vals.length) {
-                statsHtml += `<div class="stat"><div class="stat-value" style="color:${color}">${avg(vals).toFixed(0)}</div><div class="stat-label">${short(sc)} avg (ms)</div></div>`;
-            }
-        });
+        const statPlatforms = [
+            { icon: '🪟', label: 'Windows', data: DATA_WIN },
+            { icon: '🐧', label: 'Linux', data: DATA_LIN },
+            ...(SHOW_UNKNOWN_TRENDS ? [{ icon: '🕘', label: 'No machine', data: DATA_UNKNOWN }] : [])
+        ];
+        for (const platform of statPlatforms) {
+            selected.forEach((sc, i) => {
+                const vals = getSeries(sc, metric, platform.data).map(d => d.value);
+                const color = TREND_COLORS[i % TREND_COLORS.length];
+                if (vals.length) {
+                    statsHtml += `<div class="stat"><div class="stat-value" style="color:${color}">${avg(vals).toFixed(0)}</div><div class="stat-label">${platform.icon} ${platform.label} · ${short(sc)} avg (ms)</div></div>`;
+                }
+            });
+        }
+        if (!statsHtml) {
+            statsHtml = '<p class="muted" style="padding:14px">No data for the selected scenarios and metric.</p>';
+        }
         document.getElementById('trendStats').innerHTML = statsHtml;
     }
 
@@ -929,24 +991,24 @@
     }
 
     /* ══════════════════════════════════════════════
-       HEALTH — per-asset (shared data with Trends)
+       HEALTH — per-asset
        ══════════════════════════════════════════════ */
     function renderHealth() {
-        if (!DATA.length) {
-            document.getElementById('healthStats').innerHTML = '<p class="muted" style="padding:14px">Select an asset in Trends to see health data</p>';
+        if (!HEALTH_DATA.length) {
+            document.getElementById('healthStats').innerHTML = '<p class="muted" style="padding:14px">No health data for the selected asset/time range.</p>';
             document.getElementById('healthGrid').innerHTML = '';
             document.getElementById('timelineContainer').innerHTML = '';
             return;
         }
-        const pairs = getScenarioPairs();
+        const pairs = getScenarioPairsFor(HEALTH_DATA);
         const isPassed = d => d.results?.['exit-code'] === 0;
         const isFailed = d => d.results?.['exit-code'] != null && d.results['exit-code'] !== 0;
         const isNoResult = d => d.results?.['exit-code'] == null;
         const cnt = (arr, fn) => arr.filter(fn).length;
         const platforms = [
-            { key: 'windows', icon: '🪟', label: 'Windows', data: DATA_WIN },
-            { key: 'linux', icon: '🐧', label: 'Linux', data: DATA_LIN },
-            { key: 'unknown', icon: '🕘', label: 'Historical / unknown platform', data: DATA_UNKNOWN, collapsed: true }
+            { key: 'windows', icon: '🪟', label: 'Windows', data: HEALTH_WIN },
+            { key: 'linux', icon: '🐧', label: 'Linux', data: HEALTH_LIN },
+            { key: 'unknown', icon: '🕘', label: 'Historical / unknown platform', data: HEALTH_UNKNOWN, collapsed: true }
         ];
 
         function statsSection(platform) {
@@ -1055,7 +1117,7 @@
             return row + '</div></div>';
         }
 
-        const unknownRuns = DATA_UNKNOWN.length;
+        const unknownRuns = HEALTH_UNKNOWN.length;
         const unknownToggle = unknownRuns
             ? `<button class="archived-toggle health-unknown-toggle" id="unknownHealthToggle">Show ${unknownRuns} historical / unknown platform runs ▸</button>`
             : '';
@@ -1105,6 +1167,14 @@
         applyTimeFilter();
     }
 
+    async function loadHealthAsset(name) {
+        document.getElementById('healthLoadingMsg').textContent = 'Loading...';
+        const resp = await fetch(`data/aggregated/${name}.json`);
+        HEALTH_DATA_ALL = await resp.json();
+        document.getElementById('healthLoadingMsg').textContent = '';
+        applyHealthTimeFilter();
+    }
+
     /* ── Init ── */
     async function init() {
         try {
@@ -1113,35 +1183,44 @@
             SUMMARY = await summResp.json();
             renderOverview();
 
-            // Populate asset selector from summary (grouped active/archived)
+            // Populate asset selectors from summary (grouped active/archived)
             const sel = document.getElementById('assetSelect');
+            const healthSel = document.getElementById('healthAssetSelect');
             const sorted = [...SUMMARY.assets].sort((a, b) => a.name.localeCompare(b.name));
             const activeList = sorted.filter(a => !a.archived);
             const archivedList = sorted.filter(a => a.archived);
 
-            for (const a of activeList) {
-                const o = document.createElement('option');
-                o.value = a.name;
-                o.textContent = a.name;
-                sel.appendChild(o);
-            }
-            if (archivedList.length > 0) {
-                const grp = document.createElement('optgroup');
-                grp.label = `Archived (${archivedList.length})`;
-                for (const a of archivedList) {
+            function populateAssetSelect(select) {
+                select.innerHTML = '';
+                for (const a of activeList) {
                     const o = document.createElement('option');
                     o.value = a.name;
                     o.textContent = a.name;
-                    grp.appendChild(o);
+                    select.appendChild(o);
                 }
-                sel.appendChild(grp);
+                if (archivedList.length > 0) {
+                    const grp = document.createElement('optgroup');
+                    grp.label = `Archived (${archivedList.length})`;
+                    for (const a of archivedList) {
+                        const o = document.createElement('option');
+                        o.value = a.name;
+                        o.textContent = a.name;
+                        grp.appendChild(o);
+                    }
+                    select.appendChild(grp);
+                }
             }
+            populateAssetSelect(sel);
+            populateAssetSelect(healthSel);
             sel.addEventListener('change', () => loadAsset(sel.value));
+            healthSel.addEventListener('change', () => loadHealthAsset(healthSel.value));
 
             const defaultAsset = activeList.find(a => a.name === 'net8-console-app')?.name
                 || activeList[0]?.name || sorted[0]?.name;
             sel.value = defaultAsset;
+            healthSel.value = defaultAsset;
             await loadAsset(defaultAsset);
+            await loadHealthAsset(defaultAsset);
         } catch (err) {
             console.error('Dashboard init failed:', err);
             document.getElementById('headerMeta').textContent = `Error: ${err.message}`;
@@ -1152,6 +1231,7 @@
     document.getElementById('mtMetric').addEventListener('change', renderMt);
     document.getElementById('trendMetric').addEventListener('change', renderTrend);
     document.getElementById('timeRange').addEventListener('change', applyTimeFilter);
+    document.getElementById('healthTimeRange').addEventListener('change', applyHealthTimeFilter);
     document.getElementById('noMachineToggle').addEventListener('click', () => {
         SHOW_UNKNOWN_TRENDS = !SHOW_UNKNOWN_TRENDS;
         updateNoMachineToggle();
