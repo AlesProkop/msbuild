@@ -247,22 +247,24 @@
         // ── Regression Banner (per-platform, active assets only) ──
         const regressions = [];
         const improvements = [];
+        const insufficient = [];
+        let evaluatedComparisons = 0;
         for (const a of active) {
             for (const [plat, icon] of [['windows', '🪟'], ['linux', '🐧']]) {
                 const inc = a.platforms?.[plat]?.incBuild;
-                if (!inc || inc.regressionPct == null || inc.samplesLast7d < 3 || inc.samplesPrior30d < 5) continue;
+                if (!inc) continue;
+                if (inc.regressionPct == null || inc.samplesLast7d < 3 || inc.samplesPrior30d < 5) {
+                    insufficient.push({ name: a.name, plat, icon, recent: inc.samplesLast7d ?? 0, prior: inc.samplesPrior30d ?? 0 });
+                    continue;
+                }
+                evaluatedComparisons++;
                 if (inc.regressionPct > 5) regressions.push({ name: a.name, plat, icon, pct: inc.regressionPct });
                 if (inc.regressionPct < -5) improvements.push({ name: a.name, plat, icon, pct: inc.regressionPct });
             }
         }
 
         let bannerHtml = '';
-        if (regressions.length === 0) {
-            bannerHtml += `<div class="banner banner-ok">
-                <span class="banner-icon">✅</span>
-                <div><strong>All Clear</strong> — No regressions detected across ${active.length} active assets</div>
-            </div>`;
-        } else {
+        if (regressions.length > 0) {
             const items = regressions.map(r =>
                 `<span class="banner-item">${r.icon} ${r.name}: <strong>+${r.pct.toFixed(1)}%</strong></span>`
             ).join('');
@@ -270,6 +272,28 @@
                 <span class="banner-icon">🔴</span>
                 <div><strong>${regressions.length} Regression${regressions.length > 1 ? 's' : ''} Detected</strong>
                 <div class="banner-details">${items}</div></div>
+            </div>`;
+        } else if (evaluatedComparisons === 0) {
+            bannerHtml += `<div class="banner banner-stale">
+                <span class="banner-icon">⚠️</span>
+                <div><strong>Insufficient baseline data</strong> — No regression comparisons could be evaluated yet.
+                Need at least 3 recent samples and 5 prior baseline samples per platform.</div>
+            </div>`;
+        } else {
+            bannerHtml += `<div class="banner banner-ok">
+                <span class="banner-icon">✅</span>
+                <div><strong>All Clear</strong> — No regressions detected across ${evaluatedComparisons} evaluated platform comparison${evaluatedComparisons > 1 ? 's' : ''}</div>
+            </div>`;
+        }
+        if (evaluatedComparisons > 0 && insufficient.length > 0) {
+            const items = insufficient.slice(0, 8).map(r =>
+                `<span class="banner-item">${r.icon} ${r.name}: <strong>${r.recent}/3 recent, ${r.prior}/5 prior</strong></span>`
+            ).join('');
+            const more = insufficient.length > 8 ? `<span class="banner-item">+${insufficient.length - 8} more</span>` : '';
+            bannerHtml += `<div class="banner banner-stale">
+                <span class="banner-icon">⚠️</span>
+                <div><strong>${insufficient.length} Comparison${insufficient.length > 1 ? 's' : ''} Skipped</strong> — insufficient regression baseline
+                <div class="banner-details">${items}${more}</div></div>
             </div>`;
         }
         if (improvements.length > 0) {
