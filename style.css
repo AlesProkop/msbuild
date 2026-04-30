@@ -344,6 +344,18 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
 .badge-warning { background: rgba(154, 103, 0, 0.08); color: var(--warning); }
 .badge-danger { background: rgba(207, 34, 46, 0.08); color: var(--danger); }
 .badge-neutral { background: rgba(101, 109, 118, 0.08); color: var(--text-subtle); font-weight: 400; font-style: italic; }
+.platform-health-badges {
+    display: inline-flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.platform-health-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+}
 
 /* Sparklines */
 .sparkline { vertical-align: middle; }
@@ -509,6 +521,28 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
 }
 
 /* ── Health ── */
+.health-sections {
+    display: flex;
+    flex-direction: column;
+}
+.health-platform-section {
+    border-top: 1px solid var(--border);
+}
+.health-platform-section:first-child { border-top: none; }
+.health-platform-title {
+    padding: 10px 14px 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.health-stats-bar {
+    border-top: none;
+    padding-top: 8px;
+}
+.health-empty { padding: 8px 14px 12px; }
+.health-unknown-toggle { border-top: 1px dashed var(--border); }
 .health-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -564,6 +598,7 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
 .tl-dot:hover { transform: scale(1.3); }
 .tl-pass { background: var(--success); }
 .tl-fail { background: var(--danger); }
+.tl-empty { background: var(--warning); opacity: 0.65; }
 .tl-none { background: var(--border); opacity: 0.4; }
 .timeline-legend {
     display: flex;

@@ -162,8 +162,8 @@
         <div class="layout">
             <div class="card">
                 <div class="card-header"><span class="card-title">Test Health Summary</span><span class="card-subtitle">Pass/fail rates across all scenarios</span></div>
-                <div class="stats-bar" id="healthStats"></div>
-                <div class="health-grid" id="healthGrid"></div>
+                <div class="health-sections" id="healthStats"></div>
+                <div class="health-sections" id="healthGrid"></div>
             </div>
 
             <div class="card">
@@ -180,8 +180,9 @@
     let SUMMARY = null;        // from summary.json (Overview)
     let DATA = [];             // filtered per-asset data (all platforms, time-filtered)
     let DATA_ALL = [];         // unfiltered per-asset data
-    let DATA_WIN = [];         // Windows-only (includes pre-machineID records)
+    let DATA_WIN = [];         // Windows-only
     let DATA_LIN = [];         // Linux-only
+    let DATA_UNKNOWN = [];     // Historical records without machine/platform data
     let MANIFEST = [];
     const CHARTS = {};
 
@@ -199,6 +200,12 @@
         return DATA[0].scenario.replace(/-(inc-build|rebuild).*$/, '');
     }
     function scenarioList() { return [...new Set(DATA.map(d => d.scenario))].sort(); }
+    function platformOf(d) {
+        const id = (d.machineID || '').toString();
+        if (/WIN$/i.test(id)) return 'windows';
+        if (/LIN$/i.test(id)) return 'linux';
+        return 'unknown';
+    }
     function avg(arr) { return arr.length ? arr.reduce((a,b) => a+b, 0) / arr.length : 0; }
     function fmtMs(v) {
         if (v == null) return '—';
@@ -233,6 +240,16 @@
         if (rate >= 100) return '<span class="badge badge-ok">100%</span>';
         if (rate >= 90)  return `<span class="badge badge-warning">${rate.toFixed(0)}%</span>`;
         return `<span class="badge badge-danger">${rate.toFixed(0)}%</span>`;
+    }
+
+    function platformHealthBadges(asset) {
+        if (!asset.platforms) return healthBadge(asset.incBuild?.passRate30d ?? asset.incBuild?.passRate);
+        const win = asset.platforms?.windows?.incBuild;
+        const lin = asset.platforms?.linux?.incBuild;
+        return `<span class="platform-health-badges">
+            <span class="platform-health-badge">🪟 ${healthBadge(win?.passRate30d ?? win?.passRate)}</span>
+            <span class="platform-health-badge">🐧 ${healthBadge(lin?.passRate30d ?? lin?.passRate)}</span>
+        </span>`;
     }
 
     /* ══════════════════════════════════════════════
@@ -335,7 +352,7 @@
                 <td>${winInc ? sparklineSvg(winInc.sparkline) : '<span class="muted">—</span>'}</td>
                 <td class="num">${linInc ? fmtMs(linInc.p50) : '—'}</td>
                 <td>${linInc ? sparklineSvg(linInc.sparkline) : '<span class="muted">—</span>'}</td>
-                <td>${healthBadge(a.incBuild?.passRate30d ?? a.incBuild?.passRate)}</td>
+                <td>${platformHealthBadges(a)}</td>
             </tr>`;
         }
 
@@ -358,7 +375,7 @@
                     <td>${sparklineSvg(inc.sparkline)}</td>
                     <td class="num muted">—</td>
                     <td><span class="muted">—</span></td>
-                    <td>${healthBadge(inc.passRate)}</td>
+                    <td>${platformHealthBadges(a)}</td>
                 </tr>`;
             }
         }
@@ -600,8 +617,9 @@
         }
 
         DATA = filtered;
-        DATA_WIN = filtered.filter(d => !d.machineID || /WIN$/i.test(d.machineID));
-        DATA_LIN = filtered.filter(d => /LIN$/i.test(d.machineID));
+        DATA_WIN = filtered.filter(d => platformOf(d) === 'windows');
+        DATA_LIN = filtered.filter(d => platformOf(d) === 'linux');
+        DATA_UNKNOWN = filtered.filter(d => platformOf(d) === 'unknown');
         renderTrends();
         renderHealth();
     }
@@ -870,73 +888,151 @@
             return;
         }
         const pairs = getScenarioPairs();
-        const dates = [...new Set(DATA.map(d => d.date))].sort();
-        const stdData = DATA.filter(d => !d.scenario.includes('-mt-'));
-        const mtData = DATA.filter(d => d.scenario.includes('-mt-'));
-        const isPassed = d => d.results['exit-code'] === 0;
-        const isFailed = d => d.results['exit-code'] != null && d.results['exit-code'] !== 0;
+        const isPassed = d => d.results?.['exit-code'] === 0;
+        const isFailed = d => d.results?.['exit-code'] != null && d.results['exit-code'] !== 0;
+        const isNoResult = d => d.results?.['exit-code'] == null;
         const cnt = (arr, fn) => arr.filter(fn).length;
+        const platforms = [
+            { key: 'windows', icon: '🪟', label: 'Windows', data: DATA_WIN },
+            { key: 'linux', icon: '🐧', label: 'Linux', data: DATA_LIN },
+            { key: 'unknown', icon: '🕘', label: 'Historical / unknown platform', data: DATA_UNKNOWN, collapsed: true }
+        ];
 
-        document.getElementById('healthStats').innerHTML = `
-            <div class="stat"><div class="stat-value">${DATA.length}</div><div class="stat-label">Total Runs</div></div>
-            <div class="stat"><div class="stat-value">${stdData.length}</div><div class="stat-label">Standard</div></div>
-            <div class="stat"><div class="stat-value" style="color:var(--accent)">${mtData.length}</div><div class="stat-label">Multithreaded</div></div>
-            <div class="stat"><div class="stat-value" style="color:var(--success)">${cnt(DATA, isPassed)}</div><div class="stat-label">Passed</div></div>
-            <div class="stat"><div class="stat-value" style="color:var(--danger)">${cnt(DATA, isFailed)}</div><div class="stat-label">Failed</div></div>
-            <div class="stat"><div class="stat-value">${(DATA.length > 0 ? (cnt(DATA, isFailed)/DATA.length*100) : 0).toFixed(1)}%</div><div class="stat-label">Failure Rate</div></div>`;
-
-        let gridHtml = '';
-        for (const pair of pairs) {
-            const stdRecs = pair.std ? DATA.filter(d => d.scenario === pair.std) : [];
-            const mtRecs = pair.mt ? DATA.filter(d => d.scenario === pair.mt) : [];
-            function statusLine(recs, label) {
-                if (!recs.length) return `<div class="health-detail">${label}: No data</div>`;
-                const p = cnt(recs, isPassed), f = cnt(recs, isFailed);
-                const cls = f === 0 ? 'status-pass' : (p === 0 ? 'status-fail' : 'status-warn');
-                const icon = f === 0 ? '✅' : (p === 0 ? '❌' : '⚠️');
-                return `<div class="health-status ${cls}">${icon} ${label}: ${p}/${recs.length} passed</div>`;
+        function statsSection(platform) {
+            const data = platform.data;
+            const extraClass = platform.collapsed ? ' unknown-health-section' : '';
+            const style = platform.collapsed ? ' style="display:none"' : '';
+            if (!data.length) {
+                return `<div class="health-platform-section${extraClass}"${style}>
+                    <div class="health-platform-title">${platform.icon} ${platform.label}</div>
+                    <p class="muted health-empty">No data for this asset/time range.</p>
+                </div>`;
             }
-            gridHtml += `<div class="health-item"><h4>${pair.label}</h4>${statusLine(stdRecs, 'Standard')}${statusLine(mtRecs, 'MT')}</div>`;
+
+            const stdData = data.filter(d => !d.scenario.includes('-mt-'));
+            const mtData = data.filter(d => d.scenario.includes('-mt-'));
+            const passed = cnt(data, isPassed);
+            const failed = cnt(data, isFailed);
+            const noResult = cnt(data, isNoResult);
+            const completed = passed + failed;
+            const failureRate = completed ? (failed / completed * 100).toFixed(1) : '0.0';
+            return `<div class="health-platform-section${extraClass}"${style}>
+                <div class="health-platform-title">${platform.icon} ${platform.label}</div>
+                <div class="stats-bar health-stats-bar">
+                    <div class="stat"><div class="stat-value">${data.length}</div><div class="stat-label">Total Runs</div></div>
+                    <div class="stat"><div class="stat-value">${stdData.length}</div><div class="stat-label">Standard</div></div>
+                    <div class="stat"><div class="stat-value" style="color:var(--accent)">${mtData.length}</div><div class="stat-label">Multithreaded</div></div>
+                    <div class="stat"><div class="stat-value" style="color:var(--success)">${passed}</div><div class="stat-label">Passed</div></div>
+                    <div class="stat"><div class="stat-value" style="color:var(--danger)">${failed}</div><div class="stat-label">Failed</div></div>
+                    <div class="stat"><div class="stat-value" style="color:var(--warning)">${noResult}</div><div class="stat-label">No Result</div></div>
+                    <div class="stat"><div class="stat-value">${failureRate}%</div><div class="stat-label">Failure Rate</div></div>
+                </div>
+            </div>`;
         }
-        document.getElementById('healthGrid').innerHTML = gridHtml;
 
-        const recentDates = dates.slice(-30);
-        document.getElementById('timelineHeader').textContent = `Status Timeline — Standard vs MT (last ${recentDates.length} dates)`;
-        // Key by scenario+date — keep worst exit code if multiple platforms have data on same date
-        const lookup = {};
-        DATA.forEach(d => {
-            if (!lookup[d.scenario]) lookup[d.scenario] = {};
-            const prev = lookup[d.scenario][d.date];
-            const ec = d.results['exit-code'];
-            if (prev == null || (ec != null && ec !== 0)) lookup[d.scenario][d.date] = ec;
-        });
+        function gridSection(platform) {
+            const data = platform.data;
+            const extraClass = platform.collapsed ? ' unknown-health-section' : '';
+            const style = platform.collapsed ? ' style="display:none"' : '';
+            if (!data.length) return '';
 
-        let tlHtml = `<div class="timeline-legend">
-            <div class="timeline-legend-item"><div class="tl-legend-dot tl-pass"></div> Pass</div>
-            <div class="timeline-legend-item"><div class="tl-legend-dot tl-fail"></div> Fail</div>
-            <div class="timeline-legend-item"><div class="tl-legend-dot tl-none"></div> No data</div></div>`;
+            let items = '';
+            for (const pair of pairs) {
+                const stdRecs = pair.std ? data.filter(d => d.scenario === pair.std) : [];
+                const mtRecs = pair.mt ? data.filter(d => d.scenario === pair.mt) : [];
+                function statusLine(recs, label) {
+                    if (!recs.length) return `<div class="health-detail">${label}: No data</div>`;
+                    const p = cnt(recs, isPassed), f = cnt(recs, isFailed), n = cnt(recs, isNoResult);
+                    const cls = f > 0 ? (p === 0 ? 'status-fail' : 'status-warn') : (n > 0 ? 'status-warn' : 'status-pass');
+                    const icon = f > 0 ? (p === 0 ? '❌' : '⚠️') : (n > 0 ? '⚠️' : '✅');
+                    return `<div class="health-status ${cls}">${icon} ${label}: ${p} passed, ${f} failed, ${n} no result</div>`;
+                }
+                items += `<div class="health-item"><h4>${pair.label}</h4>${statusLine(stdRecs, 'Standard')}${statusLine(mtRecs, 'MT')}</div>`;
+            }
 
-        function timelineRow(sc, label, isMt) {
-            if (!sc) return '';
+            return `<div class="health-platform-section${extraClass}"${style}>
+                <div class="health-platform-title">${platform.icon} ${platform.label}</div>
+                <div class="health-grid">${items}</div>
+            </div>`;
+        }
+
+        function timelineSection(platform) {
+            const data = platform.data;
+            const extraClass = platform.collapsed ? ' unknown-health-section' : '';
+            const style = platform.collapsed ? ' style="display:none"' : '';
+            if (!data.length) return '';
+
+            const dates = [...new Set(data.map(d => d.date))].sort();
+            const recentDates = dates.slice(-30);
+            const lookup = {};
+            data.forEach(d => {
+                if (!lookup[d.scenario]) lookup[d.scenario] = {};
+                const prev = lookup[d.scenario][d.date];
+                const ec = d.results?.['exit-code'];
+                if (!prev) {
+                    lookup[d.scenario][d.date] = { exitCode: ec ?? null };
+                } else if (ec != null && ec !== 0) {
+                    prev.exitCode = ec;
+                } else if (prev.exitCode == null && ec === 0) {
+                    prev.exitCode = 0;
+                }
+            });
+
+            let html = `<div class="health-platform-section${extraClass}"${style}>
+                <div class="health-platform-title">${platform.icon} ${platform.label} <span class="muted">(last ${recentDates.length} dates)</span></div>`;
+
+            for (const pair of pairs) {
+                html += `<div class="timeline-group">`;
+                if (pair.std) html += timelineRow(pair.std, pair.label, false, lookup, recentDates, platform.label);
+                if (pair.mt) html += timelineRow(pair.mt, pair.label, true, lookup, recentDates, platform.label);
+                html += `</div>`;
+            }
+            return html + '</div>';
+        }
+
+        function timelineRow(sc, label, isMt, lookup, recentDates, platformLabel) {
             let row = `<div class="timeline-row ${isMt ? 'mt-row' : 'std-row'}"><div class="timeline-label" title="${sc}"><span class="tl-type ${isMt ? 'tl-type-mt' : 'tl-type-std'}">${isMt ? 'MT' : 'STD'}</span> ${label}</div><div class="timeline-dots">`;
             for (const date of recentDates) {
-                const ec = lookup[sc]?.[date];
+                const state = lookup[sc]?.[date];
                 let cls, tip;
-                if (ec === 0) { cls = 'tl-pass'; tip = `${date}: Pass`; }
-                else if (ec != null) { cls = 'tl-fail'; tip = `${date}: Failed (exit ${ec})`; }
-                else { cls = 'tl-none'; tip = `${date}: No data`; }
+                if (!state) { cls = 'tl-none'; tip = `${platformLabel} ${date}: No data`; }
+                else if (state.exitCode === 0) { cls = 'tl-pass'; tip = `${platformLabel} ${date}: Pass`; }
+                else if (state.exitCode != null) { cls = 'tl-fail'; tip = `${platformLabel} ${date}: Failed (exit ${state.exitCode})`; }
+                else { cls = 'tl-empty'; tip = `${platformLabel} ${date}: No result`; }
                 row += `<div class="tl-dot ${cls}" title="${tip}"></div>`;
             }
             return row + '</div></div>';
         }
 
-        for (const pair of pairs) {
-            tlHtml += `<div class="timeline-group">`;
-            if (pair.std) tlHtml += timelineRow(pair.std, pair.label, false);
-            if (pair.mt) tlHtml += timelineRow(pair.mt, pair.label, true);
-            tlHtml += `</div>`;
+        const unknownRuns = DATA_UNKNOWN.length;
+        const unknownToggle = unknownRuns
+            ? `<button class="archived-toggle health-unknown-toggle" id="unknownHealthToggle">Show ${unknownRuns} historical / unknown platform runs ▸</button>`
+            : '';
+        document.getElementById('healthStats').innerHTML =
+            platforms.map(statsSection).join('') + unknownToggle;
+        document.getElementById('healthGrid').innerHTML = platforms.map(gridSection).join('');
+
+        document.getElementById('timelineHeader').textContent = 'Status Timeline — Standard vs MT by platform';
+        document.getElementById('timelineContainer').innerHTML = `<div class="timeline-legend">
+            <div class="timeline-legend-item"><div class="tl-legend-dot tl-pass"></div> Pass</div>
+            <div class="timeline-legend-item"><div class="tl-legend-dot tl-fail"></div> Fail</div>
+            <div class="timeline-legend-item"><div class="tl-legend-dot tl-empty"></div> No result</div>
+            <div class="timeline-legend-item"><div class="tl-legend-dot tl-none"></div> No data</div></div>` +
+            platforms.map(timelineSection).join('');
+
+        const toggleBtn = document.getElementById('unknownHealthToggle');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const showing = toggleBtn.dataset.showing === 'true';
+                document.querySelectorAll('.unknown-health-section').forEach(section => {
+                    section.style.display = showing ? 'none' : '';
+                });
+                toggleBtn.dataset.showing = showing ? 'false' : 'true';
+                toggleBtn.textContent = showing
+                    ? `Show ${unknownRuns} historical / unknown platform runs ▸`
+                    : `Hide ${unknownRuns} historical / unknown platform runs ▾`;
+            });
         }
-        document.getElementById('timelineContainer').innerHTML = tlHtml;
     }
 
     /* ── Tab switching ── */
