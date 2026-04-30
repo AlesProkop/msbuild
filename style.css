@@ -135,6 +135,20 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     color: var(--text);
     font-size: 13px;
 }
+.platform-toggle {
+    padding: 6px 10px;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    background: var(--surface-raised);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.platform-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
 
 /* ── Chip multiselect ── */
 .chip-group { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -162,6 +176,9 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     border-top: 1px solid var(--border);
 }
 .platform-chart:first-child .platform-label { border-top: none; }
+.no-machine-platform .platform-label {
+    color: var(--text-subtle);
+}
 
 /* ── Stats bar ── */
 .stats-bar {

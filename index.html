@@ -74,6 +74,7 @@
                         <option value="90d">Last 90 Days</option>
                         <option value="30d">Last 30 Days</option>
                     </select>
+                    <button type="button" class="platform-toggle" id="noMachineToggle" style="display:none">Show historical / no-machine runs ▸</button>
                     <span id="loadingMsg" style="font-size:12px;color:var(--text-subtle);font-style:italic"></span>
                 </div>
             </div>
@@ -102,6 +103,11 @@
                         <div class="chart-wrapper" id="mtChartLinWrapper"><canvas id="mtChartLin"></canvas></div>
                         <div id="mtDetailLin" class="chart-detail"></div>
                     </div>
+                    <div class="platform-chart no-machine-platform" style="display:none">
+                        <div class="platform-label">🕘 Historical / no machine</div>
+                        <div class="chart-wrapper" id="mtChartUnknownWrapper"><canvas id="mtChartUnknown"></canvas></div>
+                        <div id="mtDetailUnknown" class="chart-detail"></div>
+                    </div>
                 </div>
                 <div class="mt-summary" id="mtSummary"></div>
             </div>
@@ -129,6 +135,11 @@
                         <div class="chart-wrapper" id="trendChartLinWrapper"><canvas id="trendChartLin"></canvas></div>
                         <div id="trendDetailLin" class="chart-detail"></div>
                     </div>
+                    <div class="platform-chart no-machine-platform" style="display:none">
+                        <div class="platform-label">🕘 Historical / no machine</div>
+                        <div class="chart-wrapper" id="trendChartUnknownWrapper"><canvas id="trendChartUnknown"></canvas></div>
+                        <div id="trendDetailUnknown" class="chart-detail"></div>
+                    </div>
                 </div>
                 <div class="stats-bar" id="trendStats"></div>
             </div>
@@ -151,6 +162,10 @@
                     <div class="platform-chart">
                         <div class="platform-label">🐧 Linux</div>
                         <div class="chart-wrapper" id="compChartLinWrapper"><canvas id="compChartLin"></canvas></div>
+                    </div>
+                    <div class="platform-chart no-machine-platform" style="display:none">
+                        <div class="platform-label">🕘 Historical / no machine</div>
+                        <div class="chart-wrapper" id="compChartUnknownWrapper"><canvas id="compChartUnknown"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -183,6 +198,7 @@
     let DATA_WIN = [];         // Windows-only
     let DATA_LIN = [];         // Linux-only
     let DATA_UNKNOWN = [];     // Historical records without machine/platform data
+    let SHOW_UNKNOWN_TRENDS = false;
     let MANIFEST = [];
     const CHARTS = {};
 
@@ -205,6 +221,24 @@
         if (/WIN$/i.test(id)) return 'windows';
         if (/LIN$/i.test(id)) return 'linux';
         return 'unknown';
+    }
+    function hideChart(chartKey, wrapperId) {
+        if (CHARTS[chartKey]) { CHARTS[chartKey].destroy(); CHARTS[chartKey] = null; }
+        const wrapper = document.getElementById(wrapperId);
+        if (wrapper) wrapper.parentElement.style.display = 'none';
+    }
+    function updateNoMachineToggle() {
+        const btn = document.getElementById('noMachineToggle');
+        if (!btn) return;
+        const count = DATA_UNKNOWN.length;
+        if (!count) SHOW_UNKNOWN_TRENDS = false;
+        btn.style.display = count ? '' : 'none';
+        btn.textContent = SHOW_UNKNOWN_TRENDS
+            ? `Hide ${count} historical / no-machine runs ▾`
+            : `Show ${count} historical / no-machine runs ▸`;
+        document.querySelectorAll('.no-machine-platform').forEach(section => {
+            section.style.display = SHOW_UNKNOWN_TRENDS ? '' : 'none';
+        });
     }
     function avg(arr) { return arr.length ? arr.reduce((a,b) => a+b, 0) / arr.length : 0; }
     function fmtMs(v) {
@@ -639,6 +673,7 @@
             renderTrend();
         }));
 
+        updateNoMachineToggle();
         renderMt(); renderTrend(); renderComp();
     }
 
@@ -691,8 +726,13 @@
 
         const win = renderMtPlatform('mt_win', 'mtChartWin', 'mtDetailWin', null, DATA_WIN, 'Windows');
         renderMtPlatform('mt_lin', 'mtChartLin', 'mtDetailLin', 'mtChartLinWrapper', DATA_LIN, 'Linux');
+        if (SHOW_UNKNOWN_TRENDS) {
+            renderMtPlatform('mt_unknown', 'mtChartUnknown', 'mtDetailUnknown', 'mtChartUnknownWrapper', DATA_UNKNOWN, 'Historical / no machine');
+        } else {
+            hideChart('mt_unknown', 'mtChartUnknownWrapper');
+        }
 
-        // Summary uses combined data
+        // Summary uses Windows data to match the primary platform chart.
         const sv = win.stdS.map(d => d.value), mv = win.mtS.map(d => d.value);
         let html = `<span><span class="dot std"></span> Std avg: <strong>${sv.length ? avg(sv).toFixed(0) + ' ms' : 'N/A'}</strong> (${sv.length})</span>`;
         html += `<span><span class="dot mt"></span> MT avg: <strong>${mv.length ? avg(mv).toFixed(0) + ' ms' : 'N/A'}</strong> (${mv.length})</span>`;
@@ -711,6 +751,7 @@
         if (!selected.length) {
             if (CHARTS.trend_win) CHARTS.trend_win.destroy();
             if (CHARTS.trend_lin) CHARTS.trend_lin.destroy();
+            hideChart('trend_unknown', 'trendChartUnknownWrapper');
             document.getElementById('trendStats').innerHTML = '';
             return;
         }
@@ -758,8 +799,13 @@
 
         renderTrendPlatform('trend_win', 'trendChartWin', 'trendDetailWin', null, DATA_WIN);
         renderTrendPlatform('trend_lin', 'trendChartLin', 'trendDetailLin', 'trendChartLinWrapper', DATA_LIN);
+        if (SHOW_UNKNOWN_TRENDS) {
+            renderTrendPlatform('trend_unknown', 'trendChartUnknown', 'trendDetailUnknown', 'trendChartUnknownWrapper', DATA_UNKNOWN);
+        } else {
+            hideChart('trend_unknown', 'trendChartUnknownWrapper');
+        }
 
-        // Stats (use Windows data which includes historical)
+        // Stats use Windows data to match the primary platform chart.
         let statsHtml = '';
         selected.forEach((sc, i) => {
             const vals = getSeries(sc, metric, DATA_WIN).map(d => d.value);
@@ -875,6 +921,11 @@
 
         renderCompPlatform('comp_win', 'compChartWin', null, DATA_WIN);
         renderCompPlatform('comp_lin', 'compChartLin', 'compChartLinWrapper', DATA_LIN);
+        if (SHOW_UNKNOWN_TRENDS) {
+            renderCompPlatform('comp_unknown', 'compChartUnknown', 'compChartUnknownWrapper', DATA_UNKNOWN);
+        } else {
+            hideChart('comp_unknown', 'compChartUnknownWrapper');
+        }
     }
 
     /* ══════════════════════════════════════════════
@@ -1101,6 +1152,11 @@
     document.getElementById('mtMetric').addEventListener('change', renderMt);
     document.getElementById('trendMetric').addEventListener('change', renderTrend);
     document.getElementById('timeRange').addEventListener('change', applyTimeFilter);
+    document.getElementById('noMachineToggle').addEventListener('click', () => {
+        SHOW_UNKNOWN_TRENDS = !SHOW_UNKNOWN_TRENDS;
+        updateNoMachineToggle();
+        renderMt(); renderTrend(); renderComp();
+    });
 
     init();
     </script>
