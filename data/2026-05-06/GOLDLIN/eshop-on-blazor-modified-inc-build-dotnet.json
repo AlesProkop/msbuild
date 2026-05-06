@@ -1,12 +1,12 @@
 ﻿{
     "date":  "2026-05-06",
-    "scenario":  "eshop-on-blazor-modified-rebuild-mt-dotnet",
+    "scenario":  "eshop-on-blazor-modified-inc-build-dotnet",
     "perfstarCIBuildNumber":  "20260506.4.s",
     "branch":  "refs/heads/main",
     "ciRunReason":  "Schedule",
     "machineID":  "GOLDLIN",
     "schemaVersion":  "2",
-    "timestamp":  "2026-05-06T16:29:52.5054648Z",
+    "timestamp":  "2026-05-06T16:49:20.3656893Z",
     "results":  {
                     "netSdkVersion":  "10.0.203",
                     "aspNetCoreVersion":  "10.0.7+b16286c2284f",
@@ -16,7 +16,7 @@
                     "exit-code":  1.0,
                     "failure-description":  "Restore finished with non zero exit code.",
                     "info/test-asset":  "eShopOnBlazor-modified",
-                    "info/test-scenario":  "Rebuild",
+                    "info/test-scenario":  "IncrementalBuild",
                     "info/msbuild-app":  "Dotnet",
                     "info/test-version":  1.0,
                     "info/iterations-number":  10.0,
