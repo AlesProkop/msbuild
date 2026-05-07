@@ -246,6 +246,14 @@
         if (/LIN$/i.test(id)) return 'linux';
         return 'unknown';
     }
+    function measuredSdkVersion(results) {
+        return results?.['dotnet-version'] || results?.['netSdkVersion'] || '';
+    }
+    function crankSdkVersion(results) {
+        const measured = measuredSdkVersion(results);
+        const crank = results?.['crank-netSdkVersion'] || (results?.['dotnet-version'] ? results?.['netSdkVersion'] : '');
+        return crank && crank !== measured ? crank : '';
+    }
     function hideChart(chartKey, wrapperId) {
         if (CHARTS[chartKey]) { CHARTS[chartKey].destroy(); CHARTS[chartKey] = null; }
         const wrapper = document.getElementById(wrapperId);
@@ -508,7 +516,8 @@
                 machineID: d.machineID || '',
                 msbuildVersion: d.results['msbuild-version'] || '',
                 msbuildDisplayVersion: d.results['msbuild-display-version'] || '',
-                sdkVersion: d.results['netSdkVersion'] || '',
+                sdkVersion: measuredSdkVersion(d.results),
+                crankSdkVersion: crankSdkVersion(d.results),
                 runtimeVersion: d.results['netCoreAppVersion'] || '',
                 dotnetVersion: d.results['dotnet-version'] || ''
             }))
@@ -596,6 +605,9 @@
                 parts.push(`<span class="detail-label">SDK:</span> <a href="${tagLink}" target="_blank" rel="noopener">${point.sdkVersion}</a>`);
             }
         }
+        if (point.crankSdkVersion) {
+            parts.push(`<span class="detail-label">Crank SDK:</span> ${point.crankSdkVersion}`);
+        }
         if (point.runtimeVersion) {
             const display = point.runtimeVersion;
             if (runtimeHash) {
@@ -652,6 +664,7 @@
                             if (pt.machineID) lines.push(`  Machine: ${pt.machineID}`);
                             if (pt.msbuildVersion) lines.push(`  MSBuild: ${pt.msbuildVersion}`);
                             if (pt.sdkVersion) lines.push(`  SDK: ${pt.sdkVersion}`);
+                            if (pt.crankSdkVersion) lines.push(`  Crank SDK: ${pt.crankSdkVersion}`);
                             if (pt.runtimeVersion) lines.push(`  Runtime: ${pt.runtimeVersion}`);
                             if (lines.length) lines.push('  (click for links)');
                             return lines.length ? ['', ...lines] : '';

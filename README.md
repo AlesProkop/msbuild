@@ -65,7 +65,7 @@ The dashboard expects schema version `2` data.
 - `evaluation-time`;
 - `evaluation-time-pass*`;
 - `exit-code`;
-- MSBuild, SDK, ASP.NET Core, and runtime versions;
+- MSBuild, measured SDK, ASP.NET Core, and runtime versions;
 - test asset, scenario, and app metadata.
 
 Machine IDs ending in `WIN` are treated as Windows, IDs ending in `LIN` are treated as Linux, and missing or unrecognized IDs are shown as historical or unknown-platform data.
