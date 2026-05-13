@@ -2667,38 +2667,8 @@
   {
     "date": "2025-10-20",
     "scenario": "very-large-net8-console-app-restore-dotnet",
-    "timestamp": "2025-10-20T09:01:54.6142065Z",
-    "perfstarCIBuildNumber": "20251020.1.s",
-    "branch": "refs/heads/main",
-    "ciRunReason": "Schedule",
-    "machineID": "PERFWIN",
-    "schemaVersion": "2",
-    "results": {
-      "netSdkVersion": "10.0.100-rc.2.25502.107",
-      "aspNetCoreVersion": "8.0.21+6254f5ca64f8",
-      "netCoreAppVersion": "8.0.21+362ab6669d55"
-    }
-  },
-  {
-    "date": "2025-10-20",
-    "scenario": "very-large-net8-console-app-restore-dotnet",
     "timestamp": "2025-10-20T09:53:54.9719794Z",
     "perfstarCIBuildNumber": "20251020.2.s",
-    "branch": "refs/heads/main",
-    "ciRunReason": "Schedule",
-    "machineID": "PERFLIN",
-    "schemaVersion": "2",
-    "results": {
-      "netSdkVersion": "10.0.100-rc.2.25502.107",
-      "aspNetCoreVersion": "8.0.21+6254f5ca64f8",
-      "netCoreAppVersion": "8.0.21+362ab6669d55"
-    }
-  },
-  {
-    "date": "2025-10-20",
-    "scenario": "very-large-net8-console-app-restore-dotnet",
-    "timestamp": "2025-10-20T09:00:19.6850281Z",
-    "perfstarCIBuildNumber": "20251020.1.s",
     "branch": "refs/heads/main",
     "ciRunReason": "Schedule",
     "machineID": "PERFLIN",
@@ -2717,6 +2687,36 @@
     "branch": "refs/heads/main",
     "ciRunReason": "Schedule",
     "machineID": "PERFWIN",
+    "schemaVersion": "2",
+    "results": {
+      "netSdkVersion": "10.0.100-rc.2.25502.107",
+      "aspNetCoreVersion": "8.0.21+6254f5ca64f8",
+      "netCoreAppVersion": "8.0.21+362ab6669d55"
+    }
+  },
+  {
+    "date": "2025-10-20",
+    "scenario": "very-large-net8-console-app-restore-dotnet",
+    "timestamp": "2025-10-20T09:01:54.6142065Z",
+    "perfstarCIBuildNumber": "20251020.1.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "PERFWIN",
+    "schemaVersion": "2",
+    "results": {
+      "netSdkVersion": "10.0.100-rc.2.25502.107",
+      "aspNetCoreVersion": "8.0.21+6254f5ca64f8",
+      "netCoreAppVersion": "8.0.21+362ab6669d55"
+    }
+  },
+  {
+    "date": "2025-10-20",
+    "scenario": "very-large-net8-console-app-restore-dotnet",
+    "timestamp": "2025-10-20T09:00:19.6850281Z",
+    "perfstarCIBuildNumber": "20251020.1.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "PERFLIN",
     "schemaVersion": "2",
     "results": {
       "netSdkVersion": "10.0.100-rc.2.25502.107",
@@ -2863,23 +2863,6 @@
   {
     "date": "2025-11-05",
     "scenario": "very-large-net8-console-app-restore-dotnet",
-    "timestamp": "2025-11-05T11:36:30.8281381Z",
-    "perfstarCIBuildNumber": "20251105.1.s",
-    "branch": "refs/heads/main",
-    "ciRunReason": "Schedule",
-    "machineID": "PERFLIN",
-    "schemaVersion": "2",
-    "results": {
-      "netSdkVersion": "10.0.100-rtm.25513.102",
-      "aspNetCoreVersion": "10.0.0-rtm.25513.102+b502b6eeec0d",
-      "netCoreAppVersion": "10.0.0-rtm.25513.102+b502b6eeec0d",
-      "msbuild-version": "18.1.0.55404",
-      "msbuild-display-version": "MSBuild version 18.1.0-preview-25554-04+27c7c81bb for .NET"
-    }
-  },
-  {
-    "date": "2025-11-05",
-    "scenario": "very-large-net8-console-app-restore-dotnet",
     "timestamp": "2025-11-05T11:48:58.2506750Z",
     "perfstarCIBuildNumber": "20251105.1.s",
     "branch": "refs/heads/main",
@@ -2895,13 +2878,30 @@
     }
   },
   {
+    "date": "2025-11-05",
+    "scenario": "very-large-net8-console-app-restore-dotnet",
+    "timestamp": "2025-11-05T11:36:30.8281381Z",
+    "perfstarCIBuildNumber": "20251105.1.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "PERFLIN",
+    "schemaVersion": "2",
+    "results": {
+      "netSdkVersion": "10.0.100-rtm.25513.102",
+      "aspNetCoreVersion": "10.0.0-rtm.25513.102+b502b6eeec0d",
+      "netCoreAppVersion": "10.0.0-rtm.25513.102+b502b6eeec0d",
+      "msbuild-version": "18.1.0.55404",
+      "msbuild-display-version": "MSBuild version 18.1.0-preview-25554-04+27c7c81bb for .NET"
+    }
+  },
+  {
     "date": "2025-11-08",
     "scenario": "very-large-net8-console-app-restore-dotnet",
-    "timestamp": "2025-11-08T12:14:03.1222515Z",
+    "timestamp": "2025-11-08T11:58:53.1989518Z",
     "perfstarCIBuildNumber": "20251108.1.s",
     "branch": "refs/heads/main",
     "ciRunReason": "Schedule",
-    "machineID": "PERFWIN",
+    "machineID": "PERFLIN",
     "schemaVersion": "2",
     "results": {
       "netSdkVersion": "10.0.100-rtm.25513.102",
@@ -2914,11 +2914,11 @@
   {
     "date": "2025-11-08",
     "scenario": "very-large-net8-console-app-restore-dotnet",
-    "timestamp": "2025-11-08T11:58:53.1989518Z",
+    "timestamp": "2025-11-08T12:14:03.1222515Z",
     "perfstarCIBuildNumber": "20251108.1.s",
     "branch": "refs/heads/main",
     "ciRunReason": "Schedule",
-    "machineID": "PERFLIN",
+    "machineID": "PERFWIN",
     "schemaVersion": "2",
     "results": {
       "netSdkVersion": "10.0.100-rtm.25513.102",
@@ -4421,38 +4421,6 @@
     "scenario": "very-large-net8-console-app-restore-dotnet",
     "perfstarCIBuildNumber": "20260319.1",
     "branch": "main",
-    "machineID": "PERFLIN",
-    "schemaVersion": "1",
-    "results": {
-      "netSdkVersion": "10.0.201",
-      "aspNetCoreVersion": "10.0.5+a612c2a1056f",
-      "netCoreAppVersion": "10.0.5+a612c2a1056f",
-      "msbuild-version": "18.6.0.16909",
-      "msbuild-display-version": "18.6.0.16909",
-      "evaluation-time": 278.4,
-      "evaluation-time-globbing": 0.0,
-      "evaluation-time-pass0": 4.0,
-      "evaluation-time-pass1": 159.4,
-      "evaluation-time-pass2": 1.0,
-      "evaluation-time-pass3": 24.0,
-      "evaluation-time-pass3dot1": 37.0,
-      "evaluation-time-pass4": 2.0,
-      "evaluation-time-pass5": 49.8,
-      "exit-code": 0.0,
-      "build-time": 761.74464,
-      "info/test-asset": "very-large-net8-console-app",
-      "info/test-scenario": "Restore",
-      "info/msbuild-app": "Dotnet",
-      "info/test-version": 1.0,
-      "info/iterations-number": 5.0,
-      "dotnet-version": "11.0.100-preview.3.26168.109"
-    }
-  },
-  {
-    "date": "2026-03-19",
-    "scenario": "very-large-net8-console-app-restore-dotnet",
-    "perfstarCIBuildNumber": "20260319.1",
-    "branch": "main",
     "machineID": "PERFWIN",
     "schemaVersion": "1",
     "results": {
@@ -4478,6 +4446,38 @@
       "info/test-version": 1.0,
       "info/iterations-number": 5.0,
       "dotnet-version": "10.0.201"
+    }
+  },
+  {
+    "date": "2026-03-19",
+    "scenario": "very-large-net8-console-app-restore-dotnet",
+    "perfstarCIBuildNumber": "20260319.1",
+    "branch": "main",
+    "machineID": "PERFLIN",
+    "schemaVersion": "1",
+    "results": {
+      "netSdkVersion": "10.0.201",
+      "aspNetCoreVersion": "10.0.5+a612c2a1056f",
+      "netCoreAppVersion": "10.0.5+a612c2a1056f",
+      "msbuild-version": "18.6.0.16909",
+      "msbuild-display-version": "18.6.0.16909",
+      "evaluation-time": 278.4,
+      "evaluation-time-globbing": 0.0,
+      "evaluation-time-pass0": 4.0,
+      "evaluation-time-pass1": 159.4,
+      "evaluation-time-pass2": 1.0,
+      "evaluation-time-pass3": 24.0,
+      "evaluation-time-pass3dot1": 37.0,
+      "evaluation-time-pass4": 2.0,
+      "evaluation-time-pass5": 49.8,
+      "exit-code": 0.0,
+      "build-time": 761.74464,
+      "info/test-asset": "very-large-net8-console-app",
+      "info/test-scenario": "Restore",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 5.0,
+      "dotnet-version": "11.0.100-preview.3.26168.109"
     }
   },
   {
@@ -4816,19 +4816,6 @@
     "perfstarCIBuildNumber": "20260506.4.s",
     "branch": "refs/heads/main",
     "ciRunReason": "Schedule",
-    "machineID": "GOLDWIN",
-    "schemaVersion": "2",
-    "timestamp": "2026-05-06T15:58:06.0680007Z",
-    "results": {
-      "netSdkVersion": "10.0.203"
-    }
-  },
-  {
-    "date": "2026-05-06",
-    "scenario": "very-large-net8-console-app-restore-dotnet",
-    "perfstarCIBuildNumber": "20260506.4.s",
-    "branch": "refs/heads/main",
-    "ciRunReason": "Schedule",
     "machineID": "GOLDLIN",
     "schemaVersion": "2",
     "timestamp": "2026-05-06T15:57:48.9721484Z",
@@ -4855,6 +4842,19 @@
       "info/test-version": 1.0,
       "info/iterations-number": 5.0,
       "dotnet-version": "10.0.400-preview.0.26255.118"
+    }
+  },
+  {
+    "date": "2026-05-06",
+    "scenario": "very-large-net8-console-app-restore-dotnet",
+    "perfstarCIBuildNumber": "20260506.4.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-05-06T15:58:06.0680007Z",
+    "results": {
+      "netSdkVersion": "10.0.203"
     }
   },
   {
@@ -5213,6 +5213,41 @@
     "perfstarCIBuildNumber": "20260512.2.s",
     "branch": "refs/heads/main",
     "ciRunReason": "Schedule",
+    "machineID": "GOLDLIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-05-12T11:47:46.8391680Z",
+    "results": {
+      "netSdkVersion": "11.0.100-preview.5.26261.101",
+      "aspNetCoreVersion": "10.0.7+b16286c2284f",
+      "netCoreAppVersion": "10.0.7+b16286c2284f",
+      "msbuild-version": "18.8.0.26110",
+      "msbuild-display-version": "18.8.0.26110",
+      "evaluation-time": 764.2,
+      "evaluation-time-globbing": 0.0,
+      "evaluation-time-pass0": 32.6,
+      "evaluation-time-pass1": 431.8,
+      "evaluation-time-pass2": 3.8,
+      "evaluation-time-pass3": 127.8,
+      "evaluation-time-pass3dot1": 73.0,
+      "evaluation-time-pass4": 7.6,
+      "evaluation-time-pass5": 81.2,
+      "exit-code": 0.0,
+      "build-time": 2315.6589599999998,
+      "info/test-asset": "very-large-net8-console-app",
+      "info/test-scenario": "Restore",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 5.0,
+      "dotnet-version": "11.0.100-preview.5.26261.101",
+      "crank-netSdkVersion": "10.0.203"
+    }
+  },
+  {
+    "date": "2026-05-12",
+    "scenario": "very-large-net8-console-app-restore-dotnet",
+    "perfstarCIBuildNumber": "20260512.2.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
     "machineID": "GOLDWIN",
     "schemaVersion": "2",
     "timestamp": "2026-05-12T12:00:45.9959298Z",
@@ -5243,38 +5278,38 @@
     }
   },
   {
-    "date": "2026-05-12",
+    "date": "2026-05-13",
     "scenario": "very-large-net8-console-app-restore-dotnet",
-    "perfstarCIBuildNumber": "20260512.2.s",
+    "perfstarCIBuildNumber": "20260513.1.s",
     "branch": "refs/heads/main",
     "ciRunReason": "Schedule",
     "machineID": "GOLDLIN",
     "schemaVersion": "2",
-    "timestamp": "2026-05-12T11:47:46.8391680Z",
+    "timestamp": "2026-05-13T11:41:52.9471848Z",
     "results": {
       "netSdkVersion": "11.0.100-preview.5.26261.101",
-      "aspNetCoreVersion": "10.0.7+b16286c2284f",
-      "netCoreAppVersion": "10.0.7+b16286c2284f",
+      "aspNetCoreVersion": "10.0.8+94ea82652cdd",
+      "netCoreAppVersion": "10.0.8+94ea82652cdd",
       "msbuild-version": "18.8.0.26110",
       "msbuild-display-version": "18.8.0.26110",
-      "evaluation-time": 764.2,
+      "evaluation-time": 748.6,
       "evaluation-time-globbing": 0.0,
-      "evaluation-time-pass0": 32.6,
-      "evaluation-time-pass1": 431.8,
-      "evaluation-time-pass2": 3.8,
-      "evaluation-time-pass3": 127.8,
-      "evaluation-time-pass3dot1": 73.0,
-      "evaluation-time-pass4": 7.6,
-      "evaluation-time-pass5": 81.2,
+      "evaluation-time-pass0": 30.4,
+      "evaluation-time-pass1": 409.6,
+      "evaluation-time-pass2": 3.6,
+      "evaluation-time-pass3": 128.2,
+      "evaluation-time-pass3dot1": 76.6,
+      "evaluation-time-pass4": 7.8,
+      "evaluation-time-pass5": 86.4,
       "exit-code": 0.0,
-      "build-time": 2315.6589599999998,
+      "build-time": 2250.09116,
       "info/test-asset": "very-large-net8-console-app",
       "info/test-scenario": "Restore",
       "info/msbuild-app": "Dotnet",
       "info/test-version": 1.0,
       "info/iterations-number": 5.0,
       "dotnet-version": "11.0.100-preview.5.26261.101",
-      "crank-netSdkVersion": "10.0.203"
+      "crank-netSdkVersion": "10.0.300"
     }
   },
   {
