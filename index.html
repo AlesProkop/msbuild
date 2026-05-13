@@ -308,6 +308,14 @@
         return `<span class="badge badge-danger">${rate.toFixed(0)}%</span>`;
     }
 
+    function hasMtScenarios(asset) {
+        return asset?.hasMt === true;
+    }
+
+    function isArchivedAsset(asset) {
+        return !!asset?.archived || !hasMtScenarios(asset);
+    }
+
     function platformHealthBadges(asset) {
         if (!asset.platforms) return healthBadge(asset.incBuild?.passRate30d ?? asset.incBuild?.passRate);
         const win = asset.platforms?.windows?.incBuild;
@@ -324,8 +332,8 @@
     function renderOverview() {
         if (!SUMMARY) return;
         const allAssets = SUMMARY.assets;
-        const active = allAssets.filter(a => !a.archived);
-        const archived = allAssets.filter(a => a.archived);
+        const active = allAssets.filter(a => !isArchivedAsset(a));
+        const archived = allAssets.filter(isArchivedAsset);
 
         // ── Regression Banner (per-platform, active assets only) ──
         const regressions = [];
@@ -402,6 +410,18 @@
 
         document.getElementById('regressionContent').innerHTML = bannerHtml;
 
+        function summaryCells(a) {
+            const winInc = a.platforms?.windows?.incBuild;
+            const linInc = a.platforms?.linux?.incBuild;
+            const fallbackInc = !winInc && !linInc ? a.incBuild : null;
+            return `
+                <td class="num">${winInc ? fmtMs(winInc.p50) : fallbackInc ? fmtMs(fallbackInc.p50) : '—'}</td>
+                <td>${winInc ? sparklineSvg(winInc.sparkline) : fallbackInc ? sparklineSvg(fallbackInc.sparkline) : '<span class="muted">—</span>'}</td>
+                <td class="num">${linInc ? fmtMs(linInc.p50) : '—'}</td>
+                <td>${linInc ? sparklineSvg(linInc.sparkline) : '<span class="muted">—</span>'}</td>
+                <td>${platformHealthBadges(a)}</td>`;
+        }
+
         // ── Summary Table with platform columns ──
         let tbody = '';
         for (const a of active) {
@@ -414,11 +434,7 @@
                     <span class="asset-link">${a.name}</span>
                     ${a.canonical === 'mt' ? '<span class="tag tag-mt">MT</span>' : ''}
                 </td>
-                <td class="num">${winInc ? fmtMs(winInc.p50) : '—'}</td>
-                <td>${winInc ? sparklineSvg(winInc.sparkline) : '<span class="muted">—</span>'}</td>
-                <td class="num">${linInc ? fmtMs(linInc.p50) : '—'}</td>
-                <td>${linInc ? sparklineSvg(linInc.sparkline) : '<span class="muted">—</span>'}</td>
-                <td>${platformHealthBadges(a)}</td>
+                ${summaryCells(a)}
             </tr>`;
         }
 
@@ -430,18 +446,12 @@
                 </td>
             </tr>`;
             for (const a of archived) {
-                const inc = a.incBuild;
-                if (!inc) continue;
                 tbody += `<tr class="summary-row archived-row" data-asset="${a.name}" style="display:none">
                     <td class="asset-name">
                         <span class="asset-link">${a.name}</span>
                         <span class="tag tag-archived">ARCHIVED</span>
                     </td>
-                    <td class="num">${fmtMs(inc.p50)}</td>
-                    <td>${sparklineSvg(inc.sparkline)}</td>
-                    <td class="num muted">—</td>
-                    <td><span class="muted">—</span></td>
-                    <td>${platformHealthBadges(a)}</td>
+                    ${summaryCells(a)}
                 </tr>`;
             }
         }
@@ -1200,8 +1210,8 @@
             const sel = document.getElementById('assetSelect');
             const healthSel = document.getElementById('healthAssetSelect');
             const sorted = [...SUMMARY.assets].sort((a, b) => a.name.localeCompare(b.name));
-            const activeList = sorted.filter(a => !a.archived);
-            const archivedList = sorted.filter(a => a.archived);
+            const activeList = sorted.filter(a => !isArchivedAsset(a));
+            const archivedList = sorted.filter(isArchivedAsset);
 
             function populateAssetSelect(select) {
                 select.innerHTML = '';
@@ -1228,8 +1238,7 @@
             sel.addEventListener('change', () => loadAsset(sel.value));
             healthSel.addEventListener('change', () => loadHealthAsset(healthSel.value));
 
-            const defaultAsset = activeList.find(a => a.name === 'net8-console-app')?.name
-                || activeList[0]?.name || sorted[0]?.name;
+            const defaultAsset = activeList[0]?.name || sorted[0]?.name;
             sel.value = defaultAsset;
             healthSel.value = defaultAsset;
             await loadAsset(defaultAsset);

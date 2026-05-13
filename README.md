@@ -51,6 +51,7 @@ The dashboard expects schema version `2` data.
 
 - asset name and latest result date;
 - active or archived state;
+- multithreaded scenario availability; assets without MT scenarios are treated as archived in the dashboard views;
 - canonical build mode;
 - per-platform performance summaries;
 - P50 build times;
