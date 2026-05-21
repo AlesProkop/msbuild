@@ -7,12 +7,25 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+    <script>
+        // Apply theme as early as possible to avoid a light→dark flash.
+        try {
+            const t = localStorage.getItem('msbuild-dashboard-theme');
+            document.documentElement.dataset.theme = (t === 'dark' || t === 'light') ? t
+                : (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        } catch (e) { /* localStorage may be unavailable */ }
+    </script>
 </head>
 <body>
     <header>
-        <h1>📊 MSBuild Performance Dashboard</h1>
-        <p id="headerMeta">Loading summary...</p>
-        <a href="https://github.com/alesprokop/msbuild/tree/perf/dashboard" target="_blank" rel="noopener" class="repo-link">🔗 Repository</a>
+        <div class="header-main">
+            <h1>📊 MSBuild Performance Dashboard</h1>
+            <p id="headerMeta">Loading summary...</p>
+            <a href="https://github.com/alesprokop/msbuild/tree/perf/dashboard" target="_blank" rel="noopener" class="repo-link">🔗 Repository</a>
+        </div>
+        <button type="button" id="themeToggle" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <span class="theme-icon" aria-hidden="true">🌙</span>
+        </button>
     </header>
 
     <div class="tabs">
@@ -35,16 +48,22 @@
                     <span class="card-title">Cross-Asset Performance — Incremental Build</span>
                     <span class="card-subtitle">Canonical metric (MT where available) · P50 incremental build · Per-platform</span>
                 </div>
+                <div class="controls-row overview-controls">
+                    <label for="overviewFilter">Filter:</label>
+                    <input type="search" id="overviewFilter" class="search-input" placeholder="Filter by asset name…" autocomplete="off" spellcheck="false">
+                    <span id="overviewFilterCount" class="muted" style="font-size:12px; display:none"></span>
+                    <span class="muted" id="overviewSortHint" style="font-size:12px; margin-left:auto">Sorted by worst regression · click a column to override</span>
+                </div>
                 <div class="table-wrapper">
                     <table class="summary-table" id="summaryTable">
                         <thead>
                             <tr>
-                                <th>Asset</th>
-                                <th>🪟 P50</th>
-                                <th>🪟 Trend</th>
-                                <th>🐧 P50</th>
-                                <th>🐧 Trend</th>
-                                <th>Health</th>
+                                <th class="sortable" data-sort-key="name" data-default-dir="asc" title="Sort by asset name">Asset <span class="sort-ind"></span></th>
+                                <th class="sortable" data-sort-key="winP50" data-default-dir="desc" title="Sort by Windows P50 (slowest first)">🪟 P50 <span class="sort-ind"></span></th>
+                                <th class="sortable" data-sort-key="winTrend" data-default-dir="desc" title="Sort by Windows regression % (worst first)">🪟 Trend <span class="sort-ind"></span></th>
+                                <th class="sortable" data-sort-key="linP50" data-default-dir="desc" title="Sort by Linux P50 (slowest first)">🐧 P50 <span class="sort-ind"></span></th>
+                                <th class="sortable" data-sort-key="linTrend" data-default-dir="desc" title="Sort by Linux regression % (worst first)">🐧 Trend <span class="sort-ind"></span></th>
+                                <th class="sortable" data-sort-key="health" data-default-dir="asc" title="Sort by health (worst pass rate first)">Health <span class="sort-ind"></span></th>
                             </tr>
                         </thead>
                         <tbody id="summaryBody"></tbody>
@@ -223,12 +242,25 @@
     let MANIFEST = [];
     const CHARTS = {};
 
-    const CLR = {
-        line: '#656d76', lineFill: 'rgba(101,109,118,0.06)',
-        mt: '#0969da', mtFill: 'rgba(9,105,218,0.06)',
-        avg: '#9a6700', bar: '#0969da', barMt: '#8250df'
+    // Light/dark chart palettes. Resolved per-render via clr() so theme toggling re-themes charts.
+    const CLR_LIGHT = {
+        line: '#656d76', lineFill: 'rgba(101,109,118,0.08)',
+        mt:   '#0969da', mtFill:   'rgba(9,105,218,0.08)',
+        avg:  '#9a6700', bar: '#0969da', barMt: '#8250df'
     };
-    const TREND_COLORS = ['#0969da','#cf222e','#1a7f37','#8250df','#bf8700','#656d76','#e16f24','#0550ae','#6e7781','#953800'];
+    const CLR_DARK = {
+        line: '#adbac7', lineFill: 'rgba(173,186,199,0.10)',
+        mt:   '#58a6ff', mtFill:   'rgba(88,166,255,0.12)',
+        avg:  '#e3b341', bar: '#58a6ff', barMt: '#bc8cff'
+    };
+    function clr() {
+        return document.documentElement.dataset.theme === 'dark' ? CLR_DARK : CLR_LIGHT;
+    }
+    const TREND_COLORS_LIGHT = ['#0969da','#cf222e','#1a7f37','#8250df','#bf8700','#656d76','#e16f24','#0550ae','#6e7781','#953800'];
+    const TREND_COLORS_DARK  = ['#58a6ff','#ff7b72','#3fb950','#bc8cff','#e3b341','#adbac7','#ffa657','#79c0ff','#8b949e','#ffa198'];
+    function trendColors() {
+        return document.documentElement.dataset.theme === 'dark' ? TREND_COLORS_DARK : TREND_COLORS_LIGHT;
+    }
 
     // Assets that are known to be broken / unreliable and not currently prioritized for fixing.
     // Surfaced in the UI as a yellow "BROKEN" tag in Overview, Trends and Health.
@@ -358,6 +390,218 @@
     /* ══════════════════════════════════════════════
        OVERVIEW — renders from summary.json
        ══════════════════════════════════════════════ */
+    // Filter / sort state for the cross-asset table.
+    // OVERVIEW_SORT === null means "default": worst regression first across platforms.
+    let OVERVIEW_FILTER = '';
+    let OVERVIEW_SORT = null;
+
+    function trendChip(pct) {
+        const a = Math.abs(pct);
+        const sign = pct > 0 ? '+' : pct < 0 ? '' : '±';
+        // Neutral band is ±1 % — anything beyond that gets colored so even small drifts pop.
+        let cls = 'trend-chip-ok', arrow = '·';
+        if (pct > 10)      { cls = 'trend-chip-danger';  arrow = '▲'; }
+        else if (pct > 5)  { cls = 'trend-chip-warning'; arrow = '▲'; }
+        else if (pct > 1)  { cls = 'trend-chip-warning'; arrow = '▲'; }
+        else if (pct < -5) { cls = 'trend-chip-success'; arrow = '▼'; }
+        else if (pct < -1) { cls = 'trend-chip-success'; arrow = '▼'; }
+        return `<span class="trend-chip ${cls}" title="Δ vs prior baseline (7d recent vs 30d prior)">${arrow} ${sign}${a.toFixed(1)}%</span>`;
+    }
+
+    function baselineChip(inc) {
+        const recent = inc?.samplesLast7d ?? 0;
+        const prior = inc?.samplesPrior30d ?? 0;
+        const tip = `Insufficient baseline for regression check — need ≥ 3 recent (7d) and ≥ 5 prior (30d). Have ${recent} recent / ${prior} prior.`;
+        return `<span class="baseline-chip" title="${tip}">baseline ${recent}/3·${prior}/5</span>`;
+    }
+
+    function hasRegressionBaseline(inc) {
+        return !!inc && inc.regressionPct != null && inc.samplesLast7d >= 3 && inc.samplesPrior30d >= 5;
+    }
+
+    function trendCell(inc) {
+        if (!inc) return '<span class="muted">—</span>';
+        const spark = sparklineSvg(inc.sparkline);
+        const chip = hasRegressionBaseline(inc) ? trendChip(inc.regressionPct) : baselineChip(inc);
+        return `<span class="trend-cell">${spark}${chip}</span>`;
+    }
+
+    function summaryCells(a) {
+        const winInc = a.platforms?.windows?.incBuild;
+        const linInc = a.platforms?.linux?.incBuild;
+        const fallbackInc = !winInc && !linInc ? a.incBuild : null;
+        return `
+            <td class="num">${winInc ? fmtMs(winInc.p50) : fallbackInc ? fmtMs(fallbackInc.p50) : '—'}</td>
+            <td>${winInc ? trendCell(winInc) : fallbackInc ? sparklineSvg(fallbackInc.sparkline) : '<span class="muted">—</span>'}</td>
+            <td class="num">${linInc ? fmtMs(linInc.p50) : '—'}</td>
+            <td>${linInc ? trendCell(linInc) : '<span class="muted">—</span>'}</td>
+            <td>${platformHealthBadges(a)}</td>`;
+    }
+
+    function overviewSortValue(asset, key) {
+        const win = asset.platforms?.windows?.incBuild;
+        const lin = asset.platforms?.linux?.incBuild;
+        switch (key) {
+            case 'name':     return asset.name.toLowerCase();
+            case 'winP50':   return win?.p50 ?? null;
+            case 'linP50':   return lin?.p50 ?? null;
+            case 'winTrend': return win?.regressionPct ?? null;
+            case 'linTrend': return lin?.regressionPct ?? null;
+            case 'health': {
+                const w = win?.passRate30d ?? win?.passRate;
+                const l = lin?.passRate30d ?? lin?.passRate;
+                const arr = [w, l].filter(v => v != null);
+                return arr.length ? Math.min(...arr) : null;
+            }
+            default: return null;
+        }
+    }
+
+    // Default-sort key: max regression % across platforms (worst first).
+    function priorityValue(asset) {
+        const w = asset.platforms?.windows?.incBuild?.regressionPct;
+        const l = asset.platforms?.linux?.incBuild?.regressionPct;
+        const arr = [w, l].filter(v => v != null);
+        return arr.length ? Math.max(...arr) : null;
+    }
+
+    function compareOverviewAssets(a, b) {
+        if (!OVERVIEW_SORT) {
+            const av = priorityValue(a), bv = priorityValue(b);
+            if (av == null && bv == null) return a.name.localeCompare(b.name);
+            if (av == null) return 1;
+            if (bv == null) return -1;
+            if (bv !== av) return bv - av;
+            return a.name.localeCompare(b.name);
+        }
+        const av = overviewSortValue(a, OVERVIEW_SORT.key);
+        const bv = overviewSortValue(b, OVERVIEW_SORT.key);
+        if (av == null && bv == null) return a.name.localeCompare(b.name);
+        if (av == null) return 1;
+        if (bv == null) return -1;
+        let r = typeof av === 'string' ? av.localeCompare(bv) : av - bv;
+        if (OVERVIEW_SORT.dir === 'desc') r = -r;
+        return r || a.name.localeCompare(b.name);
+    }
+
+    function matchesOverviewFilter(asset) {
+        if (!OVERVIEW_FILTER) return true;
+        return asset.name.toLowerCase().includes(OVERVIEW_FILTER);
+    }
+
+    function renderSummaryTable() {
+        if (!SUMMARY) return;
+        const allAssets = SUMMARY.assets;
+        const activeAll = allAssets.filter(a => !isArchivedAsset(a));
+        const archivedAll = allAssets.filter(isArchivedAsset);
+        const active = activeAll.filter(matchesOverviewFilter).sort(compareOverviewAssets);
+        const archived = archivedAll.filter(matchesOverviewFilter).sort(compareOverviewAssets);
+        const renderedActive = active.filter(a => a.platforms?.windows?.incBuild || a.platforms?.linux?.incBuild || a.incBuild);
+
+        let tbody = '';
+        if (!renderedActive.length && !archived.length) {
+            const msg = OVERVIEW_FILTER
+                ? `No assets match "${OVERVIEW_FILTER}".`
+                : 'No assets available.';
+            tbody = `<tr><td colspan="6" class="muted" style="padding:18px; text-align:center;">${msg}</td></tr>`;
+        } else {
+            for (const a of renderedActive) {
+                tbody += `<tr class="summary-row" data-asset="${a.name}">
+                    <td class="asset-name">
+                        <span class="asset-link">${a.name}</span>
+                        ${a.canonical === 'mt' ? '<span class="tag tag-mt">MT</span>' : ''}
+                        ${isBrokenAsset(a.name) ? brokenTagHtml() : ''}
+                    </td>
+                    ${summaryCells(a)}
+                </tr>`;
+            }
+            if (archived.length > 0) {
+                tbody += `<tr class="archived-toggle-row">
+                    <td colspan="6">
+                        <button class="archived-toggle" id="archivedToggle">Show ${archived.length} archived asset${archived.length === 1 ? '' : 's'} ▸</button>
+                    </td>
+                </tr>`;
+                for (const a of archived) {
+                    tbody += `<tr class="summary-row archived-row" data-asset="${a.name}" style="display:none">
+                        <td class="asset-name">
+                            <span class="asset-link">${a.name}</span>
+                            <span class="tag tag-archived">ARCHIVED</span>
+                            ${isBrokenAsset(a.name) ? brokenTagHtml() : ''}
+                        </td>
+                        ${summaryCells(a)}
+                    </tr>`;
+                }
+            }
+        }
+
+        document.getElementById('summaryBody').innerHTML = tbody;
+
+        // Sort indicators on column headers
+        document.querySelectorAll('#summaryTable th.sortable').forEach(th => {
+            const ind = th.querySelector('.sort-ind');
+            if (!ind) return;
+            if (OVERVIEW_SORT && OVERVIEW_SORT.key === th.dataset.sortKey) {
+                ind.textContent = OVERVIEW_SORT.dir === 'asc' ? '▴' : '▾';
+                th.classList.add('sorted');
+            } else {
+                ind.textContent = '';
+                th.classList.remove('sorted');
+            }
+        });
+
+        const hint = document.getElementById('overviewSortHint');
+        if (hint) hint.style.display = OVERVIEW_SORT ? 'none' : '';
+
+        const countEl = document.getElementById('overviewFilterCount');
+        if (countEl) {
+            if (OVERVIEW_FILTER) {
+                const matchTotal = renderedActive.length + archived.length;
+                const grandTotal = activeAll.length + archivedAll.length;
+                countEl.textContent = `${matchTotal} of ${grandTotal} assets`;
+                countEl.style.display = '';
+            } else {
+                countEl.textContent = '';
+                countEl.style.display = 'none';
+            }
+        }
+
+        // Archived toggle handler (re-attached because tbody is replaced)
+        const toggleBtn = document.getElementById('archivedToggle');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const rows = document.querySelectorAll('.archived-row');
+                const showing = rows[0]?.style.display !== 'none';
+                rows.forEach(r => r.style.display = showing ? 'none' : '');
+                toggleBtn.textContent = showing
+                    ? `Show ${archived.length} archived asset${archived.length === 1 ? '' : 's'} ▸`
+                    : `Hide ${archived.length} archived asset${archived.length === 1 ? '' : 's'} ▾`;
+            });
+        }
+
+        // Row click → switch to Trends for that asset
+        document.querySelectorAll('.summary-row').forEach(row => {
+            row.addEventListener('click', () => {
+                const name = row.dataset.asset;
+                const time = timeStopAt(document.getElementById('timeRange').value).key;
+                goToView({ tab: 'trends', asset: name, time });
+            });
+        });
+    }
+
+    // Programmatic navigation: push hash and apply state without reload.
+    function goToView(state) {
+        const targetHash = stateToHash(state);
+        if (location.hash !== targetHash) {
+            history.pushState(null, '', targetHash);
+        }
+        applyHashState(state);
+    }
+
+    function bannerLinkHtml(asset, label, time = '30d', tab = 'trends') {
+        const tabTitle = tab === 'health' ? 'Health' : 'Trends';
+        return `<button type="button" class="banner-item banner-link" data-asset="${asset}" data-tab="${tab}" data-time="${time}" title="Open ${asset} in ${tabTitle}">${label}</button>`;
+    }
+
     function renderOverview() {
         if (!SUMMARY) return;
         const allAssets = SUMMARY.assets;
@@ -386,7 +630,7 @@
         let bannerHtml = '';
         if (regressions.length > 0) {
             const items = regressions.map(r =>
-                `<span class="banner-item">${r.icon} ${r.name}: <strong>+${r.pct.toFixed(1)}%</strong></span>`
+                bannerLinkHtml(r.name, `${r.icon} ${r.name}: <strong>+${r.pct.toFixed(1)}%</strong>`)
             ).join('');
             bannerHtml += `<div class="banner banner-alert">
                 <span class="banner-icon">🔴</span>
@@ -407,7 +651,7 @@
         }
         if (evaluatedComparisons > 0 && insufficient.length > 0) {
             const items = insufficient.slice(0, 8).map(r =>
-                `<span class="banner-item">${r.icon} ${r.name}: <strong>${r.recent}/3 recent, ${r.prior}/5 prior</strong></span>`
+                bannerLinkHtml(r.name, `${r.icon} ${r.name}: <strong>${r.recent}/3 recent, ${r.prior}/5 prior</strong>`)
             ).join('');
             const more = insufficient.length > 8 ? `<span class="banner-item">+${insufficient.length - 8} more</span>` : '';
             bannerHtml += `<div class="banner banner-stale">
@@ -418,7 +662,7 @@
         }
         if (improvements.length > 0) {
             const items = improvements.map(r =>
-                `<span class="banner-item">${r.icon} ${r.name}: <strong>${r.pct.toFixed(1)}%</strong></span>`
+                bannerLinkHtml(r.name, `${r.icon} ${r.name}: <strong>${r.pct.toFixed(1)}%</strong>`)
             ).join('');
             bannerHtml += `<div class="banner banner-improvement">
                 <span class="banner-icon">🚀</span>
@@ -439,78 +683,7 @@
 
         document.getElementById('regressionContent').innerHTML = bannerHtml;
 
-        function summaryCells(a) {
-            const winInc = a.platforms?.windows?.incBuild;
-            const linInc = a.platforms?.linux?.incBuild;
-            const fallbackInc = !winInc && !linInc ? a.incBuild : null;
-            return `
-                <td class="num">${winInc ? fmtMs(winInc.p50) : fallbackInc ? fmtMs(fallbackInc.p50) : '—'}</td>
-                <td>${winInc ? sparklineSvg(winInc.sparkline) : fallbackInc ? sparklineSvg(fallbackInc.sparkline) : '<span class="muted">—</span>'}</td>
-                <td class="num">${linInc ? fmtMs(linInc.p50) : '—'}</td>
-                <td>${linInc ? sparklineSvg(linInc.sparkline) : '<span class="muted">—</span>'}</td>
-                <td>${platformHealthBadges(a)}</td>`;
-        }
-
-        // ── Summary Table with platform columns ──
-        let tbody = '';
-        for (const a of active) {
-            const winInc = a.platforms?.windows?.incBuild;
-            const linInc = a.platforms?.linux?.incBuild;
-            if (!winInc && !linInc && !a.incBuild) continue;
-
-            tbody += `<tr class="summary-row" data-asset="${a.name}">
-                <td class="asset-name">
-                    <span class="asset-link">${a.name}</span>
-                    ${a.canonical === 'mt' ? '<span class="tag tag-mt">MT</span>' : ''}
-                    ${isBrokenAsset(a.name) ? brokenTagHtml() : ''}
-                </td>
-                ${summaryCells(a)}
-            </tr>`;
-        }
-
-        // Archived assets toggle
-        if (archived.length > 0) {
-            tbody += `<tr class="archived-toggle-row">
-                <td colspan="6">
-                    <button class="archived-toggle" id="archivedToggle">Show ${archived.length} archived assets ▸</button>
-                </td>
-            </tr>`;
-            for (const a of archived) {
-                tbody += `<tr class="summary-row archived-row" data-asset="${a.name}" style="display:none">
-                    <td class="asset-name">
-                        <span class="asset-link">${a.name}</span>
-                        <span class="tag tag-archived">ARCHIVED</span>
-                        ${isBrokenAsset(a.name) ? brokenTagHtml() : ''}
-                    </td>
-                    ${summaryCells(a)}
-                </tr>`;
-            }
-        }
-
-        document.getElementById('summaryBody').innerHTML = tbody;
-
-        // Archived toggle handler
-        const toggleBtn = document.getElementById('archivedToggle');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
-                const rows = document.querySelectorAll('.archived-row');
-                const showing = rows[0]?.style.display !== 'none';
-                rows.forEach(r => r.style.display = showing ? 'none' : '');
-                toggleBtn.textContent = showing
-                    ? `Show ${archived.length} archived assets ▸`
-                    : `Hide ${archived.length} archived assets ▾`;
-            });
-        }
-
-        // Click row → switch to Trends for that asset
-        document.querySelectorAll('.summary-row').forEach(row => {
-            row.addEventListener('click', () => {
-                const name = row.dataset.asset;
-                document.getElementById('assetSelect').value = name;
-                loadAsset(name);
-                document.querySelector('.tab[data-view="trends"]').click();
-            });
-        });
+        renderSummaryTable();
 
         // ── Header meta ──
         const dates = active.map(a => a.latestDate).filter(Boolean).sort();
@@ -664,40 +837,48 @@
         el.innerHTML = `<div class="point-detail">${parts.join('<span class="detail-sep">·</span>')}</div>`;
     }
 
+    // Default Chart.js events; we strip mousemove/mouseout while a tooltip is
+    // pinned so it can't be cleared by the cursor moving away.
+    const DEFAULT_CHART_EVENTS = ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'];
+    const PINNED_CHART_EVENTS = ['click', 'touchstart'];
+
+    function pinChartTooltip(chart, dsIdx, idx) {
+        const meta = chart.getDatasetMeta(dsIdx);
+        const elem = meta && meta.data && meta.data[idx];
+        if (!elem) return;
+        chart._pinnedTooltip = { dsIdx, idx };
+        chart.options.events = PINNED_CHART_EVENTS;
+        chart.tooltip.setActiveElements(
+            [{ datasetIndex: dsIdx, index: idx }],
+            { x: elem.x, y: elem.y }
+        );
+        chart.update();
+    }
+
+    function unpinChartTooltip(chart) {
+        chart._pinnedTooltip = null;
+        chart.options.events = DEFAULT_CHART_EVENTS;
+        chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+        chart.update();
+    }
+
     function addChartClickHandler(chart, series, detailContainerId, perDataset) {
         chart.options.onClick = (evt) => {
             const points = chart.getElementsAtEventForMode(evt, 'index', { intersect: false }, false);
-            if (points.length) {
-                const idx = points[0].index;
-                const dsIdx = points[0].datasetIndex;
-                const point = perDataset ? (series[dsIdx]?.[idx] || series[0]?.[idx]) : series[idx];
-                renderPointDetail(point, detailContainerId);
+            if (!points.length) {
+                if (chart._pinnedTooltip) unpinChartTooltip(chart);
+                return;
+            }
+            const idx = points[0].index;
+            const dsIdx = points[0].datasetIndex;
+            const point = perDataset ? (series[dsIdx]?.[idx] || series[0]?.[idx]) : series[idx];
+            renderPointDetail(point, detailContainerId);
 
-                // Pin a persistent vertical line at the clicked x so the user keeps a
-                // visible anchor on the chart even after the hover tooltip fades.
-                const xValue = chart.data.labels?.[idx];
-                if (xValue != null) {
-                    if (!chart.options.plugins) chart.options.plugins = {};
-                    if (!chart.options.plugins.annotation) chart.options.plugins.annotation = { annotations: {} };
-                    const ann = chart.options.plugins.annotation.annotations;
-                    Object.keys(ann).forEach(k => { if (k.startsWith('pin_')) delete ann[k]; });
-                    ann['pin_x'] = {
-                        type: 'line',
-                        xMin: xValue, xMax: xValue,
-                        borderColor: 'rgba(9, 105, 218, 0.85)',
-                        borderWidth: 2,
-                        label: {
-                            display: true,
-                            content: '📌',
-                            position: 'start',
-                            backgroundColor: 'rgba(9, 105, 218, 0.95)',
-                            color: '#fff',
-                            font: { size: 10 },
-                            padding: 3
-                        }
-                    };
-                    chart.update('none');
-                }
+            const pinned = chart._pinnedTooltip;
+            if (pinned && pinned.idx === idx && pinned.dsIdx === dsIdx) {
+                unpinChartTooltip(chart);
+            } else {
+                pinChartTooltip(chart, dsIdx, idx);
             }
         };
         chart.update();
@@ -708,18 +889,44 @@
         return src.filter(d => d.scenario === scenario).sort((a, b) => b.date.localeCompare(a.date))[0];
     }
 
+    // Theme-aware colors for Chart.js. Charts are re-created on theme toggle so
+    // they pick up the new palette on the next render.
+    function chartTheme() {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        return isDark ? {
+            tickColor: '#7d8590',
+            axisTitle: '#7d8590',
+            grid: 'rgba(139, 148, 158, 0.18)',
+            legend: '#c9d1d9',
+            tooltipBg: 'rgba(22, 27, 34, 0.97)',
+            tooltipTitle: '#e6edf3',
+            tooltipBody: '#c9d1d9',
+            tooltipBorder: '#30363d'
+        } : {
+            tickColor: '#8b949e',
+            axisTitle: '#8b949e',
+            grid: '#f0f3f6',
+            legend: '#656d76',
+            tooltipBg: 'rgba(255, 255, 255, 0.97)',
+            tooltipTitle: '#1f2328',
+            tooltipBody: '#1f2328',
+            tooltipBorder: '#d8dee4'
+        };
+    }
+
     function chartOpts(versionData, dates) {
         const annotations = getMachineChangeAnnotations(versionData, dates);
+        const t = chartTheme();
         return {
             responsive: true, maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
             plugins: {
                 annotation: { annotations },
-                legend: { labels: { color: '#656d76', font: { size: 11 } } },
+                legend: { labels: { color: t.legend, font: { size: 11 } } },
                 tooltip: {
-                    backgroundColor: 'rgba(255,255,255,0.97)',
-                    titleColor: '#1f2328', bodyColor: '#1f2328',
-                    borderColor: '#d8dee4', borderWidth: 1,
+                    backgroundColor: t.tooltipBg,
+                    titleColor: t.tooltipTitle, bodyColor: t.tooltipBody,
+                    borderColor: t.tooltipBorder, borderWidth: 1,
                     cornerRadius: 6, padding: 10,
                     callbacks: {
                         label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1)} ms`,
@@ -733,15 +940,15 @@
                             if (pt.sdkVersion) lines.push(`  SDK: ${pt.sdkVersion}`);
                             if (pt.crankSdkVersion) lines.push(`  Crank SDK: ${pt.crankSdkVersion}`);
                             if (pt.runtimeVersion) lines.push(`  Runtime: ${pt.runtimeVersion}`);
-                            if (lines.length) lines.push('  (click for links)');
+                            if (lines.length) lines.push('  (click to pin · click again to release)');
                             return lines.length ? ['', ...lines] : '';
                         }
                     }
                 }
             },
             scales: {
-                x: { ticks: { color: '#8b949e', maxTicksLimit: 12, font: { size: 10 } }, grid: { color: '#f0f3f6' } },
-                y: { ticks: { color: '#8b949e' }, grid: { color: '#f0f3f6' }, title: { display: true, text: 'ms', color: '#8b949e' } }
+                x: { ticks: { color: t.tickColor, maxTicksLimit: 12, font: { size: 10 } }, grid: { color: t.grid } },
+                y: { ticks: { color: t.tickColor }, grid: { color: t.grid }, title: { display: true, text: 'ms', color: t.axisTitle } }
             }
         };
     }
@@ -773,7 +980,7 @@
         scenarioList().forEach((s, i) => {
             const id = `tsc_${i}`;
             const checked = prevSelected.length ? prevSelected.includes(s) : i === 0;
-            const color = TREND_COLORS[i % TREND_COLORS.length];
+            const color = trendColors()[i % trendColors().length];
             container.innerHTML += `<label class="chip${checked ? ' active' : ''}" style="--chip-color:${color}"><input type="checkbox" value="${s}" id="${id}" ${checked ? 'checked' : ''}>${short(s)}</label>`;
         });
         container.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
@@ -838,8 +1045,8 @@
             const metaArray = dates.map(d => mtMerged[d] || stdMerged[d] || null);
 
             const datasets = [
-                { label: 'Standard', data: dates.map(d => stdMap[d] ?? null), borderColor: CLR.line, backgroundColor: CLR.lineFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
-                { label: 'Multithreaded', data: dates.map(d => mtMap[d] ?? null), borderColor: CLR.mt, backgroundColor: CLR.mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
+                { label: 'Standard', data: dates.map(d => stdMap[d] ?? null), borderColor: clr().line, backgroundColor: clr().lineFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
+                { label: 'Multithreaded', data: dates.map(d => mtMap[d] ?? null), borderColor: clr().mt, backgroundColor: clr().mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
             ];
 
             if (CHARTS[chartKey]) CHARTS[chartKey].destroy();
@@ -909,7 +1116,7 @@
             const perDatasetMeta = [];
 
             allSeries.forEach((s, i) => {
-                const color = TREND_COLORS[i % TREND_COLORS.length];
+                const color = trendColors()[i % trendColors().length];
                 const valMap = Object.fromEntries(s.data.map(d => [d.date, d.value]));
                 const pointMap = Object.fromEntries(s.data.map(d => [d.date, d]));
                 perDatasetMeta.push(allDates.map(d => pointMap[d] || null));
@@ -949,7 +1156,7 @@
         for (const platform of statPlatforms) {
             selected.forEach((sc, i) => {
                 const vals = getSeries(sc, metric, platform.data).map(d => d.value);
-                const color = TREND_COLORS[i % TREND_COLORS.length];
+                const color = trendColors()[i % trendColors().length];
                 if (vals.length) {
                     statsHtml += `<div class="stat"><div class="stat-value" style="color:${color}">${avg(vals).toFixed(0)}</div><div class="stat-label">${platform.icon} ${platform.label} · ${short(sc)} avg (ms)</div></div>`;
                 }
@@ -1045,21 +1252,29 @@
                 data: {
                     labels,
                     datasets: [
-                        { label: 'Standard', data: stdVals, backgroundColor: CLR.bar, borderRadius: 3 },
-                        { label: 'Multithreaded', data: mtVals, backgroundColor: CLR.barMt, borderRadius: 3 }
+                        { label: 'Standard', data: stdVals, backgroundColor: clr().bar, borderRadius: 3 },
+                        { label: 'Multithreaded', data: mtVals, backgroundColor: clr().barMt, borderRadius: 3 }
                     ]
                 },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: '#656d76', font: { size: 11 } } },
-                        tooltip: { callbacks: { label: ctx => ctx.parsed.y != null ? ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(0)} ms` : '' } }
-                    },
-                    scales: {
-                        x: { ticks: { color: '#8b949e', font: { size: 10 } }, grid: { display: false } },
-                        y: { ticks: { color: '#8b949e' }, grid: { color: '#f0f3f6' }, title: { display: true, text: 'ms', color: '#8b949e' }, beginAtZero: true }
-                    }
-                }
+                options: (() => {
+                    const t = chartTheme();
+                    return {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: t.legend, font: { size: 11 } } },
+                            tooltip: {
+                                backgroundColor: t.tooltipBg,
+                                titleColor: t.tooltipTitle, bodyColor: t.tooltipBody,
+                                borderColor: t.tooltipBorder, borderWidth: 1,
+                                callbacks: { label: ctx => ctx.parsed.y != null ? ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(0)} ms` : '' }
+                            }
+                        },
+                        scales: {
+                            x: { ticks: { color: t.tickColor, font: { size: 10 } }, grid: { display: false } },
+                            y: { ticks: { color: t.tickColor }, grid: { color: t.grid }, title: { display: true, text: 'ms', color: t.axisTitle }, beginAtZero: true }
+                        }
+                    };
+                })()
             });
         }
 
@@ -1441,6 +1656,87 @@
         updateNoMachineToggle();
         renderMt(); renderTrend(); renderComp();
     });
+
+    // Overview: filter input
+    (function wireOverviewFilter() {
+        const input = document.getElementById('overviewFilter');
+        if (!input) return;
+        input.addEventListener('input', () => {
+            OVERVIEW_FILTER = input.value.trim().toLowerCase();
+            renderSummaryTable();
+        });
+    })();
+
+    // Overview: sortable column headers (click cycle: default-dir → opposite → off).
+    document.querySelectorAll('#summaryTable th.sortable').forEach(th => {
+        th.addEventListener('click', () => {
+            const key = th.dataset.sortKey;
+            const defaultDir = th.dataset.defaultDir || 'desc';
+            if (OVERVIEW_SORT && OVERVIEW_SORT.key === key) {
+                if (OVERVIEW_SORT.dir === defaultDir) {
+                    OVERVIEW_SORT = { key, dir: defaultDir === 'asc' ? 'desc' : 'asc' };
+                } else {
+                    OVERVIEW_SORT = null; // back to default "worst regression" sort
+                }
+            } else {
+                OVERVIEW_SORT = { key, dir: defaultDir };
+            }
+            renderSummaryTable();
+        });
+    });
+
+    // Overview banner: clickable items deep-link into Trends/Health.
+    document.getElementById('regressionContent').addEventListener('click', (e) => {
+        const btn = e.target.closest('.banner-link');
+        if (!btn) return;
+        e.preventDefault();
+        const asset = btn.dataset.asset;
+        if (!asset) return;
+        goToView({
+            tab: btn.dataset.tab || 'trends',
+            asset,
+            time: btn.dataset.time || '30d'
+        });
+    });
+
+    /* ── Theme: toggle + system preference listener ──
+       Initial value is set inline in <head> to avoid a flash. */
+    const THEME_KEY = 'msbuild-dashboard-theme';
+    function applyTheme(theme) {
+        document.documentElement.dataset.theme = theme;
+        const btn = document.getElementById('themeToggle');
+        if (btn) {
+            const icon = btn.querySelector('.theme-icon');
+            if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            const label = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+            btn.title = label;
+            btn.setAttribute('aria-label', label);
+        }
+    }
+    function rerenderForTheme() {
+        // Charts read colors via chartTheme() at construction, so re-render to refresh.
+        if (SUMMARY) renderOverview();
+        if (DATA_ALL.length) applyTimeFilter();
+        if (HEALTH_DATA_ALL.length) applyHealthTimeFilter();
+    }
+    applyTheme(document.documentElement.dataset.theme || 'light');
+    document.getElementById('themeToggle').addEventListener('click', () => {
+        const current = document.documentElement.dataset.theme || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        localStorage.setItem(THEME_KEY, next);
+        applyTheme(next);
+        rerenderForTheme();
+    });
+    if (window.matchMedia) {
+        const mql = matchMedia('(prefers-color-scheme: dark)');
+        const onSystemThemeChange = (e) => {
+            if (localStorage.getItem(THEME_KEY)) return; // user has explicit override
+            applyTheme(e.matches ? 'dark' : 'light');
+            rerenderForTheme();
+        };
+        if (mql.addEventListener) mql.addEventListener('change', onSystemThemeChange);
+        else if (mql.addListener) mql.addListener(onSystemThemeChange); // older Safari
+    }
 
     init();
     </script>
