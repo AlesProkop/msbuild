@@ -150,6 +150,33 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     border-color: var(--accent);
 }
 
+/* ── Time-range slider ── */
+.time-slider-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+}
+.time-slider {
+    width: 200px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+.time-slider:focus { outline: none; }
+.time-slider-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 100px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
 /* ── Chip multiselect ── */
 .chip-group { display: flex; flex-wrap: wrap; gap: 5px; }
 .chip {
@@ -347,6 +374,11 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
 .tag-archived {
     background: rgba(101, 109, 118, 0.1);
     color: var(--text-subtle);
+}
+.tag-broken {
+    background: #fff8c5;
+    color: #7a5d00;
+    border: 1px solid #d4a72c;
 }
 .badge {
     display: inline-block;

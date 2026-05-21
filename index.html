@@ -64,16 +64,12 @@
                 <div class="controls-row">
                     <label>Asset:</label>
                     <select id="assetSelect"></select>
-                    <label>Time Range:</label>
-                    <select id="timeRange">
-                        <option value="all" selected>All Time</option>
-                        <option value="3y">Last 3 Years</option>
-                        <option value="2y">Last 2 Years</option>
-                        <option value="1y">Last Year</option>
-                        <option value="6m">Last 6 Months</option>
-                        <option value="90d">Last 90 Days</option>
-                        <option value="30d">Last 30 Days</option>
-                    </select>
+                    <span id="trendsBrokenBadge" class="tag tag-broken" title="This asset is currently broken — results may be unreliable. Not prioritized for fixing." style="display:none">⚠ BROKEN</span>
+                    <label for="timeRange">Time Range:</label>
+                    <div class="time-slider-wrap">
+                        <input type="range" id="timeRange" class="time-slider" min="0" max="8" step="1" value="2" list="rangeTicks">
+                        <span class="time-slider-label" id="timeRangeLabel">Last 30 days</span>
+                    </div>
                     <button type="button" class="platform-toggle" id="noMachineToggle" style="display:none">Show historical / no-machine runs ▸</button>
                     <span id="loadingMsg" style="font-size:12px;color:var(--text-subtle);font-style:italic"></span>
                 </div>
@@ -179,16 +175,12 @@
                 <div class="controls-row">
                     <label>Asset:</label>
                     <select id="healthAssetSelect"></select>
-                    <label>Time Range:</label>
-                    <select id="healthTimeRange">
-                        <option value="all" selected>All Time</option>
-                        <option value="3y">Last 3 Years</option>
-                        <option value="2y">Last 2 Years</option>
-                        <option value="1y">Last Year</option>
-                        <option value="6m">Last 6 Months</option>
-                        <option value="90d">Last 90 Days</option>
-                        <option value="30d">Last 30 Days</option>
-                    </select>
+                    <span id="healthBrokenBadge" class="tag tag-broken" title="This asset is currently broken — results may be unreliable. Not prioritized for fixing." style="display:none">⚠ BROKEN</span>
+                    <label for="healthTimeRange">Time Range:</label>
+                    <div class="time-slider-wrap">
+                        <input type="range" id="healthTimeRange" class="time-slider" min="0" max="8" step="1" value="2" list="rangeTicks">
+                        <span class="time-slider-label" id="healthTimeRangeLabel">Last 30 days</span>
+                    </div>
                     <span id="healthLoadingMsg" style="font-size:12px;color:var(--text-subtle);font-style:italic"></span>
                 </div>
             </div>
@@ -207,6 +199,12 @@
     </div>
 
     <footer><p id="footerInfo">MSBuild PerfStar CI</p></footer>
+
+    <datalist id="rangeTicks">
+        <option value="0"></option><option value="1"></option><option value="2"></option>
+        <option value="3"></option><option value="4"></option><option value="5"></option>
+        <option value="6"></option><option value="7"></option><option value="8"></option>
+    </datalist>
 
     <script>
     /* ── Global state ── */
@@ -231,6 +229,37 @@
         avg: '#9a6700', bar: '#0969da', barMt: '#8250df'
     };
     const TREND_COLORS = ['#0969da','#cf222e','#1a7f37','#8250df','#bf8700','#656d76','#e16f24','#0550ae','#6e7781','#953800'];
+
+    // Assets that are known to be broken / unreliable and not currently prioritized for fixing.
+    // Surfaced in the UI as a yellow "BROKEN" tag in Overview, Trends and Health.
+    const BROKEN_ASSETS = new Set(['eshop-on-blazor-modified']);
+    function isBrokenAsset(name) { return BROKEN_ASSETS.has(name); }
+    const BROKEN_TAG_TITLE = 'This asset is currently broken — results may be unreliable. Not prioritized for fixing.';
+    function brokenTagHtml() { return `<span class="tag tag-broken" title="${BROKEN_TAG_TITLE}">⚠ BROKEN</span>`; }
+
+    // Time-range slider stops. Index 0 = most recent, last index = "all time" (no cutoff).
+    // The 'key' is the stable identifier used in the shareable URL hash.
+    const TIME_STOPS = [
+        { days: 7,    label: 'Last week',     key: '7d' },
+        { days: 14,   label: 'Last 2 weeks',  key: '14d' },
+        { days: 30,   label: 'Last 30 days',  key: '30d' },
+        { days: 90,   label: 'Last 90 days',  key: '90d' },
+        { days: 180,  label: 'Last 6 months', key: '6m' },
+        { days: 365,  label: 'Last year',     key: '1y' },
+        { days: 730,  label: 'Last 2 years',  key: '2y' },
+        { days: 1095, label: 'Last 3 years',  key: '3y' },
+        { days: null, label: 'All time',      key: 'all' }
+    ];
+    const DEFAULT_TIME_IDX = 2; // "Last 30 days"
+    function timeStopAt(idx) {
+        const i = Math.max(0, Math.min(TIME_STOPS.length - 1, +idx | 0));
+        return TIME_STOPS[i];
+    }
+    function timeIdxFromKey(key, fallback) {
+        if (key == null) return fallback;
+        const i = TIME_STOPS.findIndex(s => s.key === key);
+        return i >= 0 ? i : fallback;
+    }
 
     /* ── Helpers ── */
     function short(s) { return s.replace(/^.*?-(?=inc-build|rebuild)/, '').replace('-dotnet',''); }
@@ -433,6 +462,7 @@
                 <td class="asset-name">
                     <span class="asset-link">${a.name}</span>
                     ${a.canonical === 'mt' ? '<span class="tag tag-mt">MT</span>' : ''}
+                    ${isBrokenAsset(a.name) ? brokenTagHtml() : ''}
                 </td>
                 ${summaryCells(a)}
             </tr>`;
@@ -450,6 +480,7 @@
                     <td class="asset-name">
                         <span class="asset-link">${a.name}</span>
                         <span class="tag tag-archived">ARCHIVED</span>
+                        ${isBrokenAsset(a.name) ? brokenTagHtml() : ''}
                     </td>
                     ${summaryCells(a)}
                 </tr>`;
@@ -641,6 +672,32 @@
                 const dsIdx = points[0].datasetIndex;
                 const point = perDataset ? (series[dsIdx]?.[idx] || series[0]?.[idx]) : series[idx];
                 renderPointDetail(point, detailContainerId);
+
+                // Pin a persistent vertical line at the clicked x so the user keeps a
+                // visible anchor on the chart even after the hover tooltip fades.
+                const xValue = chart.data.labels?.[idx];
+                if (xValue != null) {
+                    if (!chart.options.plugins) chart.options.plugins = {};
+                    if (!chart.options.plugins.annotation) chart.options.plugins.annotation = { annotations: {} };
+                    const ann = chart.options.plugins.annotation.annotations;
+                    Object.keys(ann).forEach(k => { if (k.startsWith('pin_')) delete ann[k]; });
+                    ann['pin_x'] = {
+                        type: 'line',
+                        xMin: xValue, xMax: xValue,
+                        borderColor: 'rgba(9, 105, 218, 0.85)',
+                        borderWidth: 2,
+                        label: {
+                            display: true,
+                            content: '📌',
+                            position: 'start',
+                            backgroundColor: 'rgba(9, 105, 218, 0.95)',
+                            color: '#fff',
+                            font: { size: 10 },
+                            padding: 3
+                        }
+                    };
+                    chart.update('none');
+                }
             }
         };
         chart.update();
@@ -690,13 +747,13 @@
     }
 
     function applyTimeFilter() {
-        const range = document.getElementById('timeRange').value;
+        const stop = timeStopAt(document.getElementById('timeRange').value);
+        document.getElementById('timeRangeLabel').textContent = stop.label;
         let filtered = [...DATA_ALL];
 
-        if (range !== 'all' && filtered.length) {
+        if (stop.days != null && filtered.length) {
             const now = new Date();
-            const days = { '30d': 30, '90d': 90, '6m': 180, '1y': 365, '2y': 730, '3y': 1095 }[range] || 0;
-            now.setDate(now.getDate() - days);
+            now.setDate(now.getDate() - stop.days);
             const cutoff = now.toISOString().slice(0, 10);
             filtered = filtered.filter(d => d.date >= cutoff);
         }
@@ -706,6 +763,7 @@
         DATA_LIN = filtered.filter(d => platformOf(d) === 'linux');
         DATA_UNKNOWN = filtered.filter(d => platformOf(d) === 'unknown');
         renderTrends();
+        updateHash();
     }
 
     function renderTrends() {
@@ -728,13 +786,13 @@
     }
 
     function applyHealthTimeFilter() {
-        const range = document.getElementById('healthTimeRange').value;
+        const stop = timeStopAt(document.getElementById('healthTimeRange').value);
+        document.getElementById('healthTimeRangeLabel').textContent = stop.label;
         let filtered = [...HEALTH_DATA_ALL];
 
-        if (range !== 'all' && filtered.length) {
+        if (stop.days != null && filtered.length) {
             const now = new Date();
-            const days = { '30d': 30, '90d': 90, '6m': 180, '1y': 365, '2y': 730, '3y': 1095 }[range] || 0;
-            now.setDate(now.getDate() - days);
+            now.setDate(now.getDate() - stop.days);
             const cutoff = now.toISOString().slice(0, 10);
             filtered = filtered.filter(d => d.date >= cutoff);
         }
@@ -744,6 +802,7 @@
         HEALTH_LIN = filtered.filter(d => platformOf(d) === 'linux');
         HEALTH_UNKNOWN = filtered.filter(d => platformOf(d) === 'unknown');
         renderHealth();
+        updateHash();
     }
 
     // ── MT vs Standard ──
@@ -1171,19 +1230,116 @@
         }
     }
 
+    /* ══════════════════════════════════════════════
+       URL hash — shareable view state
+       Hash format:
+         #overview
+         #trends/<asset>/<timeKey>
+         #health/<asset>/<timeKey>
+       ══════════════════════════════════════════════ */
+    let HASH_SUPPRESSED = false; // set true while applying hash to avoid feedback loop
+    function getCurrentState() {
+        const activeTabBtn = document.querySelector('.tab.active');
+        const tab = activeTabBtn?.dataset.view || 'overview';
+        if (tab === 'trends') {
+            return {
+                tab,
+                asset: document.getElementById('assetSelect').value || '',
+                time: timeStopAt(document.getElementById('timeRange').value).key
+            };
+        }
+        if (tab === 'health') {
+            return {
+                tab,
+                asset: document.getElementById('healthAssetSelect').value || '',
+                time: timeStopAt(document.getElementById('healthTimeRange').value).key
+            };
+        }
+        return { tab: 'overview' };
+    }
+    function stateToHash(s) {
+        if (!s || s.tab === 'overview') return '#overview';
+        return `#${s.tab}/${encodeURIComponent(s.asset || '')}/${s.time || 'all'}`;
+    }
+    function parseHash() {
+        const h = (location.hash || '').replace(/^#/, '');
+        if (!h) return null;
+        const parts = h.split('/');
+        if (parts[0] === 'overview') return { tab: 'overview' };
+        if (parts[0] === 'trends' || parts[0] === 'health') {
+            return {
+                tab: parts[0],
+                asset: parts[1] ? decodeURIComponent(parts[1]) : null,
+                time: parts[2] || null
+            };
+        }
+        return null;
+    }
+    function updateHash() {
+        if (HASH_SUPPRESSED) return;
+        const newHash = stateToHash(getCurrentState());
+        if (location.hash !== newHash) history.replaceState(null, '', newHash);
+    }
+    function switchTab(tabName) {
+        const tabBtn = document.querySelector(`.tab[data-view="${tabName}"]`);
+        if (!tabBtn) return;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        tabBtn.classList.add('active');
+        document.getElementById('view-' + tabName).classList.add('active');
+    }
+    async function applyHashState(state) {
+        if (!state) return;
+        HASH_SUPPRESSED = true;
+        try {
+            switchTab(state.tab);
+            if (state.tab === 'trends' && state.asset) {
+                const sel = document.getElementById('assetSelect');
+                if ([...sel.options].some(o => o.value === state.asset)) {
+                    if (sel.value !== state.asset) {
+                        sel.value = state.asset;
+                        await loadAsset(state.asset);
+                    }
+                }
+                if (state.time) {
+                    const slider = document.getElementById('timeRange');
+                    slider.value = timeIdxFromKey(state.time, DEFAULT_TIME_IDX);
+                    applyTimeFilter();
+                }
+            } else if (state.tab === 'health' && state.asset) {
+                const sel = document.getElementById('healthAssetSelect');
+                if ([...sel.options].some(o => o.value === state.asset)) {
+                    if (sel.value !== state.asset) {
+                        sel.value = state.asset;
+                        await loadHealthAsset(state.asset);
+                    }
+                }
+                if (state.time) {
+                    const slider = document.getElementById('healthTimeRange');
+                    slider.value = timeIdxFromKey(state.time, DEFAULT_TIME_IDX);
+                    applyHealthTimeFilter();
+                }
+            }
+        } finally {
+            HASH_SUPPRESSED = false;
+            updateHash();
+        }
+    }
+    window.addEventListener('hashchange', () => { applyHashState(parseHash()); });
+
     /* ── Tab switching ── */
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById('view-' + tab.dataset.view).classList.add('active');
+            switchTab(tab.dataset.view);
+            updateHash();
         });
     });
 
     /* ── Load asset (for Trends / Health) ── */
     async function loadAsset(name) {
         document.getElementById('loadingMsg').textContent = 'Loading...';
+        const badge = document.getElementById('trendsBrokenBadge');
+        if (badge) badge.style.display = isBrokenAsset(name) ? '' : 'none';
         const resp = await fetch(`data/aggregated/${name}.json`);
         DATA_ALL = await resp.json();
         document.getElementById('loadingMsg').textContent = '';
@@ -1192,6 +1348,8 @@
 
     async function loadHealthAsset(name) {
         document.getElementById('healthLoadingMsg').textContent = 'Loading...';
+        const badge = document.getElementById('healthBrokenBadge');
+        if (badge) badge.style.display = isBrokenAsset(name) ? '' : 'none';
         const resp = await fetch(`data/aggregated/${name}.json`);
         HEALTH_DATA_ALL = await resp.json();
         document.getElementById('healthLoadingMsg').textContent = '';
@@ -1201,6 +1359,11 @@
     /* ── Init ── */
     async function init() {
         try {
+            // Capture the user's pasted hash up front; default loading below would
+            // otherwise overwrite location.hash via applyTimeFilter → updateHash.
+            const initialHashState = parseHash();
+            HASH_SUPPRESSED = true;
+
             // Load summary for Overview + asset selector
             const summResp = await fetch('data/summary.json');
             SUMMARY = await summResp.json();
@@ -1218,7 +1381,7 @@
                 for (const a of activeList) {
                     const o = document.createElement('option');
                     o.value = a.name;
-                    o.textContent = a.name;
+                    o.textContent = isBrokenAsset(a.name) ? `${a.name} ⚠` : a.name;
                     select.appendChild(o);
                 }
                 if (archivedList.length > 0) {
@@ -1227,7 +1390,7 @@
                     for (const a of archivedList) {
                         const o = document.createElement('option');
                         o.value = a.name;
-                        o.textContent = a.name;
+                        o.textContent = isBrokenAsset(a.name) ? `${a.name} ⚠` : a.name;
                         grp.appendChild(o);
                     }
                     select.appendChild(grp);
@@ -1239,10 +1402,19 @@
             healthSel.addEventListener('change', () => loadHealthAsset(healthSel.value));
 
             const defaultAsset = activeList[0]?.name || sorted[0]?.name;
-            sel.value = defaultAsset;
+            const trendsDefaultAsset = sorted.find(a => a.name === 'orchard-core')?.name || defaultAsset;
+            sel.value = trendsDefaultAsset;
             healthSel.value = defaultAsset;
-            await loadAsset(defaultAsset);
+            await loadAsset(trendsDefaultAsset);
             await loadHealthAsset(defaultAsset);
+
+            // Now safe to write hash. Apply the URL hash (if any) over the defaults.
+            HASH_SUPPRESSED = false;
+            if (initialHashState) {
+                await applyHashState(initialHashState);
+            } else {
+                updateHash();
+            }
         } catch (err) {
             console.error('Dashboard init failed:', err);
             document.getElementById('headerMeta').textContent = `Error: ${err.message}`;
@@ -1252,8 +1424,18 @@
     document.getElementById('mtBuildType').addEventListener('change', renderMt);
     document.getElementById('mtMetric').addEventListener('change', renderMt);
     document.getElementById('trendMetric').addEventListener('change', renderTrend);
-    document.getElementById('timeRange').addEventListener('change', applyTimeFilter);
-    document.getElementById('healthTimeRange').addEventListener('change', applyHealthTimeFilter);
+    (function wireTimeSlider(sliderId, labelId, onChange) {
+        const slider = document.getElementById(sliderId);
+        const label = document.getElementById(labelId);
+        slider.addEventListener('input', () => { label.textContent = timeStopAt(slider.value).label; });
+        slider.addEventListener('change', onChange);
+    })('timeRange', 'timeRangeLabel', applyTimeFilter);
+    (function wireTimeSlider(sliderId, labelId, onChange) {
+        const slider = document.getElementById(sliderId);
+        const label = document.getElementById(labelId);
+        slider.addEventListener('input', () => { label.textContent = timeStopAt(slider.value).label; });
+        slider.addEventListener('change', onChange);
+    })('healthTimeRange', 'healthTimeRangeLabel', applyHealthTimeFilter);
     document.getElementById('noMachineToggle').addEventListener('click', () => {
         SHOW_UNKNOWN_TRENDS = !SHOW_UNKNOWN_TRENDS;
         updateNoMachineToggle();
