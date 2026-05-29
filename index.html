@@ -46,13 +46,18 @@
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">Cross-Asset Performance — Incremental Build</span>
-                    <span class="card-subtitle">Canonical metric (MT where available) · P50 incremental build · Per-platform</span>
+                    <span class="card-subtitle" id="overviewSubtitle">Canonical metric (MT where available) · P50 incremental build · Per-platform</span>
                 </div>
                 <div class="controls-row overview-controls">
                     <label for="overviewFilter">Filter:</label>
                     <input type="search" id="overviewFilter" class="search-input" placeholder="Filter by asset name…" autocomplete="off" spellcheck="false">
                     <span id="overviewFilterCount" class="muted" style="font-size:12px; display:none"></span>
                     <span class="muted" id="overviewSortHint" style="font-size:12px; margin-left:auto">Sorted by worst regression · click a column to override</span>
+                    <div class="thermal-toggle" id="overviewThermalToggle" role="group" aria-label="Thermal mode" title="Switch between cold-process and warm-process build measurements">
+                        <button type="button" data-thermal="cold" class="active" title="Cold-process builds (default)">❄ Cold</button>
+                        <button type="button" data-thermal="warm" title="Warm-process builds (MSBuild nodes reused across iterations)">🔥 Warm</button>
+                        <button type="button" data-thermal="both" title="Stacked cold + warm sparklines per asset">Both</button>
+                    </div>
                 </div>
                 <div class="table-wrapper">
                     <table class="summary-table" id="summaryTable">
@@ -99,8 +104,10 @@
                 <div class="card-header"><span class="card-title">Multithreaded vs Standard</span><span class="card-subtitle">Build time trend comparing standard and MT configurations</span></div>
                 <div class="controls-row">
                     <select id="mtBuildType">
-                        <option value="inc-build">Incremental Build</option>
-                        <option value="rebuild">Rebuild</option>
+                        <option value="inc-build">❄ Incremental Build</option>
+                        <option value="rebuild">❄ Rebuild</option>
+                        <option value="warm-inc-build" data-warm="1">🔥 Warm Incremental Build</option>
+                        <option value="warm-rebuild" data-warm="1">🔥 Warm Rebuild</option>
                     </select>
                     <select id="mtMetric">
                         <option value="build-time" selected>Build Time</option>
@@ -137,6 +144,8 @@
                         <option value="evaluation-time">Evaluation Time</option>
                         <option value="evaluation-time-pass1">Eval Pass 1</option>
                         <option value="evaluation-time-pass5">Eval Pass 5</option>
+                        <option value="build-time-first" data-warm-only="1">🔥 Build Time (1st iteration)</option>
+                        <option value="evaluation-time-first" data-warm-only="1">🔥 Evaluation Time (1st iteration)</option>
                     </select>
                 </div>
                 <div class="platform-charts">
@@ -269,6 +278,53 @@
     const BROKEN_TAG_TITLE = 'This asset is currently broken — results may be unreliable. Not prioritized for fixing.';
     function brokenTagHtml() { return `<span class="tag tag-broken" title="${BROKEN_TAG_TITLE}">⚠ BROKEN</span>`; }
 
+    /* ── Thermal mode (Overview Cold / Warm / Both) ──
+       Cold = builds with cold MSBuild worker nodes (today's canonical metric, /nr:false).
+       Warm = warm-process builds (nodes stay alive). Warm scenarios in summary.json land in the
+              `incBuildWarm` / `rebuildWarm` slots and are produced from `build-time` (steady-state
+              iterations 1..N-1, not the `build-time-first` diagnostic — see write-perfstar-test
+              SKILL.md "Warm scenarios — iteration 0 is special").
+       Both = stacked cold + warm sparklines for visual comparison.
+       Persisted to localStorage so a user's preference survives reload, but defaults to Cold so the
+       Overview table is byte-identical to today for assets without warm data. */
+    const THERMAL_MODE_KEY = 'msbuild-dashboard-thermal';
+    const THERMAL_MODES = ['cold', 'warm', 'both'];
+    let THERMAL_MODE = 'cold';
+    try {
+        const t = localStorage.getItem(THERMAL_MODE_KEY);
+        if (t && THERMAL_MODES.includes(t)) THERMAL_MODE = t;
+    } catch (e) { /* localStorage may be unavailable */ }
+
+    const WARM_TAG_TITLE = 'Warm-node build scenarios available — toggle the Overview table mode or pick a 🔥 option in the Trends tab.';
+    function warmTagHtml() { return `<span class="tag tag-warm" title="${WARM_TAG_TITLE}">🔥 warm</span>`; }
+
+    function hasWarmScenarios(asset) {
+        if (!asset) return false;
+        if (asset.hasWarm === true) return true;
+        // Fallback for schema-v2 data: infer from per-asset scenario list if present.
+        if (Array.isArray(asset.scenarios)) {
+            return asset.scenarios.some(s => typeof s === 'string' && s.includes('-warm-'));
+        }
+        return false;
+    }
+
+    /* Picks the inc-build summary blob for an asset (or platform sub-blob) honoring the thermal mode.
+       Falls back to cold when warm requested but unavailable, so toggles don't blank the table. */
+    function pickIncBuild(blob) {
+        if (!blob) return null;
+        if (THERMAL_MODE === 'warm') return blob.incBuildWarm ?? null;
+        return blob.incBuild ?? null;
+    }
+    function pickRebuild(blob) {
+        if (!blob) return null;
+        if (THERMAL_MODE === 'warm') return blob.rebuildWarm ?? null;
+        return blob.rebuild ?? null;
+    }
+    function pickIncBuildBoth(blob) {
+        if (!blob) return { cold: null, warm: null };
+        return { cold: blob.incBuild ?? null, warm: blob.incBuildWarm ?? null };
+    }
+
     // Time-range slider stops. Index 0 = most recent, last index = "all time" (no cutoff).
     // The 'key' is the stable identifier used in the shareable URL hash.
     const TIME_STOPS = [
@@ -294,11 +350,25 @@
     }
 
     /* ── Helpers ── */
-    function short(s) { return s.replace(/^.*?-(?=inc-build|rebuild)/, '').replace('-dotnet',''); }
+    /* Scenario name shortener used by chip labels and chart legends.
+       - cold: "orchard-core-inc-build-dotnet"        → "inc-build"
+       - cold MT: "orchard-core-inc-build-mt-dotnet"  → "inc-build-mt"
+       - warm: "orchard-core-warm-inc-build-dotnet"   → "🔥 inc-build"
+       - warm MT: "orchard-core-warm-inc-build-mt-dotnet" → "🔥 inc-build-mt"
+       Keeping the 🔥 glyph in the shortened label makes screenshots self-explanatory. */
+    function short(s) {
+        if (typeof s !== 'string') return s;
+        const isWarm = s.includes('-warm-');
+        const tail = s.replace(/^.*?-(?=inc-build|rebuild)/, '').replace('-dotnet', '');
+        return isWarm ? `🔥 ${tail}` : tail;
+    }
     function assetPrefix() {
         if (!DATA.length) return '';
-        return DATA[0].scenario.replace(/-(inc-build|rebuild).*$/, '');
+        // Strip the trailing "(warm-)?(inc-build|rebuild)...{maybe -mt}-dotnet" suffix
+        // so warm scenarios don't pollute the asset prefix used by the MT panel.
+        return DATA[0].scenario.replace(/-(warm-)?(inc-build|rebuild).*$/, '');
     }
+    function hasWarmDataIn(data) { return data.some(d => d.scenario.includes('-warm-')); }
     function scenarioListFor(data) { return [...new Set(data.map(d => d.scenario))].sort(); }
     function scenarioList() { return scenarioListFor(DATA); }
     function platformOf(d) {
@@ -426,10 +496,51 @@
         return `<span class="trend-cell">${spark}${chip}</span>`;
     }
 
+    /* Cell content when the user is in "Both" thermal mode: stack cold + warm sparklines
+       with small ❄ / 🔥 glyph labels. We deliberately drop the regression / baseline chip
+       in this view to keep the cell compact — full chips are still visible in single-mode views. */
+    function bothSparkCell(coldInc, warmInc) {
+        if (!coldInc && !warmInc) return '<span class="muted">—</span>';
+        const rows = [];
+        if (coldInc) rows.push(`<span class="spark-row"><span class="spark-glyph" title="Cold-process build">❄</span>${sparklineSvg(coldInc.sparkline)}</span>`);
+        else rows.push(`<span class="spark-row"><span class="spark-glyph">❄</span><span class="muted">—</span></span>`);
+        if (warmInc) rows.push(`<span class="spark-row"><span class="spark-glyph" title="Warm-process build">🔥</span>${sparklineSvg(warmInc.sparkline)}</span>`);
+        else rows.push(`<span class="spark-row"><span class="spark-glyph">🔥</span><span class="muted">—</span></span>`);
+        return `<span class="spark-stack">${rows.join('')}</span>`;
+    }
+
+    /* In "Both" mode, the P50 cell shows the active mode's value (cold by default) but
+       also surfaces the other mode's P50 in a tooltip so we don't lose information. */
+    function bothP50(coldInc, warmInc) {
+        const coldStr = coldInc ? fmtMs(coldInc.p50) : '—';
+        const warmStr = warmInc ? fmtMs(warmInc.p50) : '—';
+        const title = `❄ Cold ${coldStr} · 🔥 Warm ${warmStr}`;
+        return `<span title="${title}">${coldStr}<span class="muted" style="font-size:10px; margin-left:4px">/ ${warmStr}</span></span>`;
+    }
+
     function summaryCells(a) {
-        const winInc = a.platforms?.windows?.incBuild;
-        const linInc = a.platforms?.linux?.incBuild;
-        const fallbackInc = !winInc && !linInc ? a.incBuild : null;
+        const winBlob = a.platforms?.windows;
+        const linBlob = a.platforms?.linux;
+        const fallbackBlob = !winBlob && !linBlob ? a : null;
+
+        if (THERMAL_MODE === 'both') {
+            const winCold = winBlob?.incBuild;
+            const winWarm = winBlob?.incBuildWarm;
+            const linCold = linBlob?.incBuild;
+            const linWarm = linBlob?.incBuildWarm;
+            const fbCold = fallbackBlob?.incBuild;
+            const fbWarm = fallbackBlob?.incBuildWarm;
+            return `
+                <td class="num">${winBlob ? bothP50(winCold, winWarm) : fbCold ? bothP50(fbCold, fbWarm) : '—'}</td>
+                <td>${winBlob ? bothSparkCell(winCold, winWarm) : fallbackBlob ? bothSparkCell(fbCold, fbWarm) : '<span class="muted">—</span>'}</td>
+                <td class="num">${linBlob ? bothP50(linCold, linWarm) : '—'}</td>
+                <td>${linBlob ? bothSparkCell(linCold, linWarm) : '<span class="muted">—</span>'}</td>
+                <td>${platformHealthBadges(a)}</td>`;
+        }
+
+        const winInc = pickIncBuild(winBlob);
+        const linInc = pickIncBuild(linBlob);
+        const fallbackInc = pickIncBuild(fallbackBlob);
         return `
             <td class="num">${winInc ? fmtMs(winInc.p50) : fallbackInc ? fmtMs(fallbackInc.p50) : '—'}</td>
             <td>${winInc ? trendCell(winInc) : fallbackInc ? sparklineSvg(fallbackInc.sparkline) : '<span class="muted">—</span>'}</td>
@@ -439,8 +550,11 @@
     }
 
     function overviewSortValue(asset, key) {
-        const win = asset.platforms?.windows?.incBuild;
-        const lin = asset.platforms?.linux?.incBuild;
+        // In "Both" mode we sort by the cold inc-build so the table order is stable
+        // when toggling between modes. Health column is always cold-based.
+        const platformPick = THERMAL_MODE === 'both' ? (b) => b?.incBuild : pickIncBuild;
+        const win = platformPick(asset.platforms?.windows);
+        const lin = platformPick(asset.platforms?.linux);
         switch (key) {
             case 'name':     return asset.name.toLowerCase();
             case 'winP50':   return win?.p50 ?? null;
@@ -448,9 +562,11 @@
             case 'winTrend': return win?.regressionPct ?? null;
             case 'linTrend': return lin?.regressionPct ?? null;
             case 'health': {
-                const w = win?.passRate30d ?? win?.passRate;
-                const l = lin?.passRate30d ?? lin?.passRate;
-                const arr = [w, l].filter(v => v != null);
+                const w = asset.platforms?.windows?.incBuild;
+                const l = asset.platforms?.linux?.incBuild;
+                const ws = w?.passRate30d ?? w?.passRate;
+                const ls = l?.passRate30d ?? l?.passRate;
+                const arr = [ws, ls].filter(v => v != null);
                 return arr.length ? Math.min(...arr) : null;
             }
             default: return null;
@@ -459,8 +575,11 @@
 
     // Default-sort key: max regression % across platforms (worst first).
     function priorityValue(asset) {
-        const w = asset.platforms?.windows?.incBuild?.regressionPct;
-        const l = asset.platforms?.linux?.incBuild?.regressionPct;
+        // Use the active thermal mode (or cold in "Both") so the "worst regression first"
+        // order matches what the user is currently looking at.
+        const pick = THERMAL_MODE === 'both' ? (b) => b?.incBuild : pickIncBuild;
+        const w = pick(asset.platforms?.windows)?.regressionPct;
+        const l = pick(asset.platforms?.linux)?.regressionPct;
         const arr = [w, l].filter(v => v != null);
         return arr.length ? Math.max(...arr) : null;
     }
@@ -489,20 +608,46 @@
         return asset.name.toLowerCase().includes(OVERVIEW_FILTER);
     }
 
+    function hasAnyIncBuild(asset) {
+        // For "Both" mode, render a row if either side has *any* inc-build data.
+        // For Cold/Warm, fall back gracefully: a row should still appear when only the other
+        // thermal has data so the user can see that switching modes would surface it.
+        const pickers = THERMAL_MODE === 'both'
+            ? [(b) => b?.incBuild, (b) => b?.incBuildWarm]
+            : [pickIncBuild];
+        for (const pick of pickers) {
+            if (pick(asset.platforms?.windows)) return true;
+            if (pick(asset.platforms?.linux)) return true;
+            if (pick(asset)) return true;
+        }
+        return false;
+    }
+
     function renderSummaryTable() {
         if (!SUMMARY) return;
         const allAssets = SUMMARY.assets;
+
+        // Fall back to 'cold' mode if no asset has warm data (e.g. stale localStorage from a previous
+        // dataset). Must run BEFORE the table is built, otherwise the first render shows em-dashes.
+        const anyWarm = allAssets.some(hasWarmScenarios);
+        if (!anyWarm && THERMAL_MODE !== 'cold') {
+            THERMAL_MODE = 'cold';
+            try { localStorage.setItem(THERMAL_MODE_KEY, 'cold'); } catch (_) { /* ignore */ }
+        }
+
         const activeAll = allAssets.filter(a => !isArchivedAsset(a));
         const archivedAll = allAssets.filter(isArchivedAsset);
         const active = activeAll.filter(matchesOverviewFilter).sort(compareOverviewAssets);
         const archived = archivedAll.filter(matchesOverviewFilter).sort(compareOverviewAssets);
-        const renderedActive = active.filter(a => a.platforms?.windows?.incBuild || a.platforms?.linux?.incBuild || a.incBuild);
+        const renderedActive = active.filter(hasAnyIncBuild);
 
         let tbody = '';
         if (!renderedActive.length && !archived.length) {
             const msg = OVERVIEW_FILTER
                 ? `No assets match "${OVERVIEW_FILTER}".`
-                : 'No assets available.';
+                : THERMAL_MODE === 'warm'
+                    ? 'No assets have warm-build data yet — switch back to ❄ Cold.'
+                    : 'No assets available.';
             tbody = `<tr><td colspan="6" class="muted" style="padding:18px; text-align:center;">${msg}</td></tr>`;
         } else {
             for (const a of renderedActive) {
@@ -510,6 +655,7 @@
                     <td class="asset-name">
                         <span class="asset-link">${a.name}</span>
                         ${a.canonical === 'mt' ? '<span class="tag tag-mt">MT</span>' : ''}
+                        ${hasWarmScenarios(a) ? warmTagHtml() : ''}
                         ${isBrokenAsset(a.name) ? brokenTagHtml() : ''}
                     </td>
                     ${summaryCells(a)}
@@ -526,6 +672,7 @@
                         <td class="asset-name">
                             <span class="asset-link">${a.name}</span>
                             <span class="tag tag-archived">ARCHIVED</span>
+                            ${hasWarmScenarios(a) ? warmTagHtml() : ''}
                             ${isBrokenAsset(a.name) ? brokenTagHtml() : ''}
                         </td>
                         ${summaryCells(a)}
@@ -535,6 +682,27 @@
         }
 
         document.getElementById('summaryBody').innerHTML = tbody;
+
+        // Hide the thermal toggle when no asset has warm data — otherwise users see a control that
+        // does nothing useful. (Mode-fallback handled at the top of the function.)
+        const toggleEl = document.getElementById('overviewThermalToggle');
+        if (toggleEl) {
+            toggleEl.style.display = anyWarm ? '' : 'none';
+        }
+
+        // Subtitle reflects the active thermal mode so screenshots are self-explanatory.
+        const subtitle = document.getElementById('overviewSubtitle');
+        if (subtitle) {
+            const modeLabel =
+                THERMAL_MODE === 'warm' ? '🔥 Warm-process build · P50 · Per-platform' :
+                THERMAL_MODE === 'both' ? '❄ Cold + 🔥 Warm (stacked) · P50 · Per-platform' :
+                'Canonical metric (MT where available) · P50 incremental build · Per-platform';
+            subtitle.textContent = modeLabel;
+        }
+        // Sync toggle button highlighting (in case mode was changed via hash/script).
+        document.querySelectorAll('#overviewThermalToggle button').forEach(b => {
+            b.classList.toggle('active', b.dataset.thermal === THERMAL_MODE);
+        });
 
         // Sort indicators on column headers
         document.querySelectorAll('#summaryTable th.sortable').forEach(th => {
@@ -988,6 +1156,19 @@
             renderTrend();
         }));
 
+        // Gate warm-specific dropdown options on whether this asset has warm scenarios.
+        // (Avoids dead options that would produce empty charts.)
+        const warmAvailable = hasWarmDataIn(DATA);
+        document.querySelectorAll('#mtBuildType option[data-warm="1"], #trendMetric option[data-warm-only="1"]').forEach(opt => {
+            opt.disabled = !warmAvailable;
+            opt.hidden = !warmAvailable;
+        });
+        // If the currently-selected option just got hidden, fall back to a safe default.
+        const mtSel = document.getElementById('mtBuildType');
+        if (mtSel && mtSel.selectedOptions[0]?.hidden) mtSel.value = 'inc-build';
+        const metSel = document.getElementById('trendMetric');
+        if (metSel && metSel.selectedOptions[0]?.hidden) metSel.value = 'build-time';
+
         updateNoMachineToggle();
         renderMt(); renderTrend(); renderComp();
     }
@@ -1022,6 +1203,9 @@
         const asset = assetPrefix();
         const stdScenario = `${asset}-${bt}-dotnet`;
         const mtScenario = `${asset}-${bt}-mt-dotnet`;
+        const isWarm = bt.startsWith('warm-');
+        const stdLabel = isWarm ? '🔥 Standard (warm)' : 'Standard';
+        const mtLabel = isWarm ? '🔥 Multithreaded (warm)' : 'Multithreaded';
 
         function renderMtPlatform(chartKey, canvasId, detailId, wrapperId, dataSource, platformLabel) {
             const stdS = getSeries(stdScenario, metric, dataSource);
@@ -1045,8 +1229,8 @@
             const metaArray = dates.map(d => mtMerged[d] || stdMerged[d] || null);
 
             const datasets = [
-                { label: 'Standard', data: dates.map(d => stdMap[d] ?? null), borderColor: clr().line, backgroundColor: clr().lineFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
-                { label: 'Multithreaded', data: dates.map(d => mtMap[d] ?? null), borderColor: clr().mt, backgroundColor: clr().mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
+                { label: stdLabel, data: dates.map(d => stdMap[d] ?? null), borderColor: clr().line, backgroundColor: clr().lineFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 },
+                { label: mtLabel, data: dates.map(d => mtMap[d] ?? null), borderColor: clr().mt, backgroundColor: clr().mtFill, fill: true, tension: 0.3, pointRadius: 2, spanGaps: true, borderWidth: 1.5 }
             ];
 
             if (CHARTS[chartKey]) CHARTS[chartKey].destroy();
@@ -1663,6 +1847,21 @@
         if (!input) return;
         input.addEventListener('input', () => {
             OVERVIEW_FILTER = input.value.trim().toLowerCase();
+            renderSummaryTable();
+        });
+    })();
+
+    // Overview: thermal-mode segmented toggle (❄ Cold / 🔥 Warm / Both).
+    (function wireThermalToggle() {
+        const toggle = document.getElementById('overviewThermalToggle');
+        if (!toggle) return;
+        toggle.addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-thermal]');
+            if (!btn) return;
+            const mode = btn.dataset.thermal;
+            if (!THERMAL_MODES.includes(mode) || mode === THERMAL_MODE) return;
+            THERMAL_MODE = mode;
+            try { localStorage.setItem(THERMAL_MODE_KEY, mode); } catch (_) { /* ignore */ }
             renderSummaryTable();
         });
     })();

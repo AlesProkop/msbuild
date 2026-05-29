@@ -521,6 +521,59 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     color: #24292f;
     border: 1px solid #b08800;
 }
+.tag-warm {
+    background: rgba(207, 34, 46, 0.10);
+    color: var(--danger);
+}
+.tag-cold {
+    background: rgba(9, 105, 218, 0.10);
+    color: var(--accent);
+}
+
+/* Thermal-mode segmented toggle (Overview: Cold / Warm / Both) */
+.thermal-toggle {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-left: auto;
+}
+.thermal-toggle button {
+    background: transparent;
+    border: 0;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-right: 1px solid var(--border);
+}
+.thermal-toggle button:last-child { border-right: 0; }
+.thermal-toggle button.active {
+    background: var(--surface-hover);
+    color: var(--text);
+    font-weight: 600;
+}
+.thermal-toggle button:hover:not(.active) {
+    background: var(--surface-raised);
+}
+
+/* Stacked sparkline cell used by the "Both" mode in the Overview table. */
+.spark-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.spark-stack .spark-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.spark-stack .spark-glyph {
+    font-size: 9px;
+    opacity: 0.75;
+    width: 12px;
+    text-align: center;
+}
 .badge {
     display: inline-block;
     font-size: 11px;
@@ -860,6 +913,8 @@ footer {
 
 [data-theme="dark"] .tag-mt        { background: rgba(88, 166, 255, 0.20); }
 [data-theme="dark"] .tag-archived  { background: rgba(125, 133, 144, 0.22); }
+[data-theme="dark"] .tag-warm      { background: rgba(248, 81, 73, 0.18); }
+[data-theme="dark"] .tag-cold      { background: rgba(88, 166, 255, 0.20); }
 [data-theme="dark"] .tl-type-std   { background: rgba(125, 133, 144, 0.25); color: var(--text-muted); }
 [data-theme="dark"] .tl-type-mt    { background: rgba(88, 166, 255, 0.25); }
 

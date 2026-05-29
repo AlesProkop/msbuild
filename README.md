@@ -45,7 +45,9 @@ Do not rely on opening `index.html` directly from the file system. The dashboard
 
 ## Data model
 
-The dashboard expects schema version `2` data.
+The dashboard expects schema version `3` data and falls back gracefully when
+served against schema version `2` (warm fields are simply treated as missing,
+so the Overview defaults to ❄ Cold and warm options stay hidden).
 
 `data\summary.json` contains the overview payload:
 
@@ -58,7 +60,8 @@ The dashboard expects schema version `2` data.
 - regression percentages;
 - recent and baseline sample counts;
 - pass rates;
-- compact sparkline values.
+- compact sparkline values;
+- warm-build summaries, when available (see "Warm vs cold builds" below).
 
 `data\aggregated\<asset>.json` contains the full history for one asset. Each record includes run metadata such as date, scenario, CI build number, branch, run reason, machine ID, timestamp, and a `results` object with measured values such as:
 
@@ -66,7 +69,48 @@ The dashboard expects schema version `2` data.
 - `evaluation-time`;
 - `evaluation-time-pass*`;
 - `exit-code`;
+- `build-time-first` and `evaluation-time-first` for warm scenarios (see "Warm vs cold builds" below);
 - MSBuild, measured SDK, ASP.NET Core, and runtime versions;
 - test asset, scenario, and app metadata.
 
 Machine IDs ending in `WIN` are treated as Windows, IDs ending in `LIN` are treated as Linux, and missing or unrecognized IDs are shown as historical or unknown-platform data.
+
+## Warm vs cold builds
+
+Cold scenarios (`*-inc-build-*`, `*-rebuild-*`) run with `/nr:false`, so every measured iteration spawns fresh MSBuild worker nodes. The `build-time` metric is the canonical mean across all iterations.
+
+Warm scenarios (`*-warm-inc-build-*`, `*-warm-rebuild-*`, `*-warm-restore-*`) keep MSBuild nodes alive between iterations. The first measured iteration (iteration 0) is systematically different from the rest because in-memory caches have only ever seen the priming build's state. To keep the published mean honest, perfstar emits two parallel metric keys for warm scenarios:
+
+| Metric key | Population | Used by the dashboard |
+| --- | --- | --- |
+| `build-time` / `evaluation-time` | iterations 1..N-1 (steady state) | Yes — drives all `*Warm` summary slots and trend lines. |
+| `build-time-first` / `evaluation-time-first` | iteration 0 only | Diagnostic only — surfaced in the Trends tab via a 🔥 dropdown option, never aggregated into summaries. |
+| `exit-code` | all iterations | Yes — drives Health pass rate. Not split, so iteration-0 failures still get caught by validation. |
+
+In `data\summary.json`, warm summaries live in parallel fields next to the cold ones:
+
+```jsonc
+{
+  "name": "orchard-core",
+  "canonical": "standard",
+  "canonicalThermal": "cold",     // "cold" by default; "warm" if a project is warm-canonical
+  "hasMt": true,
+  "hasWarm": true,                 // gates the 🔥 warm chip and warm dropdown options
+  "incBuild":     { /* cold */ },
+  "rebuild":      { /* cold */ },
+  "incBuildWarm": { /* aggregated from results["build-time"] of *-warm-inc-build-* scenarios */ },
+  "rebuildWarm":  { /* same, for *-warm-rebuild-* */ },
+  "platforms": {
+    "windows": { "incBuild": {...}, "rebuild": {...}, "incBuildWarm": {...}, "rebuildWarm": {...} },
+    "linux":   { /* same shape */ }
+  }
+}
+```
+
+Rules for the aggregator that builds `summary.json`:
+
+- Warm sparklines and P50s come from `results["build-time"]` only — never `build-time-first`.
+- If a warm scenario has no samples in the time window, the matching `*Warm` field should be `null` (the dashboard renders an em-dash).
+- The regression banner on the Overview tab is intentionally cold-anchored so warm/cold baselines don't get mixed in attention-grabbing alerts.
+
+In the Overview tab, a `[❄ Cold] [🔥 Warm] [Both]` segmented toggle controls which numbers and sparklines populate the table. The user's preference is persisted to `localStorage`. The default mode is `Cold`, so users without warm data see no visual change.
