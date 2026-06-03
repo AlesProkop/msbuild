@@ -1,18 +1,18 @@
 ﻿{
     "date":  "2026-06-03",
     "scenario":  "net8-blazorwasm-app-inc-build-dotnet",
-    "perfstarCIBuildNumber":  "20260603.1.s",
+    "perfstarCIBuildNumber":  "20260603.4.s",
     "branch":  "refs/heads/main",
     "ciRunReason":  "Schedule",
     "machineID":  "GOLDLIN",
     "schemaVersion":  "2",
-    "timestamp":  "2026-06-03T01:41:46.5419779Z",
+    "timestamp":  "2026-06-03T16:30:49.6389897Z",
     "results":  {
-                    "netSdkVersion":  "11.0.100-preview.6.26302.109",
+                    "netSdkVersion":  "11.0.100-preview.6.26302.118",
                     "aspNetCoreVersion":  "10.0.8+94ea82652cdd",
                     "netCoreAppVersion":  "10.0.8+94ea82652cdd",
-                    "msbuild-version":  "18.9.0.30207",
-                    "msbuild-display-version":  "18.9.0.30207",
+                    "msbuild-version":  "18.9.0.30305",
+                    "msbuild-display-version":  "18.9.0.30305",
                     "exit-code":  1.0,
                     "failure-description":  "Restore finished with non zero exit code.",
                     "info/test-asset":  "Net8BlazorWasmApp",
@@ -20,7 +20,7 @@
                     "info/msbuild-app":  "Dotnet",
                     "info/test-version":  1.0,
                     "info/iterations-number":  10.0,
-                    "dotnet-version":  "11.0.100-preview.6.26302.109",
+                    "dotnet-version":  "11.0.100-preview.6.26302.118",
                     "crank-netSdkVersion":  "10.0.300"
                 }
 }
