@@ -71,7 +71,7 @@
   },
   {
     "name": "eshop-on-blazor-modified",
-    "records": 1496,
+    "records": 1500,
     "scenarios": [
       "eshop-on-blazor-modified-inc-build-dotnet",
       "eshop-on-blazor-modified-inc-build-mt-dotnet",
@@ -79,7 +79,7 @@
       "eshop-on-blazor-modified-rebuild-mt-dotnet"
     ],
     "firstDate": "2023-09-09",
-    "latestDate": "2026-06-03"
+    "latestDate": "2026-06-04"
   },
   {
     "name": "net-console-app",
@@ -193,7 +193,7 @@
   },
   {
     "name": "net8-blazorwasm-app",
-    "records": 2038,
+    "records": 2044,
     "scenarios": [
       "net8-blazorwasm-app-inc-build-binlog-dotnet",
       "net8-blazorwasm-app-inc-build-dotnet",
@@ -203,21 +203,21 @@
       "net8-blazorwasm-app-rebuild-mt-dotnet"
     ],
     "firstDate": "2023-10-14",
-    "latestDate": "2026-06-03"
+    "latestDate": "2026-06-04"
   },
   {
     "name": "net8-class-lib",
-    "records": 1101,
+    "records": 1103,
     "scenarios": [
       "net8-class-lib-inc-build-dotnet",
       "net8-class-lib-rebuild-dotnet"
     ],
     "firstDate": "2023-10-14",
-    "latestDate": "2026-06-03"
+    "latestDate": "2026-06-04"
   },
   {
     "name": "net8-console-app",
-    "records": 3020,
+    "records": 3030,
     "scenarios": [
       "net8-console-app-inc-build-binlog-dotnet",
       "net8-console-app-inc-build-check-dotnet",
@@ -231,7 +231,7 @@
       "net8-console-app-rebuild-mt-dotnet"
     ],
     "firstDate": "2023-10-14",
-    "latestDate": "2026-06-03"
+    "latestDate": "2026-06-04"
   },
   {
     "name": "net8-web-app",
@@ -265,7 +265,7 @@
   },
   {
     "name": "orchard-core",
-    "records": 1190,
+    "records": 1198,
     "scenarios": [
       "orchard-core-inc-build-binlog-dotnet",
       "orchard-core-inc-build-check-dotnet",
@@ -277,16 +277,16 @@
       "orchard-core-rebuild-mt-dotnet"
     ],
     "firstDate": "2025-04-14",
-    "latestDate": "2026-06-03"
+    "latestDate": "2026-06-04"
   },
   {
     "name": "very-large-net8-console-app",
-    "records": 234,
+    "records": 235,
     "scenarios": [
       "very-large-net8-console-app-restore-dotnet"
     ],
     "firstDate": "2025-06-28",
-    "latestDate": "2026-06-03"
+    "latestDate": "2026-06-04"
   },
   {
     "name": "web-app",
