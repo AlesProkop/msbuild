@@ -264,7 +264,7 @@
 
     // Assets that are known to be broken / unreliable and not currently prioritized for fixing.
     // Surfaced in the UI as a yellow "BROKEN" tag in Overview, Trends and Health.
-    const BROKEN_ASSETS = new Set(['eshop-on-blazor-modified']);
+    const BROKEN_ASSETS = new Set([]);
     function isBrokenAsset(name) { return BROKEN_ASSETS.has(name); }
     const BROKEN_TAG_TITLE = 'This asset is currently broken — results may be unreliable. Not prioritized for fixing.';
     function brokenTagHtml() { return `<span class="tag tag-broken" title="${BROKEN_TAG_TITLE}">⚠ BROKEN</span>`; }
