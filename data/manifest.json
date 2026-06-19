@@ -71,7 +71,7 @@
   },
   {
     "name": "eshop-on-blazor-modified",
-    "records": 1602,
+    "records": 1606,
     "scenarios": [
       "eshop-on-blazor-modified-inc-build-dotnet",
       "eshop-on-blazor-modified-inc-build-mt-dotnet",
@@ -193,7 +193,7 @@
   },
   {
     "name": "net8-blazorwasm-app",
-    "records": 2180,
+    "records": 2184,
     "scenarios": [
       "net8-blazorwasm-app-inc-build-binlog-dotnet",
       "net8-blazorwasm-app-inc-build-dotnet",
@@ -207,17 +207,17 @@
   },
   {
     "name": "net8-class-lib",
-    "records": 1153,
+    "records": 1155,
     "scenarios": [
       "net8-class-lib-inc-build-dotnet",
       "net8-class-lib-rebuild-dotnet"
     ],
     "firstDate": "2023-10-14",
-    "latestDate": "2026-06-18"
+    "latestDate": "2026-06-19"
   },
   {
     "name": "net8-console-app",
-    "records": 3254,
+    "records": 3260,
     "scenarios": [
       "net8-console-app-inc-build-binlog-dotnet",
       "net8-console-app-inc-build-check-dotnet",
@@ -235,7 +235,7 @@
   },
   {
     "name": "net8-console-app-warm",
-    "records": 6,
+    "records": 9,
     "scenarios": [
       "net8-console-app-warm-inc-build-dotnet",
       "net8-console-app-warm-inc-build-mt-dotnet",
@@ -279,7 +279,7 @@
   },
   {
     "name": "orchard-core",
-    "records": 1387,
+    "records": 1393,
     "scenarios": [
       "orchard-core-inc-build-binlog-dotnet",
       "orchard-core-inc-build-check-dotnet",
@@ -295,7 +295,7 @@
   },
   {
     "name": "orchard-core-cold",
-    "records": 6,
+    "records": 8,
     "scenarios": [
       "orchard-core-cold-restore-dotnet",
       "orchard-core-cold-restore-mt-dotnet"
@@ -305,7 +305,7 @@
   },
   {
     "name": "orchard-core-inc",
-    "records": 5,
+    "records": 7,
     "scenarios": [
       "orchard-core-inc-restore-dotnet",
       "orchard-core-inc-restore-mt-dotnet"
@@ -315,7 +315,7 @@
   },
   {
     "name": "orchard-core-warm",
-    "records": 3,
+    "records": 6,
     "scenarios": [
       "orchard-core-warm-inc-build-dotnet",
       "orchard-core-warm-rebuild-dotnet",
@@ -326,7 +326,7 @@
   },
   {
     "name": "very-large-net8-console-app",
-    "records": 260,
+    "records": 261,
     "scenarios": [
       "very-large-net8-console-app-restore-dotnet"
     ],
@@ -335,7 +335,7 @@
   },
   {
     "name": "very-large-net8-console-app-inc",
-    "records": 3,
+    "records": 4,
     "scenarios": [
       "very-large-net8-console-app-inc-restore-dotnet"
     ],

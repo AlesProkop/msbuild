@@ -1496,13 +1496,13 @@
         },
         "linux": {
           "incBuild": {
-            "p50": 5205.292530000001,
+            "p50": 5237.4606,
             "regressionPct": null,
-            "samplesLast7d": 4,
+            "samplesLast7d": 5,
             "samplesPrior30d": 0,
-            "passRate": 27.4,
-            "passRate30d": 13.8,
-            "totalRuns": 106,
+            "passRate": 28.0,
+            "passRate30d": 16.7,
+            "totalRuns": 107,
             "sparkline": [
               {
                 "v": 2743.24578
@@ -1590,17 +1590,20 @@
               },
               {
                 "v": 5237.4606
+              },
+              {
+                "v": 5276.015170000001
               }
             ]
           },
           "rebuild": {
-            "p50": 5529.43042,
+            "p50": 5599.500999999999,
             "regressionPct": null,
-            "samplesLast7d": 4,
+            "samplesLast7d": 5,
             "samplesPrior30d": 0,
-            "passRate": 27.4,
-            "passRate30d": 13.8,
-            "totalRuns": 106,
+            "passRate": 28.0,
+            "passRate30d": 16.7,
+            "totalRuns": 107,
             "sparkline": [
               {
                 "v": 2853.33017
@@ -1688,23 +1691,23 @@
               },
               {
                 "v": 5679.398550000001
+              },
+              {
+                "v": 5599.500999999999
               }
             ]
           }
         }
       },
       "incBuild": {
-        "p50": 5406.037340000001,
+        "p50": 5332.041950000001,
         "regressionPct": null,
-        "samplesLast7d": 9,
+        "samplesLast7d": 10,
         "samplesPrior30d": 0,
-        "passRate": 37.6,
-        "passRate30d": 17.6,
-        "totalRuns": 210,
+        "passRate": 37.9,
+        "passRate30d": 19.2,
+        "totalRuns": 211,
         "sparkline": [
-          {
-            "v": 2132.1816400000002
-          },
           {
             "v": 2006.9975000000002
           },
@@ -1712,10 +1715,10 @@
             "v": 2147.8257
           },
           {
-            "v": 2152.38206
+            "v": 2096.14712
           },
           {
-            "v": 2096.14712
+            "v": 2152.38206
           },
           {
             "v": 1507.24311
@@ -1790,22 +1793,22 @@
             "v": 5442.798830000001
           },
           {
+            "v": 5276.015170000001
+          },
+          {
             "v": 5457.68099
           }
         ]
       },
       "rebuild": {
-        "p50": 5802.33988,
+        "p50": 5712.7500900000005,
         "regressionPct": null,
-        "samplesLast7d": 9,
+        "samplesLast7d": 10,
         "samplesPrior30d": 0,
-        "passRate": 37.6,
-        "passRate30d": 17.6,
-        "totalRuns": 210,
+        "passRate": 37.9,
+        "passRate30d": 19.2,
+        "totalRuns": 211,
         "sparkline": [
-          {
-            "v": 2310.6759999999995
-          },
           {
             "v": 2114.56095
           },
@@ -1813,10 +1816,10 @@
             "v": 2385.70633
           },
           {
-            "v": 2333.9977200000003
+            "v": 2108.61245
           },
           {
-            "v": 2108.61245
+            "v": 2333.9977200000003
           },
           {
             "v": 1645.1980199999998
@@ -1891,18 +1894,21 @@
             "v": 5825.54957
           },
           {
+            "v": 5599.500999999999
+          },
+          {
             "v": 5826.5110700000005
           }
         ]
       },
       "mt": {
         "incBuild": {
-          "p50": 5406.037340000001,
-          "speedupPct": -54.7
+          "p50": 5332.041950000001,
+          "speedupPct": -28.4
         },
         "rebuild": {
-          "p50": 5802.33988,
-          "speedupPct": -57.6
+          "p50": 5712.7500900000005,
+          "speedupPct": -34.6
         }
       }
     },
@@ -5616,16 +5622,13 @@
         "linux": {
           "incBuild": {
             "p50": 6731.74764,
-            "regressionPct": -2.4,
-            "samplesLast7d": 4,
+            "regressionPct": -1.4,
+            "samplesLast7d": 5,
             "samplesPrior30d": 16,
-            "passRate": 53.8,
-            "passRate30d": 69.0,
-            "totalRuns": 106,
+            "passRate": 54.2,
+            "passRate30d": 70.0,
+            "totalRuns": 107,
             "sparkline": [
-              {
-                "v": 6687.206429999998
-              },
               {
                 "v": 6698.810739999999
               },
@@ -5712,21 +5715,21 @@
               },
               {
                 "v": 6689.90186
+              },
+              {
+                "v": 6685.919769999999
               }
             ]
           },
           "rebuild": {
             "p50": 7152.442109999999,
             "regressionPct": -1.6,
-            "samplesLast7d": 4,
+            "samplesLast7d": 5,
             "samplesPrior30d": 16,
-            "passRate": 53.8,
-            "passRate30d": 69.0,
-            "totalRuns": 106,
+            "passRate": 54.2,
+            "passRate30d": 70.0,
+            "totalRuns": 107,
             "sparkline": [
-              {
-                "v": 7105.899549999999
-              },
               {
                 "v": 7135.560280000001
               },
@@ -5813,6 +5816,9 @@
               },
               {
                 "v": 6919.23426
+              },
+              {
+                "v": 6918.9738
               }
             ]
           }
@@ -5820,16 +5826,13 @@
       },
       "incBuild": {
         "p50": 6946.02301,
-        "regressionPct": 46.1,
-        "samplesLast7d": 9,
+        "regressionPct": -3.7,
+        "samplesLast7d": 10,
         "samplesPrior30d": 27,
-        "passRate": 59.0,
-        "passRate30d": 70.6,
-        "totalRuns": 210,
+        "passRate": 59.2,
+        "passRate30d": 71.2,
+        "totalRuns": 211,
         "sparkline": [
-          {
-            "v": 6674.037169999999
-          },
           {
             "v": 13397.580360000002
           },
@@ -5915,22 +5918,22 @@
             "v": 10307.777740000001
           },
           {
+            "v": 6685.919769999999
+          },
+          {
             "v": 10364.116640000002
           }
         ]
       },
       "rebuild": {
         "p50": 7354.424530000001,
-        "regressionPct": 51.8,
-        "samplesLast7d": 9,
+        "regressionPct": -2.0,
+        "samplesLast7d": 10,
         "samplesPrior30d": 27,
-        "passRate": 58.7,
-        "passRate30d": 70.6,
-        "totalRuns": 208,
+        "passRate": 58.9,
+        "passRate30d": 71.2,
+        "totalRuns": 209,
         "sparkline": [
-          {
-            "v": 7030.91539
-          },
           {
             "v": 14425.335149999999
           },
@@ -6010,10 +6013,13 @@
             "v": 11163.3335
           },
           {
+            "v": 6919.23426
+          },
+          {
             "v": 11388.678019999998
           },
           {
-            "v": 6919.23426
+            "v": 6918.9738
           },
           {
             "v": 11392.375950000001
@@ -6027,15 +6033,15 @@
         },
         "rebuild": {
           "p50": 7354.424530000001,
-          "speedupPct": -32.9
+          "speedupPct": -33.5
         }
       }
     },
     {
       "name": "net8-class-lib",
-      "latestDate": "2026-06-18",
+      "latestDate": "2026-06-19",
       "stale": false,
-      "staleDays": 1,
+      "staleDays": 0,
       "archived": false,
       "hasMt": false,
       "canonical": "standard",
@@ -6248,15 +6254,12 @@
           "incBuild": {
             "p50": 2803.1850400000003,
             "regressionPct": 2.5,
-            "samplesLast7d": 7,
+            "samplesLast7d": 8,
             "samplesPrior30d": 18,
-            "passRate": 71.3,
+            "passRate": 71.6,
             "passRate30d": 100.0,
-            "totalRuns": 101,
+            "totalRuns": 102,
             "sparkline": [
-              {
-                "v": 2737.2822000000006
-              },
               {
                 "v": 2713.0245699999996
               },
@@ -6343,21 +6346,21 @@
               },
               {
                 "v": 2937.6116
+              },
+              {
+                "v": 2856.1940300000006
               }
             ]
           },
           "rebuild": {
             "p50": 2945.72042,
-            "regressionPct": 2.4,
-            "samplesLast7d": 7,
+            "regressionPct": 2.0,
+            "samplesLast7d": 8,
             "samplesPrior30d": 18,
-            "passRate": 70.3,
+            "passRate": 70.6,
             "passRate30d": 100.0,
-            "totalRuns": 101,
+            "totalRuns": 102,
             "sparkline": [
-              {
-                "v": 2775.78614
-              },
               {
                 "v": 2713.44689
               },
@@ -6444,23 +6447,23 @@
               },
               {
                 "v": 2770.02013
+              },
+              {
+                "v": 2950.96524
               }
             ]
           }
         }
       },
       "incBuild": {
-        "p50": 2693.60511,
-        "regressionPct": -12.8,
-        "samplesLast7d": 14,
+        "p50": 2699.4346,
+        "regressionPct": 1.7,
+        "samplesLast7d": 15,
         "samplesPrior30d": 32,
-        "passRate": 81.9,
+        "passRate": 82.0,
         "passRate30d": 100.0,
-        "totalRuns": 576,
+        "totalRuns": 577,
         "sparkline": [
-          {
-            "v": 2787.4781300000004
-          },
           {
             "v": 2769.5970700000003
           },
@@ -6486,10 +6489,10 @@
             "v": 2332.2360400000002
           },
           {
-            "v": 2344.6242399999996
+            "v": 2821.96537
           },
           {
-            "v": 2821.96537
+            "v": 2344.6242399999996
           },
           {
             "v": 2850.1182200000003
@@ -6543,25 +6546,25 @@
             "v": 2313.06959
           },
           {
+            "v": 2336.1846100000002
+          },
+          {
             "v": 2937.6116
           },
           {
-            "v": 2336.1846100000002
+            "v": 2856.1940300000006
           }
         ]
       },
       "rebuild": {
-        "p50": 2662.7229199999997,
-        "regressionPct": -11.0,
-        "samplesLast7d": 14,
+        "p50": 2744.1816599999997,
+        "regressionPct": 4.0,
+        "samplesLast7d": 15,
         "samplesPrior30d": 32,
         "passRate": 81.8,
         "passRate30d": 100.0,
-        "totalRuns": 577,
+        "totalRuns": 578,
         "sparkline": [
-          {
-            "v": 2744.1816599999997
-          },
           {
             "v": 2945.72042
           },
@@ -6620,16 +6623,16 @@
             "v": 2366.0755
           },
           {
-            "v": 2365.98804
-          },
-          {
             "v": 2984.1472200000003
           },
           {
-            "v": 2968.00466
+            "v": 2365.98804
           },
           {
             "v": 2357.6429500000004
+          },
+          {
+            "v": 2968.00466
           },
           {
             "v": 2986.5660300000004
@@ -6648,6 +6651,9 @@
           },
           {
             "v": 2348.0162
+          },
+          {
+            "v": 2950.96524
           }
         ]
       },
@@ -6869,16 +6875,13 @@
         "linux": {
           "incBuild": {
             "p50": 3660.5801199999996,
-            "regressionPct": -3.6,
-            "samplesLast7d": 7,
+            "regressionPct": -4.4,
+            "samplesLast7d": 8,
             "samplesPrior30d": 21,
-            "passRate": 67.3,
+            "passRate": 67.6,
             "passRate30d": 100.0,
-            "totalRuns": 104,
+            "totalRuns": 105,
             "sparkline": [
-              {
-                "v": 3712.95425
-              },
               {
                 "v": 3787.1744700000004
               },
@@ -6965,21 +6968,21 @@
               },
               {
                 "v": 3594.2995800000003
+              },
+              {
+                "v": 3535.1538400000004
               }
             ]
           },
           "rebuild": {
             "p50": 3791.730269999999,
-            "regressionPct": -4.5,
-            "samplesLast7d": 7,
+            "regressionPct": -5.2,
+            "samplesLast7d": 8,
             "samplesPrior30d": 19,
-            "passRate": 67.0,
+            "passRate": 67.3,
             "passRate30d": 100.0,
-            "totalRuns": 103,
+            "totalRuns": 104,
             "sparkline": [
-              {
-                "v": 4075.91
-              },
               {
                 "v": 4114.66759
               },
@@ -7066,6 +7069,9 @@
               },
               {
                 "v": 3655.4569800000004
+              },
+              {
+                "v": 3639.13375
               }
             ]
           }
@@ -7074,15 +7080,12 @@
       "incBuild": {
         "p50": 3557.93209,
         "regressionPct": -16.9,
-        "samplesLast7d": 15,
+        "samplesLast7d": 16,
         "samplesPrior30d": 35,
-        "passRate": 69.1,
+        "passRate": 69.2,
         "passRate30d": 100.0,
-        "totalRuns": 207,
+        "totalRuns": 208,
         "sparkline": [
-          {
-            "v": 3677.13099
-          },
           {
             "v": 3400.0730000000003
           },
@@ -7120,16 +7123,16 @@
             "v": 3608.0267999999996
           },
           {
-            "v": 2984.6622400000006
-          },
-          {
             "v": 3648.57811
           },
           {
-            "v": 3639.53018
+            "v": 2984.6622400000006
           },
           {
             "v": 2975.86352
+          },
+          {
+            "v": 3639.53018
           },
           {
             "v": 3661.10504
@@ -7162,10 +7165,13 @@
             "v": 2889.18986
           },
           {
+            "v": 3594.2995800000003
+          },
+          {
             "v": 2967.6844300000002
           },
           {
-            "v": 3594.2995800000003
+            "v": 3535.1538400000004
           },
           {
             "v": 2998.2237
@@ -7175,15 +7181,12 @@
       "rebuild": {
         "p50": 3662.1539199999997,
         "regressionPct": -18.7,
-        "samplesLast7d": 15,
+        "samplesLast7d": 16,
         "samplesPrior30d": 33,
-        "passRate": 68.9,
+        "passRate": 69.1,
         "passRate30d": 100.0,
-        "totalRuns": 206,
+        "totalRuns": 207,
         "sparkline": [
-          {
-            "v": 3859.6096699999994
-          },
           {
             "v": 3391.7035300000002
           },
@@ -7267,6 +7270,9 @@
           },
           {
             "v": 2951.40793
+          },
+          {
+            "v": 3639.13375
           },
           {
             "v": 3064.7299
@@ -8751,13 +8757,13 @@
         },
         "linux": {
           "incBuild": {
-            "p50": 117349.4758,
+            "p50": 116856.2397,
             "regressionPct": -3.6,
-            "samplesLast7d": 4,
+            "samplesLast7d": 5,
             "samplesPrior30d": 9,
-            "passRate": 52.0,
-            "passRate30d": 52.0,
-            "totalRuns": 50,
+            "passRate": 52.9,
+            "passRate30d": 53.8,
+            "totalRuns": 51,
             "sparkline": [
               {
                 "v": 118886.8067
@@ -8836,17 +8842,20 @@
               },
               {
                 "v": 114157.4805
+              },
+              {
+                "v": 113344.0593
               }
             ]
           },
           "rebuild": {
-            "p50": 134631.8657,
+            "p50": 132365.3486,
             "regressionPct": -5.9,
-            "samplesLast7d": 4,
+            "samplesLast7d": 5,
             "samplesPrior30d": 9,
-            "passRate": 52.0,
-            "passRate30d": 52.0,
-            "totalRuns": 50,
+            "passRate": 52.9,
+            "passRate30d": 53.8,
+            "totalRuns": 51,
             "sparkline": [
               {
                 "v": 233553.7832
@@ -8925,23 +8934,23 @@
               },
               {
                 "v": 129558.1865
+              },
+              {
+                "v": 125714.4491
               }
             ]
           }
         }
       },
       "incBuild": {
-        "p50": 223734.7006,
-        "regressionPct": 87.7,
-        "samplesLast7d": 9,
+        "p50": 119195.4921,
+        "regressionPct": -3.5,
+        "samplesLast7d": 10,
         "samplesPrior30d": 18,
-        "passRate": 43.4,
-        "passRate30d": 57.4,
-        "totalRuns": 99,
+        "passRate": 44.0,
+        "passRate30d": 58.3,
+        "totalRuns": 100,
         "sparkline": [
-          {
-            "v": 122873.4199
-          },
           {
             "v": 124298.9886
           },
@@ -9021,10 +9030,13 @@
             "v": 224129.1766
           },
           {
+            "v": 114157.4805
+          },
+          {
             "v": 226106.2035
           },
           {
-            "v": 114157.4805
+            "v": 113344.0593
           },
           {
             "v": 223734.7006
@@ -9034,15 +9046,12 @@
       "rebuild": {
         "p50": 143997.2827,
         "regressionPct": -9.3,
-        "samplesLast7d": 8,
+        "samplesLast7d": 9,
         "samplesPrior30d": 18,
-        "passRate": 42.9,
-        "passRate30d": 56.5,
-        "totalRuns": 98,
+        "passRate": 43.4,
+        "passRate30d": 57.4,
+        "totalRuns": 99,
         "sparkline": [
-          {
-            "v": 144230.7852
-          },
           {
             "v": 138568.3719
           },
@@ -9125,21 +9134,24 @@
             "v": 235658.9767
           },
           {
+            "v": 241267.4313
+          },
+          {
             "v": 129558.1865
           },
           {
-            "v": 241267.4313
+            "v": 125714.4491
           }
         ]
       },
       "mt": {
         "incBuild": {
-          "p50": 223734.7006,
-          "speedupPct": -304.9
+          "p50": 119195.4921,
+          "speedupPct": -115.7
         },
         "rebuild": {
           "p50": 143997.2827,
-          "speedupPct": -74.8
+          "speedupPct": -77.6
         }
       }
     },
@@ -9199,31 +9211,67 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 44835.06854,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 44835.06854
+              }
+            ]
+          },
+          "rebuild": {
+            "p50": 69809.85756,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 69809.85756
+              }
+            ]
+          }
         }
       },
       "incBuild": {
-        "p50": 110855.78288,
+        "p50": 44835.06854,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 44835.06854
+          },
           {
             "v": 110855.78288
           }
         ]
       },
       "rebuild": {
-        "p50": 115188.84486,
+        "p50": 69809.85756,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 69809.85756
+          },
           {
             "v": 115188.84486
           }
