@@ -1555,7 +1555,7 @@
         document.getElementById('loadingMsg').textContent = 'Loading...';
         const badge = document.getElementById('trendsBrokenBadge');
         if (badge) badge.style.display = isBrokenAsset(name) ? '' : 'none';
-        const resp = await fetch(`data/aggregated/${name}.json`);
+        const resp = await fetch(`data/main/aggregated/${name}.json`);
         DATA_ALL = await resp.json();
         document.getElementById('loadingMsg').textContent = '';
         applyTimeFilter();
@@ -1565,7 +1565,7 @@
         document.getElementById('healthLoadingMsg').textContent = 'Loading...';
         const badge = document.getElementById('healthBrokenBadge');
         if (badge) badge.style.display = isBrokenAsset(name) ? '' : 'none';
-        const resp = await fetch(`data/aggregated/${name}.json`);
+        const resp = await fetch(`data/main/aggregated/${name}.json`);
         HEALTH_DATA_ALL = await resp.json();
         document.getElementById('healthLoadingMsg').textContent = '';
         applyHealthTimeFilter();
@@ -1580,7 +1580,7 @@
             HASH_SUPPRESSED = true;
 
             // Load summary for Overview + asset selector
-            const summResp = await fetch('data/summary.json');
+            const summResp = await fetch('data/main/summary.json');
             SUMMARY = await summResp.json();
             renderOverview();
 
