@@ -1,16 +1,7 @@
 [
   {
-    "name": "net8-console-app",
-    "records": 1,
-    "scenarios": [
-      "net8-console-app-inc-build-dotnet"
-    ],
-    "firstDate": "2026-06-23",
-    "latestDate": "2026-06-23"
-  },
-  {
     "name": "orchard-core",
-    "records": 6,
+    "records": 12,
     "scenarios": [
       "orchard-core-inc-build-check-dotnet",
       "orchard-core-inc-build-dotnet",
@@ -24,7 +15,7 @@
   },
   {
     "name": "orchard-core-cold",
-    "records": 2,
+    "records": 4,
     "scenarios": [
       "orchard-core-cold-restore-dotnet",
       "orchard-core-cold-restore-mt-dotnet"
@@ -34,7 +25,7 @@
   },
   {
     "name": "orchard-core-inc",
-    "records": 2,
+    "records": 4,
     "scenarios": [
       "orchard-core-inc-restore-dotnet",
       "orchard-core-inc-restore-mt-dotnet"
