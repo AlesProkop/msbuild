@@ -25,17 +25,36 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 2763.7704599999993,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 2763.7704599999993
+              }
+            ]
+          }
         }
       },
       "incBuild": {
         "p50": 2371.51708,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 2763.7704599999993
+          },
           {
             "v": 2371.51708
           }
