@@ -1,0 +1,37 @@
+[
+  {
+    "date": "2026-06-23",
+    "scenario": "net8-blazorwasm-app-publish-dotnet",
+    "perfstarCIBuildNumber": "20260623.1.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "GOLDLIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-06-23T04:25:09.9290003Z",
+    "results": {
+      "netSdkVersion": "11.0.100-preview.6.26322.104",
+      "aspNetCoreVersion": "10.0.9+901ca9412484",
+      "netCoreAppVersion": "10.0.9+901ca9412484",
+      "msbuild-version": "18.9.0.32206",
+      "msbuild-display-version": "18.9.0.32206",
+      "evaluation-time": 1447.4,
+      "evaluation-time-globbing": 22.6,
+      "evaluation-time-pass0": 22.5,
+      "evaluation-time-pass1": 771.5,
+      "evaluation-time-pass2": 10.5,
+      "evaluation-time-pass3": 136.3,
+      "evaluation-time-pass3dot1": 173.7,
+      "evaluation-time-pass4": 15.1,
+      "evaluation-time-pass5": 311.1,
+      "exit-code": 0.0,
+      "build-time": 7024.939000000001,
+      "info/test-asset": "Net8BlazorWasmApp",
+      "info/test-scenario": "Publish",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 10.0,
+      "dotnet-version": "11.0.100-preview.6.26322.104",
+      "crank-netSdkVersion": "10.0.301"
+    }
+  }
+]
