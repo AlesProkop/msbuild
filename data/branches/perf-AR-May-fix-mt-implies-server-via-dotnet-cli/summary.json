@@ -10,22 +10,6 @@
       "hasMt": false,
       "canonical": "standard",
       "platforms": {
-        "windows": {
-          "incBuild": {
-            "p50": 2371.51708,
-            "regressionPct": null,
-            "samplesLast7d": 1,
-            "samplesPrior30d": 0,
-            "passRate": 100.0,
-            "passRate30d": 100.0,
-            "totalRuns": 1,
-            "sparkline": [
-              {
-                "v": 2371.51708
-              }
-            ]
-          }
-        },
         "linux": {
           "incBuild": {
             "p50": 2763.7704599999993,
@@ -44,22 +28,116 @@
         }
       },
       "incBuild": {
-        "p50": 2371.51708,
+        "p50": 2763.7704599999993,
         "regressionPct": null,
-        "samplesLast7d": 2,
+        "samplesLast7d": 1,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 2,
+        "totalRuns": 1,
         "sparkline": [
           {
             "v": 2763.7704599999993
-          },
-          {
-            "v": 2371.51708
           }
         ]
       }
+    },
+    {
+      "name": "orchard-core",
+      "latestDate": "2026-06-23",
+      "stale": false,
+      "staleDays": 0,
+      "archived": false,
+      "hasMt": true,
+      "canonical": "mt",
+      "platforms": {
+        "windows": {
+          "incBuild": {
+            "p50": 228149.4278,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 228149.4278
+              }
+            ]
+          },
+          "rebuild": {
+            "p50": 228145.6588,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 228145.6588
+              }
+            ]
+          }
+        }
+      },
+      "incBuild": {
+        "p50": 228149.4278,
+        "regressionPct": null,
+        "samplesLast7d": 1,
+        "samplesPrior30d": 0,
+        "passRate": 100.0,
+        "passRate30d": 100.0,
+        "totalRuns": 1,
+        "sparkline": [
+          {
+            "v": 228149.4278
+          }
+        ]
+      },
+      "rebuild": {
+        "p50": 228145.6588,
+        "regressionPct": null,
+        "samplesLast7d": 1,
+        "samplesPrior30d": 0,
+        "passRate": 100.0,
+        "passRate30d": 100.0,
+        "totalRuns": 1,
+        "sparkline": [
+          {
+            "v": 228145.6588
+          }
+        ]
+      },
+      "mt": {
+        "incBuild": {
+          "p50": 228149.4278,
+          "speedupPct": -88.8
+        },
+        "rebuild": {
+          "p50": 228145.6588,
+          "speedupPct": -86.2
+        }
+      }
+    },
+    {
+      "name": "orchard-core-cold",
+      "latestDate": "2026-06-23",
+      "stale": false,
+      "staleDays": 0,
+      "archived": false,
+      "hasMt": true,
+      "canonical": "mt"
+    },
+    {
+      "name": "orchard-core-inc",
+      "latestDate": "2026-06-23",
+      "stale": false,
+      "staleDays": 0,
+      "archived": false,
+      "hasMt": true,
+      "canonical": "mt"
     }
   ]
 }
