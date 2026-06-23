@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 2,
+  "assets": [
+    {
+      "name": "net8-console-app",
+      "latestDate": "2026-06-23",
+      "stale": false,
+      "staleDays": 0,
+      "archived": false,
+      "hasMt": false,
+      "canonical": "standard",
+      "platforms": {
+        "windows": {
+          "incBuild": {
+            "p50": 2371.51708,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 2371.51708
+              }
+            ]
+          }
+        }
+      },
+      "incBuild": {
+        "p50": 2371.51708,
+        "regressionPct": null,
+        "samplesLast7d": 1,
+        "samplesPrior30d": 0,
+        "passRate": 100.0,
+        "passRate30d": 100.0,
+        "totalRuns": 1,
+        "sparkline": [
+          {
+            "v": 2371.51708
+          }
+        ]
+      }
+    }
+  ]
+}
