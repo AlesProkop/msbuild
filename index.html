@@ -32,6 +32,7 @@
         <button class="tab active" data-view="overview"><span class="tab-label">Overview</span><span class="tab-subtitle">Cross-asset summary</span></button>
         <button class="tab" data-view="trends"><span class="tab-label">Trends</span><span class="tab-subtitle">Deep-dive per asset</span></button>
         <button class="tab" data-view="health"><span class="tab-label">Health</span><span class="tab-subtitle">Pass/fail tracking</span></button>
+        <button class="tab" data-view="compare"><span class="tab-label">Comparison</span><span class="tab-subtitle">Branch vs main</span></button>
     </div>
 
     <!-- ============ OVERVIEW (cross-asset, no interaction) ============ -->
@@ -213,6 +214,99 @@
             <div class="card">
                 <div class="card-header" id="timelineHeader">Status Timeline</div>
                 <div class="timeline-wrapper" id="timelineContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ COMPARISON (run vs baseline, per scenario) ============ -->
+    <div class="view" id="view-compare">
+        <div class="layout">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Compare a CI run against a baseline</span>
+                    <span class="card-subtitle">Per-scenario difference for runs that have comparable data</span>
+                </div>
+                <div class="compare-grid">
+                    <!-- Side A: candidate -->
+                    <div class="compare-side">
+                        <div class="compare-side-title">A · Candidate</div>
+                        <div class="compare-field">
+                            <label for="cmpADataset">Dataset</label>
+                            <select id="cmpADataset"></select>
+                        </div>
+                        <div class="compare-field">
+                            <label for="cmpARun">CI run</label>
+                            <select id="cmpARun"></select>
+                        </div>
+                    </div>
+                    <!-- Side B: baseline -->
+                    <div class="compare-side">
+                        <div class="compare-side-title">B · Baseline</div>
+                        <div class="compare-field">
+                            <label for="cmpBDataset">Dataset</label>
+                            <select id="cmpBDataset"></select>
+                        </div>
+                        <div class="compare-field">
+                            <label for="cmpBMode">Baseline</label>
+                            <select id="cmpBMode">
+                                <option value="latest">Latest run</option>
+                                <option value="average" selected>Average of last N days</option>
+                                <option value="specific">Specific run</option>
+                            </select>
+                        </div>
+                        <div class="compare-field" id="cmpBDaysWrap">
+                            <label for="cmpBDays">Days</label>
+                            <input type="number" id="cmpBDays" min="1" max="3650" step="1" value="30">
+                        </div>
+                        <div class="compare-field">
+                            <label for="cmpBRun">CI run</label>
+                            <select id="cmpBRun"></select>
+                        </div>
+                    </div>
+                    <!-- Metric + action -->
+                    <div class="compare-side">
+                        <div class="compare-side-title">Metric</div>
+                        <div class="compare-field">
+                            <label for="cmpMetric">Measure</label>
+                            <select id="cmpMetric">
+                                <option value="build-time" selected>Build Time</option>
+                                <option value="evaluation-time">Evaluation Time</option>
+                                <option value="evaluation-time-globbing">Eval — Globbing</option>
+                                <option value="evaluation-time-pass1">Eval Pass 1</option>
+                                <option value="evaluation-time-pass5">Eval Pass 5</option>
+                            </select>
+                        </div>
+                        <div class="compare-field">
+                            <button type="button" class="compare-run-btn" id="cmpRun">Compare</button>
+                        </div>
+                        <div class="compare-field">
+                            <span id="cmpStatus" class="muted" style="font-size:12px"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Differences</span>
+                    <span class="card-subtitle" id="cmpSummaryLine">Pick a candidate run and a baseline, then Compare.</span>
+                </div>
+                <div class="table-wrapper">
+                    <table class="summary-table compare-table" id="cmpTable" style="display:none">
+                        <thead>
+                            <tr>
+                                <th>Scenario</th>
+                                <th>Platform</th>
+                                <th class="num">A</th>
+                                <th class="num">B (baseline)</th>
+                                <th class="num">Δ</th>
+                                <th>Δ %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cmpBody"></tbody>
+                    </table>
+                </div>
+                <div id="cmpNote" class="muted" style="font-size:12px; margin-top:8px"></div>
             </div>
         </div>
     </div>
@@ -1470,10 +1564,14 @@
                 time: timeStopAt(document.getElementById('healthTimeRange').value).key
             };
         }
+        if (tab === 'compare') {
+            return { tab: 'compare' };
+        }
         return { tab: 'overview' };
     }
     function stateToHash(s) {
         if (!s || s.tab === 'overview') return '#overview';
+        if (s.tab === 'compare') return '#compare';
         return `#${s.tab}/${encodeURIComponent(s.asset || '')}/${s.time || 'all'}`;
     }
     function parseHash() {
@@ -1481,6 +1579,7 @@
         if (!h) return null;
         const parts = h.split('/');
         if (parts[0] === 'overview') return { tab: 'overview' };
+        if (parts[0] === 'compare') return { tab: 'compare' };
         if (parts[0] === 'trends' || parts[0] === 'health') {
             return {
                 tab: parts[0],
@@ -1508,7 +1607,9 @@
         HASH_SUPPRESSED = true;
         try {
             switchTab(state.tab);
-            if (state.tab === 'trends' && state.asset) {
+            if (state.tab === 'compare') {
+                await setupCompare();
+            } else if (state.tab === 'trends' && state.asset) {
                 const sel = document.getElementById('assetSelect');
                 if ([...sel.options].some(o => o.value === state.asset)) {
                     if (sel.value !== state.asset) {
@@ -1546,6 +1647,7 @@
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
             switchTab(tab.dataset.view);
+            if (tab.dataset.view === 'compare') setupCompare();
             updateHash();
         });
     });
@@ -1569,6 +1671,286 @@
         HEALTH_DATA_ALL = await resp.json();
         document.getElementById('healthLoadingMsg').textContent = '';
         applyHealthTimeFilter();
+    }
+
+    /* ══════════════════════════════════════════════
+       COMPARISON — run vs baseline, per scenario
+       Works across datasets: 'main' (data/main) plus any perf-branch
+       datasets listed in data/datasets.json. Branch data is optional; with
+       main only you can still compare a specific main run vs a main average.
+       ══════════════════════════════════════════════ */
+    const CMP = {
+        datasets: null,        // [{id,label,base}]
+        cache: {},             // base -> { records:[], runs:[{build,date}] }
+        initialized: false
+    };
+    const CMP_SEP = '\u241F';  // key separator for scenario|platform
+
+    function cmpPlatformLabel(p) {
+        return p === 'windows' ? '🪟 Windows' : p === 'linux' ? '🐧 Linux' : '🕘 Other';
+    }
+    function cmpMetricLabel() {
+        const sel = document.getElementById('cmpMetric');
+        return sel.options[sel.selectedIndex]?.textContent || sel.value;
+    }
+    function cmpNum(v) { const n = Number(v); return Number.isFinite(n) ? n : null; }
+
+    // Difference chip: positive % = slower than baseline (regression, red).
+    function cmpDiffChip(pct) {
+        if (pct == null) return '<span class="muted">—</span>';
+        const a = Math.abs(pct);
+        const sign = pct > 0 ? '+' : pct < 0 ? '' : '±';
+        let cls = 'trend-chip-ok', arrow = '·';
+        if (pct > 5)       { cls = 'trend-chip-danger';  arrow = '▲'; }
+        else if (pct > 1)  { cls = 'trend-chip-warning'; arrow = '▲'; }
+        else if (pct < -5) { cls = 'trend-chip-success'; arrow = '▼'; }
+        else if (pct < -1) { cls = 'trend-chip-success'; arrow = '▼'; }
+        return `<span class="trend-chip ${cls}" title="A vs baseline B">${arrow} ${sign}${a.toFixed(1)}%</span>`;
+    }
+
+    // Build the dataset list: main is always present; perf-branch datasets come
+    // from data/datasets.json (tolerant of a missing/empty registry).
+    async function cmpDatasetList() {
+        if (CMP.datasets) return CMP.datasets;
+        let branchDatasets = [];
+        try {
+            const resp = await fetch('data/datasets.json', { cache: 'no-store' });
+            if (resp.ok) {
+                const parsed = await resp.json();
+                if (Array.isArray(parsed)) {
+                    branchDatasets = parsed
+                        .filter(d => d && d.base && d.id)
+                        .map(d => ({ id: d.id, label: d.label || d.id, base: d.base }));
+                }
+            }
+        } catch (_) { /* main only */ }
+        CMP.datasets = [{ id: 'main', label: 'main', base: 'data/main' }, ...branchDatasets];
+        return CMP.datasets;
+    }
+
+    // Load + cache every aggregated asset file for a dataset, and derive its CI runs.
+    async function cmpEnsureLoaded(base, statusEl) {
+        if (CMP.cache[base]) return CMP.cache[base];
+        if (statusEl) statusEl.textContent = 'Loading ' + base + ' …';
+        let assetNames = [];
+        try {
+            const sresp = await fetch(`${base}/summary.json`, { cache: 'no-store' });
+            if (sresp.ok) {
+                const summary = await sresp.json();
+                assetNames = (summary.assets || []).map(a => a.name);
+            }
+        } catch (_) { /* leave empty */ }
+
+        const records = [];
+        await Promise.all(assetNames.map(async name => {
+            try {
+                const r = await fetch(`${base}/aggregated/${name}.json`, { cache: 'no-store' });
+                if (!r.ok) return;
+                const arr = await r.json();
+                if (Array.isArray(arr)) for (const rec of arr) records.push(rec);
+            } catch (_) { /* skip missing asset */ }
+        }));
+
+        // Distinct CI runs, newest first (by the latest date seen for each build number).
+        const runMap = new Map();
+        for (const rec of records) {
+            const build = rec.perfstarCIBuildNumber;
+            if (!build) continue;
+            const prev = runMap.get(build);
+            if (!prev || (rec.date || '') > prev.date) runMap.set(build, { build, date: rec.date || '' });
+        }
+        const runs = [...runMap.values()].sort((x, y) =>
+            (y.date || '').localeCompare(x.date || '') || (y.build || '').localeCompare(x.build || ''));
+
+        CMP.cache[base] = { records, runs };
+        if (statusEl) statusEl.textContent = '';
+        return CMP.cache[base];
+    }
+
+    // Map scenario|platform -> averaged metric value for a single CI run.
+    function cmpRunMap(records, build, metric) {
+        const acc = new Map(); // key -> {sum,count,scenario,platform}
+        for (const rec of records) {
+            if (rec.perfstarCIBuildNumber !== build) continue;
+            const v = cmpNum(rec.results?.[metric]);
+            if (v == null) continue;
+            const platform = platformOf(rec);
+            const key = rec.scenario + CMP_SEP + platform;
+            const e = acc.get(key) || { sum: 0, count: 0, scenario: rec.scenario, platform };
+            e.sum += v; e.count++;
+            acc.set(key, e);
+        }
+        const out = new Map();
+        for (const [k, e] of acc) out.set(k, { value: e.sum / e.count, scenario: e.scenario, platform: e.platform, samples: e.count });
+        return out;
+    }
+
+    // Map scenario|platform -> averaged metric value over the last N days of a dataset
+    // (relative to the most recent record date in that dataset).
+    function cmpAverageMap(records, days, metric) {
+        let maxMs = 0;
+        for (const rec of records) {
+            const t = Date.parse(rec.date);
+            if (Number.isFinite(t) && t > maxMs) maxMs = t;
+        }
+        const cutoff = maxMs - days * 86400000;
+        const acc = new Map();
+        for (const rec of records) {
+            const t = Date.parse(rec.date);
+            if (!Number.isFinite(t) || t < cutoff) continue;
+            const v = cmpNum(rec.results?.[metric]);
+            if (v == null) continue;
+            const platform = platformOf(rec);
+            const key = rec.scenario + CMP_SEP + platform;
+            const e = acc.get(key) || { sum: 0, count: 0, scenario: rec.scenario, platform };
+            e.sum += v; e.count++;
+            acc.set(key, e);
+        }
+        const out = new Map();
+        for (const [k, e] of acc) out.set(k, { value: e.sum / e.count, scenario: e.scenario, platform: e.platform, samples: e.count });
+        return out;
+    }
+
+    function cmpPopulateRuns(selectEl, runs) {
+        selectEl.innerHTML = '';
+        for (const run of runs) {
+            const o = document.createElement('option');
+            o.value = run.build;
+            o.textContent = `${run.date || '?'} · ${run.build}`;
+            selectEl.appendChild(o);
+        }
+        if (!runs.length) {
+            const o = document.createElement('option');
+            o.value = ''; o.textContent = '(no runs)';
+            selectEl.appendChild(o);
+        }
+    }
+
+    function cmpSyncBModeVisibility() {
+        const mode = document.getElementById('cmpBMode').value;
+        document.getElementById('cmpBDaysWrap').style.display = mode === 'average' ? '' : 'none';
+        document.getElementById('cmpBRun').parentElement.style.display = mode === 'specific' ? '' : 'none';
+    }
+
+    // Reload A's run list when its dataset changes.
+    async function cmpOnADatasetChange() {
+        const base = document.getElementById('cmpADataset').value;
+        const status = document.getElementById('cmpStatus');
+        const { runs } = await cmpEnsureLoaded(base, status);
+        cmpPopulateRuns(document.getElementById('cmpARun'), runs);
+    }
+    async function cmpOnBDatasetChange() {
+        const base = document.getElementById('cmpBDataset').value;
+        const status = document.getElementById('cmpStatus');
+        const { runs } = await cmpEnsureLoaded(base, status);
+        cmpPopulateRuns(document.getElementById('cmpBRun'), runs);
+    }
+
+    async function cmpCompute() {
+        const status = document.getElementById('cmpStatus');
+        const table = document.getElementById('cmpTable');
+        const body = document.getElementById('cmpBody');
+        const note = document.getElementById('cmpNote');
+        const summaryLine = document.getElementById('cmpSummaryLine');
+        const metric = document.getElementById('cmpMetric').value;
+
+        const aBase = document.getElementById('cmpADataset').value;
+        const bBase = document.getElementById('cmpBDataset').value;
+        const aBuild = document.getElementById('cmpARun').value;
+        const bMode = document.getElementById('cmpBMode').value;
+
+        try {
+            const aData = await cmpEnsureLoaded(aBase, status);
+            const bData = await cmpEnsureLoaded(bBase, status);
+
+            if (!aBuild) { summaryLine.textContent = 'No candidate run available in this dataset.'; table.style.display = 'none'; note.textContent = ''; return; }
+
+            const aMap = cmpRunMap(aData.records, aBuild, metric);
+
+            let bMap, bDesc;
+            if (bMode === 'latest') {
+                const latest = bData.runs[0];
+                if (!latest) { summaryLine.textContent = 'Baseline dataset has no runs.'; table.style.display = 'none'; return; }
+                bMap = cmpRunMap(bData.records, latest.build, metric);
+                bDesc = `latest run (${latest.date} · ${latest.build})`;
+            } else if (bMode === 'specific') {
+                const bBuild = document.getElementById('cmpBRun').value;
+                if (!bBuild) { summaryLine.textContent = 'Pick a baseline run.'; table.style.display = 'none'; return; }
+                bMap = cmpRunMap(bData.records, bBuild, metric);
+                bDesc = `run ${bBuild}`;
+            } else {
+                const days = Math.max(1, parseInt(document.getElementById('cmpBDays').value, 10) || 30);
+                bMap = cmpAverageMap(bData.records, days, metric);
+                bDesc = `average of last ${days} days`;
+            }
+
+            // Rows where both sides have data for the metric.
+            const rows = [];
+            let aOnly = 0, bOnly = 0;
+            const allKeys = new Set([...aMap.keys(), ...bMap.keys()]);
+            for (const key of allKeys) {
+                const a = aMap.get(key), b = bMap.get(key);
+                if (a && !b) { aOnly++; continue; }
+                if (b && !a) { bOnly++; continue; }
+                const delta = a.value - b.value;
+                const pct = b.value !== 0 ? (delta / b.value) * 100 : null;
+                rows.push({ scenario: a.scenario, platform: a.platform, aVal: a.value, bVal: b.value, delta, pct, bSamples: b.samples });
+            }
+            rows.sort((x, y) => x.scenario.localeCompare(y.scenario) || x.platform.localeCompare(y.platform));
+
+            body.innerHTML = rows.map(r => `
+                <tr>
+                    <td>${r.scenario}</td>
+                    <td>${cmpPlatformLabel(r.platform)}</td>
+                    <td class="num">${fmtMs(r.aVal)}</td>
+                    <td class="num">${fmtMs(r.bVal)}${r.bSamples > 1 ? ` <span class="muted">(n=${r.bSamples})</span>` : ''}</td>
+                    <td class="num">${(r.delta > 0 ? '+' : '') + fmtMs(r.delta)}</td>
+                    <td>${cmpDiffChip(r.pct)}</td>
+                </tr>`).join('');
+
+            table.style.display = rows.length ? '' : 'none';
+            const aLabel = (CMP.datasets.find(d => d.base === aBase) || {}).label || aBase;
+            const bLabel = (CMP.datasets.find(d => d.base === bBase) || {}).label || bBase;
+            summaryLine.textContent = `A: ${aLabel} run ${aBuild} (${metric}) vs B: ${bLabel} ${bDesc} — ${rows.length} scenario(s)`;
+            const skipped = [];
+            if (aOnly) skipped.push(`${aOnly} only in A`);
+            if (bOnly) skipped.push(`${bOnly} only in B`);
+            note.textContent = rows.length
+                ? (skipped.length ? `Skipped ${skipped.join(', ')} (no comparable data).` : 'All scenarios had comparable data.')
+                : 'No scenarios had data on both sides for this metric.';
+        } catch (err) {
+            console.error('Comparison failed:', err);
+            status.textContent = `Error: ${err.message}`;
+        }
+    }
+
+    // Build the dataset selectors once; load A/B run lists lazily on first open.
+    async function setupCompare() {
+        if (CMP.initialized) return;
+        CMP.initialized = true;
+        const datasets = await cmpDatasetList();
+        const aSel = document.getElementById('cmpADataset');
+        const bSel = document.getElementById('cmpBDataset');
+        for (const ds of datasets) {
+            for (const sel of [aSel, bSel]) {
+                const o = document.createElement('option');
+                o.value = ds.base; o.textContent = ds.label;
+                sel.appendChild(o);
+            }
+        }
+        // Default: candidate from the last dataset (a perf branch if present), baseline = main.
+        aSel.value = datasets[datasets.length - 1].base;
+        bSel.value = 'data/main';
+
+        aSel.addEventListener('change', () => cmpOnADatasetChange());
+        bSel.addEventListener('change', () => cmpOnBDatasetChange());
+        document.getElementById('cmpBMode').addEventListener('change', () => { cmpSyncBModeVisibility(); });
+        document.getElementById('cmpRun').addEventListener('click', () => cmpCompute());
+        cmpSyncBModeVisibility();
+
+        await cmpOnADatasetChange();
+        await cmpOnBDatasetChange();
+        await cmpCompute();
     }
 
     /* ── Init ── */

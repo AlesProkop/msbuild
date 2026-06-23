@@ -427,6 +427,67 @@ header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
     color: var(--accent);
 }
 
+/* Comparison tab */
+.compare-grid {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding: 14px;
+    align-items: flex-start;
+}
+.compare-side {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 200px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface-raised);
+}
+.compare-side-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+}
+.compare-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.compare-field label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.compare-field select,
+.compare-field input[type="number"] {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    min-width: 180px;
+}
+.compare-run-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.compare-run-btn:hover { filter: brightness(1.05); }
+.compare-table tbody tr { cursor: default; }
+.compare-table .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
 /* Overview filter row */
 .overview-controls .search-input {
     padding: 6px 10px;
