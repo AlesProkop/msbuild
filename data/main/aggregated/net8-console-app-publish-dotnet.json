@@ -68,5 +68,40 @@
       "dotnet-version": "11.0.100-preview.6.26322.104",
       "crank-netSdkVersion": "10.0.301"
     }
+  },
+  {
+    "date": "2026-06-24",
+    "scenario": "net8-console-app-publish-dotnet",
+    "perfstarCIBuildNumber": "20260624.1.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-06-24T04:23:07.1417067Z",
+    "results": {
+      "netSdkVersion": "11.0.100-preview.6.26323.106",
+      "aspNetCoreVersion": "10.0.9+901ca9412484",
+      "netCoreAppVersion": "10.0.9+901ca9412484",
+      "msbuild-version": "18.9.0.32305",
+      "msbuild-display-version": "18.9.0.32305",
+      "evaluation-time": 748.2,
+      "evaluation-time-globbing": 4.0,
+      "evaluation-time-pass0": 9.3,
+      "evaluation-time-pass1": 443.4,
+      "evaluation-time-pass2": 3.0,
+      "evaluation-time-pass3": 90.9,
+      "evaluation-time-pass3dot1": 67.7,
+      "evaluation-time-pass4": 6.0,
+      "evaluation-time-pass5": 124.2,
+      "exit-code": 0.0,
+      "build-time": 2427.4949399999996,
+      "info/test-asset": "Net8ConsoleApp",
+      "info/test-scenario": "Publish",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 10.0,
+      "dotnet-version": "11.0.100-preview.6.26323.106",
+      "crank-netSdkVersion": "10.0.301"
+    }
   }
 ]
