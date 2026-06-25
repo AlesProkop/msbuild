@@ -262,7 +262,7 @@
   },
   {
     "name": "net8-console-app-warm",
-    "records": 60,
+    "records": 62,
     "scenarios": [
       "net8-console-app-warm-inc-build-dotnet",
       "net8-console-app-warm-inc-build-mt-dotnet",
@@ -351,12 +351,13 @@
   },
   {
     "name": "orchard-core-warm",
-    "records": 41,
+    "records": 43,
     "scenarios": [
       "orchard-core-warm-inc-build-dotnet",
       "orchard-core-warm-inc-build-mt-dotnet",
       "orchard-core-warm-rebuild-dotnet",
-      "orchard-core-warm-restore-dotnet"
+      "orchard-core-warm-restore-dotnet",
+      "orchard-core-warm-restore-mt-dotnet"
     ],
     "firstDate": "2026-06-19",
     "latestDate": "2026-06-25"
