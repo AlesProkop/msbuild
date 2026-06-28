@@ -1,8 +1,20 @@
 [
   {
+    "id": "perf-AR-May-bundle-7fix-on-server-fix",
+    "label": "perf/AR-May/bundle-7fix-on-server-fix",
+    "base": "data/branches/perf-AR-May-bundle-7fix-on-server-fix",
+    "latestDate": "2026-06-28"
+  },
+  {
     "id": "perf-AR-May-fix-mt-implies-server-via-dotnet-cli",
     "label": "perf/AR-May/fix-mt-implies-server-via-dotnet-cli",
     "base": "data/branches/perf-AR-May-fix-mt-implies-server-via-dotnet-cli",
     "latestDate": "2026-06-24"
+  },
+  {
+    "id": "perf-AR-May-lock-contention-on-server-fix",
+    "label": "perf/AR-May/lock-contention-on-server-fix",
+    "base": "data/branches/perf-AR-May-lock-contention-on-server-fix",
+    "latestDate": "2026-06-27"
   }
 ]
