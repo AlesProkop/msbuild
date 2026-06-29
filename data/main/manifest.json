@@ -1,43 +1,5 @@
 [
   {
-    "name": "aspire",
-    "records": 6,
-    "scenarios": [
-      "aspire-inc-build-dotnet",
-      "aspire-rebuild-dotnet"
-    ],
-    "firstDate": "2026-06-26",
-    "latestDate": "2026-06-29"
-  },
-  {
-    "name": "aspire-warm",
-    "records": 3,
-    "scenarios": [
-      "aspire-warm-inc-build-dotnet"
-    ],
-    "firstDate": "2026-06-26",
-    "latestDate": "2026-06-29"
-  },
-  {
-    "name": "azure-core",
-    "records": 6,
-    "scenarios": [
-      "azure-core-inc-build-dotnet",
-      "azure-core-rebuild-dotnet"
-    ],
-    "firstDate": "2026-06-26",
-    "latestDate": "2026-06-29"
-  },
-  {
-    "name": "azure-core-warm",
-    "records": 3,
-    "scenarios": [
-      "azure-core-warm-inc-build-dotnet"
-    ],
-    "firstDate": "2026-06-26",
-    "latestDate": "2026-06-29"
-  },
-  {
     "name": "blazorwasm-app",
     "records": 26,
     "scenarios": [
@@ -447,24 +409,5 @@
     ],
     "firstDate": "2023-08-30",
     "latestDate": "2023-10-11"
-  },
-  {
-    "name": "xunit",
-    "records": 8,
-    "scenarios": [
-      "xunit-inc-build-dotnet",
-      "xunit-rebuild-dotnet"
-    ],
-    "firstDate": "2026-06-26",
-    "latestDate": "2026-06-29"
-  },
-  {
-    "name": "xunit-warm",
-    "records": 4,
-    "scenarios": [
-      "xunit-warm-inc-build-dotnet"
-    ],
-    "firstDate": "2026-06-26",
-    "latestDate": "2026-06-29"
   }
 ]

@@ -363,6 +363,25 @@
     const BROKEN_TAG_TITLE = 'This asset is currently broken — results may be unreliable. Not prioritized for fixing.';
     function brokenTagHtml() { return `<span class="tag tag-broken" title="${BROKEN_TAG_TITLE}">⚠ BROKEN</span>`; }
 
+    // ── Display-asset grouping (client-side; durable across PerfStar data pushes
+    // since the publisher bot only writes data/, never index.html) ──
+    // A parent display asset absorbs the scenarios of the listed source assets,
+    // which are then hidden as separate list entries. This presents one
+    // "orchard-core" (build + cold/incremental restore) while keeping warm
+    // steady-state runs under "orchard-core-warm". Add more entries to taste.
+    const ASSET_GROUPS = {
+        'orchard-core': ['orchard-core-cold', 'orchard-core-inc']
+    };
+    // child asset name -> the parent it is absorbed into
+    const ASSET_GROUP_PARENT = Object.fromEntries(
+        Object.entries(ASSET_GROUPS).flatMap(([parent, kids]) => kids.map(k => [k, parent]))
+    );
+    // Aggregated source files to load for a (possibly grouped) display asset.
+    function assetSources(name) { return [name, ...(ASSET_GROUPS[name] || [])]; }
+    // summary.json assets with absorbed children hidden from the lists.
+    function displayAssets() { return (SUMMARY?.assets || []).filter(a => !ASSET_GROUP_PARENT[a.name]); }
+    function displayAssetNames() { return displayAssets().map(a => a.name); }
+
     // Time-range slider stops. Index 0 = most recent, last index = "all time" (no cutoff).
     // The 'key' is the stable identifier used in the shareable URL hash.
     const TIME_STOPS = [
@@ -388,10 +407,58 @@
     }
 
     /* ── Helpers ── */
-    function short(s) { return s.replace(/^.*?-(?=inc-build|rebuild)/, '').replace('-dotnet',''); }
-    function assetPrefix() {
-        if (!DATA.length) return '';
-        return DATA[0].scenario.replace(/-(inc-build|rebuild).*$/, '');
+    // Scenario label with the (longest matching) display-asset prefix removed and
+    // the default "-dotnet" suffix dropped (the "-msbuild" suffix is kept so
+    // dotnet/msbuild variants stay distinguishable), e.g.
+    // orchard-core-cold-restore-dotnet -> "cold-restore",
+    // net6-console-app-inc-build-msbuild -> "inc-build-msbuild".
+    // Falls back to the inc-build/rebuild heuristic before the asset list loads.
+    function short(s) {
+        const noApp = s.replace(/-(dotnet|msbuild)$/, '');
+        const prefix = displayAssetNames()
+            .filter(n => noApp === n || noApp.startsWith(n + '-'))
+            .sort((a, b) => b.length - a.length)[0];
+        let k = (prefix && noApp.startsWith(prefix + '-'))
+            ? s.slice(prefix.length + 1)
+            : s.replace(/^.*?-(?=inc-build|rebuild)/, '');
+        return k.replace(/-dotnet$/, '');
+    }
+    // Standard/Multithreaded comparable scenario pairs for the loaded asset.
+    // Derived from the data: any scenario containing "-mt-" is paired with the
+    // same scenario minus "-mt", so every build kind — inc-build, rebuild,
+    // restore, cold/warm/incremental restore, publish, pack, … — is supported,
+    // not just two hardcoded build types. Binlog-instrumented variants are
+    // excluded from the build-type selector.
+    function mtScenarioPairs() {
+        const all = DATA_ALL.length ? DATA_ALL : DATA;
+        const scns = new Set(all.map(d => d.scenario));
+        const pairs = [];
+        const seen = new Set();
+        for (const mt of [...scns].sort()) {
+            if (!mt.includes('-mt-') || /-binlog(-|$)/.test(mt)) continue;
+            const std = mt.replace('-mt-', '-');
+            if (!scns.has(std) || seen.has(std)) continue;
+            seen.add(std);
+            pairs.push({ std, mt, label: mtBuildTypeLabel(std) });
+        }
+        return pairs;
+    }
+    const MT_BUILD_TYPE_LABELS = {
+        'inc-build': 'Incremental Build', 'rebuild': 'Rebuild', 'restore': 'Restore',
+        'warm-restore': 'Warm Restore', 'cold-restore': 'Cold Restore', 'inc-restore': 'Incremental Restore',
+        'warm-inc-build': 'Warm Incremental Build', 'publish': 'Publish', 'pack': 'Pack'
+    };
+    // Human label for a Standard scenario's build type, with the asset-name
+    // prefix and the dotnet/msbuild suffix stripped off.
+    function mtBuildTypeLabel(stdScenario) {
+        const asset = document.getElementById('assetSelect')?.value || '';
+        const appMatch = stdScenario.match(/-(dotnet|msbuild)$/);
+        const buildApp = appMatch ? appMatch[1] : '';
+        let kind = stdScenario.replace(/-(dotnet|msbuild)$/, '');
+        if (asset && (kind === asset || kind.startsWith(asset + '-'))) kind = kind.slice(asset.length).replace(/^-/, '');
+        let label = MT_BUILD_TYPE_LABELS[kind] || (kind ? kind.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Build');
+        if (buildApp === 'msbuild') label += ' (msbuild)';
+        return label;
     }
     function scenarioListFor(data) { return [...new Set(data.map(d => d.scenario))].sort(); }
     function scenarioList() { return scenarioListFor(DATA); }
@@ -585,7 +652,7 @@
 
     function renderSummaryTable() {
         if (!SUMMARY) return;
-        const allAssets = SUMMARY.assets;
+        const allAssets = displayAssets();
         const activeAll = allAssets.filter(a => !isArchivedAsset(a));
         const archivedAll = allAssets.filter(isArchivedAsset);
         const active = activeAll.filter(matchesOverviewFilter).sort(compareOverviewAssets);
@@ -698,7 +765,7 @@
 
     function renderOverview() {
         if (!SUMMARY) return;
-        const allAssets = SUMMARY.assets;
+        const allAssets = displayAssets();
         const active = allAssets.filter(a => !isArchivedAsset(a));
         const archived = allAssets.filter(isArchivedAsset);
 
@@ -792,10 +859,11 @@
         const scs = scenarioListFor(data);
         const mtSet = new Set(scs.filter(s => s.includes('-mt-')));
         const stdScs = scs.filter(s => !s.includes('-mt-'));
+        const stdToMt = {};
+        for (const mt of mtSet) stdToMt[mt.replace('-mt-', '-')] = mt;
         const pairs = [], matched = new Set();
         for (const std of stdScs) {
-            const mtCandidate = std.replace(/(inc-build|rebuild)/, '$1-mt');
-            const mt = mtSet.has(mtCandidate) ? mtCandidate : null;
+            const mt = stdToMt[std] || null;
             if (mt) matched.add(mt);
             pairs.push({ std, mt, label: short(std) });
         }
@@ -1019,11 +1087,21 @@
                 legend: { labels: { color: t.legend, font: { size: 11 } } },
                 tooltip: {
                     backgroundColor: t.tooltipBg,
-                    titleColor: t.tooltipTitle, bodyColor: t.tooltipBody,
+                    titleColor: t.tooltipTitle, bodyColor: t.tooltipBody, footerColor: t.tooltipBody,
                     borderColor: t.tooltipBorder, borderWidth: 1,
                     cornerRadius: 6, padding: 10,
                     callbacks: {
                         label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1)} ms`,
+                        footer: (items) => {
+                            const std = items.find(it => it.dataset.label === 'Standard');
+                            const mt = items.find(it => it.dataset.label === 'Multithreaded');
+                            if (!std || !mt) return '';
+                            const sv = std.parsed.y, mv = mt.parsed.y;
+                            if (sv == null || mv == null || !sv) return '';
+                            const ratio = mv / sv;
+                            const verdict = ratio < 0.995 ? 'MT faster' : ratio > 1.005 ? 'non-MT faster' : 'about equal';
+                            return `MT / Standard: ${ratio.toFixed(2)}× — ${verdict}`;
+                        },
                         afterBody: (items) => {
                             if (!versionData || !items.length) return '';
                             const pt = versionData[items[0].dataIndex];
@@ -1042,7 +1120,7 @@
             },
             scales: {
                 x: { ticks: { color: t.tickColor, maxTicksLimit: 12, font: { size: 10 } }, grid: { color: t.grid } },
-                y: { ticks: { color: t.tickColor }, grid: { color: t.grid }, title: { display: true, text: 'ms', color: t.axisTitle } }
+                y: { ticks: { color: t.tickColor }, grid: { color: t.grid }, title: { display: true, text: 'ms', color: t.axisTitle }, beginAtZero: true }
             }
         };
     }
@@ -1109,13 +1187,17 @@
     // ── MT vs Standard ──
     function renderMt() {
         const panel = document.getElementById('mtPanel');
-        if (!DATA.some(d => d.scenario.includes('-mt-'))) { panel.style.display = 'none'; return; }
+        const pairs = mtScenarioPairs();
+        if (!pairs.length) { panel.style.display = 'none'; return; }
         panel.style.display = '';
-        const bt = document.getElementById('mtBuildType').value;
         const metric = document.getElementById('mtMetric').value;
-        const asset = assetPrefix();
-        const stdScenario = `${asset}-${bt}-dotnet`;
-        const mtScenario = `${asset}-${bt}-mt-dotnet`;
+        const btSel = document.getElementById('mtBuildType');
+        const prevVal = btSel.value;
+        btSel.innerHTML = pairs.map(p => `<option value="${p.std}">${p.label}</option>`).join('');
+        if (pairs.some(p => p.std === prevVal)) btSel.value = prevVal;
+        const pair = pairs.find(p => p.std === btSel.value) || pairs[0];
+        const stdScenario = pair.std;
+        const mtScenario = pair.mt;
 
         function renderMtPlatform(chartKey, canvasId, detailId, wrapperId, dataSource, platformLabel) {
             const stdS = getSeries(stdScenario, metric, dataSource);
@@ -1611,10 +1693,11 @@
                 await setupCompare();
             } else if (state.tab === 'trends' && state.asset) {
                 const sel = document.getElementById('assetSelect');
-                if ([...sel.options].some(o => o.value === state.asset)) {
-                    if (sel.value !== state.asset) {
-                        sel.value = state.asset;
-                        await loadAsset(state.asset);
+                const wantAsset = ASSET_GROUP_PARENT[state.asset] || state.asset;
+                if ([...sel.options].some(o => o.value === wantAsset)) {
+                    if (sel.value !== wantAsset) {
+                        sel.value = wantAsset;
+                        await loadAsset(wantAsset);
                     }
                 }
                 if (state.time) {
@@ -1624,10 +1707,11 @@
                 }
             } else if (state.tab === 'health' && state.asset) {
                 const sel = document.getElementById('healthAssetSelect');
-                if ([...sel.options].some(o => o.value === state.asset)) {
-                    if (sel.value !== state.asset) {
-                        sel.value = state.asset;
-                        await loadHealthAsset(state.asset);
+                const wantAsset = ASSET_GROUP_PARENT[state.asset] || state.asset;
+                if ([...sel.options].some(o => o.value === wantAsset)) {
+                    if (sel.value !== wantAsset) {
+                        sel.value = wantAsset;
+                        await loadHealthAsset(wantAsset);
                     }
                 }
                 if (state.time) {
@@ -1653,12 +1737,20 @@
     });
 
     /* ── Load asset (for Trends / Health) ── */
+    // Load (and concatenate) the aggregated files backing a display asset,
+    // including any grouped child assets. Missing children are tolerated.
+    async function loadAggregatedGroup(name) {
+        const parts = await Promise.all(assetSources(name).map(async src => {
+            try { const r = await fetch(`data/main/aggregated/${src}.json`); return r.ok ? await r.json() : []; }
+            catch { return []; }
+        }));
+        return parts.flat();
+    }
     async function loadAsset(name) {
         document.getElementById('loadingMsg').textContent = 'Loading...';
         const badge = document.getElementById('trendsBrokenBadge');
         if (badge) badge.style.display = isBrokenAsset(name) ? '' : 'none';
-        const resp = await fetch(`data/main/aggregated/${name}.json`);
-        DATA_ALL = await resp.json();
+        DATA_ALL = await loadAggregatedGroup(name);
         document.getElementById('loadingMsg').textContent = '';
         applyTimeFilter();
     }
@@ -1667,8 +1759,7 @@
         document.getElementById('healthLoadingMsg').textContent = 'Loading...';
         const badge = document.getElementById('healthBrokenBadge');
         if (badge) badge.style.display = isBrokenAsset(name) ? '' : 'none';
-        const resp = await fetch(`data/main/aggregated/${name}.json`);
-        HEALTH_DATA_ALL = await resp.json();
+        HEALTH_DATA_ALL = await loadAggregatedGroup(name);
         document.getElementById('healthLoadingMsg').textContent = '';
         applyHealthTimeFilter();
     }
@@ -1969,7 +2060,7 @@
             // Populate asset selectors from summary (grouped active/archived)
             const sel = document.getElementById('assetSelect');
             const healthSel = document.getElementById('healthAssetSelect');
-            const sorted = [...SUMMARY.assets].sort((a, b) => a.name.localeCompare(b.name));
+            const sorted = [...displayAssets()].sort((a, b) => a.name.localeCompare(b.name));
             const activeList = sorted.filter(a => !isArchivedAsset(a));
             const archivedList = sorted.filter(isArchivedAsset);
 
