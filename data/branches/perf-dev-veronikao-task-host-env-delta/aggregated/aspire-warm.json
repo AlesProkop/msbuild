@@ -1,0 +1,28 @@
+[
+  {
+    "date": "2026-06-29",
+    "scenario": "aspire-warm-inc-build-dotnet",
+    "perfstarCIBuildNumber": "20260629.1.t",
+    "branch": "refs/heads/perf/dev/veronikao/task-host-env-delta",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDLIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-06-29T16:09:56.6336741Z",
+    "results": {
+      "netSdkVersion": "11.0.100-preview.7.26328.102",
+      "aspNetCoreVersion": "10.0.9+901ca9412484",
+      "netCoreAppVersion": "10.0.9+901ca9412484",
+      "msbuild-version": "18.9.0.32901",
+      "msbuild-display-version": "18.9.0.32901",
+      "exit-code": 1.0,
+      "failure-description": "Incremental build finished with non zero exit code.",
+      "info/test-asset": "Aspire",
+      "info/test-scenario": "WarmIncrementalBuild",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 1.0,
+      "dotnet-version": "11.0.100-preview.7.26328.102",
+      "crank-netSdkVersion": "10.0.301"
+    }
+  }
+]
