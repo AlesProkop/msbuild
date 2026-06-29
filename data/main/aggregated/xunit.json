@@ -58,5 +58,35 @@
       "aspNetCoreVersion": "10.0.9+901ca9412484",
       "netCoreAppVersion": "10.0.9+901ca9412484"
     }
+  },
+  {
+    "date": "2026-06-29",
+    "scenario": "xunit-inc-build-dotnet",
+    "perfstarCIBuildNumber": "20260629.3.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-06-29T07:44:38.9822489Z",
+    "results": {
+      "netSdkVersion": "10.0.301",
+      "aspNetCoreVersion": "10.0.9+901ca9412484",
+      "netCoreAppVersion": "10.0.9+901ca9412484"
+    }
+  },
+  {
+    "date": "2026-06-29",
+    "scenario": "xunit-rebuild-dotnet",
+    "perfstarCIBuildNumber": "20260629.3.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-06-29T07:44:55.0422978Z",
+    "results": {
+      "netSdkVersion": "10.0.301",
+      "aspNetCoreVersion": "10.0.9+901ca9412484",
+      "netCoreAppVersion": "10.0.9+901ca9412484"
+    }
   }
 ]
