@@ -1,0 +1,249 @@
+[
+  {
+    "name": "aspire",
+    "records": 2,
+    "scenarios": [
+      "aspire-inc-build-dotnet",
+      "aspire-rebuild-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "aspire-warm",
+    "records": 1,
+    "scenarios": [
+      "aspire-warm-inc-build-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "azure-core",
+    "records": 2,
+    "scenarios": [
+      "azure-core-inc-build-dotnet",
+      "azure-core-rebuild-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "azure-core-warm",
+    "records": 1,
+    "scenarios": [
+      "azure-core-warm-inc-build-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "eshop-on-blazor-modified",
+    "records": 8,
+    "scenarios": [
+      "eshop-on-blazor-modified-inc-build-dotnet",
+      "eshop-on-blazor-modified-inc-build-mt-dotnet",
+      "eshop-on-blazor-modified-rebuild-dotnet",
+      "eshop-on-blazor-modified-rebuild-mt-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "net8-blazorwasm-app",
+    "records": 8,
+    "scenarios": [
+      "net8-blazorwasm-app-inc-build-dotnet",
+      "net8-blazorwasm-app-inc-build-mt-dotnet",
+      "net8-blazorwasm-app-rebuild-dotnet",
+      "net8-blazorwasm-app-rebuild-mt-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "net8-blazorwasm-app-publish-dotnet",
+    "records": 2,
+    "scenarios": [
+      "net8-blazorwasm-app-publish-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "net8-class-lib",
+    "records": 4,
+    "scenarios": [
+      "net8-class-lib-inc-build-dotnet",
+      "net8-class-lib-rebuild-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "net8-class-lib-pack-dotnet",
+    "records": 2,
+    "scenarios": [
+      "net8-class-lib-pack-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "net8-console-app",
+    "records": 12,
+    "scenarios": [
+      "net8-console-app-inc-build-check-dotnet",
+      "net8-console-app-inc-build-dotnet",
+      "net8-console-app-inc-build-mt-dotnet",
+      "net8-console-app-rebuild-check-dotnet",
+      "net8-console-app-rebuild-dotnet",
+      "net8-console-app-rebuild-mt-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "net8-console-app-publish-dotnet",
+    "records": 2,
+    "scenarios": [
+      "net8-console-app-publish-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "net8-console-app-warm",
+    "records": 6,
+    "scenarios": [
+      "net8-console-app-warm-inc-build-dotnet",
+      "net8-console-app-warm-inc-build-mt-dotnet",
+      "net8-console-app-warm-restore-dotnet",
+      "net8-console-app-warm-restore-mt-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "net8-web-app",
+    "records": 2,
+    "scenarios": [
+      "net8-web-app-inc-build-dotnet",
+      "net8-web-app-rebuild-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "net8-web-app-publish-dotnet",
+    "records": 1,
+    "scenarios": [
+      "net8-web-app-publish-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "net8-win-forms-app",
+    "records": 2,
+    "scenarios": [
+      "net8-win-forms-app-inc-build-dotnet",
+      "net8-win-forms-app-rebuild-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "net8-wpf-app",
+    "records": 2,
+    "scenarios": [
+      "net8-wpf-app-inc-build-dotnet",
+      "net8-wpf-app-rebuild-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "orchard-core",
+    "records": 12,
+    "scenarios": [
+      "orchard-core-inc-build-check-dotnet",
+      "orchard-core-inc-build-dotnet",
+      "orchard-core-inc-build-mt-dotnet",
+      "orchard-core-rebuild-check-dotnet",
+      "orchard-core-rebuild-dotnet",
+      "orchard-core-rebuild-mt-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "orchard-core-cold",
+    "records": 4,
+    "scenarios": [
+      "orchard-core-cold-restore-dotnet",
+      "orchard-core-cold-restore-mt-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "orchard-core-inc",
+    "records": 4,
+    "scenarios": [
+      "orchard-core-inc-restore-dotnet",
+      "orchard-core-inc-restore-mt-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "orchard-core-warm",
+    "records": 6,
+    "scenarios": [
+      "orchard-core-warm-inc-build-dotnet",
+      "orchard-core-warm-inc-build-mt-dotnet",
+      "orchard-core-warm-restore-dotnet",
+      "orchard-core-warm-restore-mt-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "very-large-net8-console-app",
+    "records": 2,
+    "scenarios": [
+      "very-large-net8-console-app-restore-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "very-large-net8-console-app-inc",
+    "records": 2,
+    "scenarios": [
+      "very-large-net8-console-app-inc-restore-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "xunit",
+    "records": 4,
+    "scenarios": [
+      "xunit-inc-build-dotnet",
+      "xunit-rebuild-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  },
+  {
+    "name": "xunit-warm",
+    "records": 2,
+    "scenarios": [
+      "xunit-warm-inc-build-dotnet"
+    ],
+    "firstDate": "2026-06-28",
+    "latestDate": "2026-06-28"
+  }
+]
