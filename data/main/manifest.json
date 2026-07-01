@@ -231,7 +231,7 @@
   },
   {
     "name": "net8-blazorwasm-app",
-    "records": 2251,
+    "records": 2252,
     "scenarios": [
       "net8-blazorwasm-app-inc-build-binlog-dotnet",
       "net8-blazorwasm-app-inc-build-dotnet",
@@ -353,7 +353,7 @@
   },
   {
     "name": "orchard-core",
-    "records": 1500,
+    "records": 1503,
     "scenarios": [
       "orchard-core-inc-build-binlog-dotnet",
       "orchard-core-inc-build-check-dotnet",
@@ -369,7 +369,7 @@
   },
   {
     "name": "orchard-core-cold",
-    "records": 46,
+    "records": 47,
     "scenarios": [
       "orchard-core-cold-restore-dotnet",
       "orchard-core-cold-restore-mt-dotnet"
@@ -379,7 +379,7 @@
   },
   {
     "name": "orchard-core-inc",
-    "records": 39,
+    "records": 40,
     "scenarios": [
       "orchard-core-inc-restore-dotnet",
       "orchard-core-inc-restore-mt-dotnet"
@@ -402,7 +402,7 @@
   },
   {
     "name": "very-large-net8-console-app",
-    "records": 280,
+    "records": 281,
     "scenarios": [
       "very-large-net8-console-app-restore-dotnet"
     ],
@@ -411,7 +411,7 @@
   },
   {
     "name": "very-large-net8-console-app-inc",
-    "records": 22,
+    "records": 23,
     "scenarios": [
       "very-large-net8-console-app-inc-restore-dotnet"
     ],
@@ -450,7 +450,7 @@
   },
   {
     "name": "xunit",
-    "records": 6,
+    "records": 8,
     "scenarios": [
       "xunit-inc-build-dotnet",
       "xunit-rebuild-dotnet"
@@ -460,7 +460,7 @@
   },
   {
     "name": "xunit-warm",
-    "records": 3,
+    "records": 4,
     "scenarios": [
       "xunit-warm-inc-build-dotnet"
     ],

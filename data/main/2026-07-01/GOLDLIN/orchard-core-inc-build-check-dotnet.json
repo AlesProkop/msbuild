@@ -1,0 +1,19 @@
+{
+  "date": "2026-07-01",
+  "scenario": "orchard-core-inc-build-check-dotnet",
+  "perfstarCIBuildNumber": "20260701.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "GOLDLIN",
+  "schemaVersion": "2",
+  "timestamp": "2026-07-01T01:54:51.3807496Z",
+  "results": {
+    "netSdkVersion": "10.0.301",
+    "aspNetCoreVersion": "10.0.9+901ca9412484",
+    "netCoreAppVersion": "10.0.9+901ca9412484",
+    "msbuild-version": "18.10.0.33010",
+    "msbuild-display-version": "18.10.0.33010",
+    "exit-code": 0.0,
+    "recollected-attempts": 0.0
+  }
+}
