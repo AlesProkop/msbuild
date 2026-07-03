@@ -1,0 +1,65 @@
+# Publish the PerfStar dashboard (this branch's static index.html + data/*.json)
+# to GitHub Pages via a GitHub Actions deployment.
+#
+# Why not the default "deploy from a branch" (legacy Jekyll build)? This branch
+# has ~19k files (daily raw per-run result JSON). The legacy build times out /
+# hangs on that file count, so the site stops updating even though the branch is
+# correct. An Actions deploy uploads the site as a single artifact (no Jekyll
+# build), which handles the file count reliably.
+#
+# One-time setup required: set the repo's Pages source to "GitHub Actions"
+# (Settings > Pages > Build and deployment > Source: GitHub Actions, i.e.
+# build_type=workflow). Until that is done, the deploy step will fail.
+#
+# The daily publisher bot commits to this branch with a GitHub App token, which
+# DOES trigger workflows, so each push auto-deploys.
+name: Deploy dashboard to GitHub Pages
+
+on:
+  push:
+    branches: [ "perf/dashboard" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Serialize deployments; let an in-progress publish finish rather than cancelling
+# it (cancelling a Pages deploy mid-flight can leave the site in a bad state).
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Stage site (exclude VCS and CI files)
+        run: |
+          mkdir -p _site
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='_site' \
+            ./ _site/
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

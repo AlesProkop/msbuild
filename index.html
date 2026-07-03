@@ -107,6 +107,7 @@
                         <option value="build-time" selected>Build Time</option>
                         <option value="evaluation-time">Evaluation Time</option>
                     </select>
+                    <span id="mtNotDefaultBadge" class="tag tag-not-default" style="display:none">⚠ Not run by default</span>
                 </div>
                 <div class="platform-charts">
                     <div class="platform-chart">
@@ -362,6 +363,15 @@
     function isBrokenAsset(name) { return BROKEN_ASSETS.has(name); }
     const BROKEN_TAG_TITLE = 'This asset is currently broken — results may be unreliable. Not prioritized for fixing.';
     function brokenTagHtml() { return `<span class="tag tag-broken" title="${BROKEN_TAG_TITLE}">⚠ BROKEN</span>`; }
+
+    // Scenarios NOT run on scheduled runs by default (from summary.json's
+    // disabledScenarios, sourced from the pipeline's ScenarioInventory.json).
+    // Their charts freeze at the last day they were run, so we flag the matching
+    // build types / scenario chips so a frozen line is not mistaken for a
+    // pipeline/upload failure.
+    let DISABLED_SCENARIOS = new Set();
+    function isNotDefaultScenario(name) { return !!name && DISABLED_SCENARIOS.has(name); }
+    const NOT_DEFAULT_TITLE = 'Not run by default — this scenario is disabled in the scheduled run set, so its data may be stale.';
 
     // ── Display-asset grouping (client-side; durable across PerfStar data pushes
     // since the publisher bot only writes data/, never index.html) ──
@@ -1153,7 +1163,8 @@
             const id = `tsc_${i}`;
             const checked = prevSelected.length ? prevSelected.includes(s) : i === 0;
             const color = trendColors()[i % trendColors().length];
-            container.innerHTML += `<label class="chip${checked ? ' active' : ''}" style="--chip-color:${color}"><input type="checkbox" value="${s}" id="${id}" ${checked ? 'checked' : ''}>${short(s)}</label>`;
+            const nd = isNotDefaultScenario(s);
+            container.innerHTML += `<label class="chip${checked ? ' active' : ''}${nd ? ' chip-not-default' : ''}" style="--chip-color:${color}"${nd ? ` title="${NOT_DEFAULT_TITLE}"` : ''}><input type="checkbox" value="${s}" id="${id}" ${checked ? 'checked' : ''}>${short(s)}${nd ? ' ⚠' : ''}</label>`;
         });
         container.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
             cb.closest('.chip').classList.toggle('active', cb.checked);
@@ -1193,11 +1204,22 @@
         const metric = document.getElementById('mtMetric').value;
         const btSel = document.getElementById('mtBuildType');
         const prevVal = btSel.value;
-        btSel.innerHTML = pairs.map(p => `<option value="${p.std}">${p.label}</option>`).join('');
+        btSel.innerHTML = pairs.map(p => {
+            const nd = isNotDefaultScenario(p.std) || isNotDefaultScenario(p.mt);
+            return `<option value="${p.std}"${nd ? ` title="${NOT_DEFAULT_TITLE}"` : ''}>${p.label}${nd ? ' ⚠' : ''}</option>`;
+        }).join('');
         if (pairs.some(p => p.std === prevVal)) btSel.value = prevVal;
         const pair = pairs.find(p => p.std === btSel.value) || pairs[0];
         const stdScenario = pair.std;
         const mtScenario = pair.mt;
+
+        // Flag the currently selected build type when it is not run by default.
+        const mtBadge = document.getElementById('mtNotDefaultBadge');
+        if (mtBadge) {
+            const nd = isNotDefaultScenario(stdScenario) || isNotDefaultScenario(mtScenario);
+            mtBadge.style.display = nd ? '' : 'none';
+            mtBadge.title = NOT_DEFAULT_TITLE;
+        }
 
         function renderMtPlatform(chartKey, canvasId, detailId, wrapperId, dataSource, platformLabel) {
             const stdS = getSeries(stdScenario, metric, dataSource);
@@ -2055,6 +2077,12 @@
             // Load summary for Overview + asset selector
             const summResp = await fetch('data/main/summary.json');
             SUMMARY = await summResp.json();
+            // disabledScenarios may be absent (older summary.json) or, due to a
+            // ConvertTo-Json single-element quirk, a scalar; normalize to a Set.
+            {
+                const ds = SUMMARY?.disabledScenarios;
+                DISABLED_SCENARIOS = new Set(Array.isArray(ds) ? ds : (ds ? [ds] : []));
+            }
             renderOverview();
 
             // Populate asset selectors from summary (grouped active/archived)
