@@ -1,7 +1,7 @@
 [
   {
     "name": "orchard-core",
-    "records": 1,
+    "records": 2,
     "scenarios": [
       "orchard-core-rebuild-mt-dotnet"
     ],
@@ -10,7 +10,7 @@
   },
   {
     "name": "orchard-core-warm",
-    "records": 2,
+    "records": 4,
     "scenarios": [
       "orchard-core-warm-inc-build-mt-dotnet",
       "orchard-core-warm-restore-mt-dotnet"
