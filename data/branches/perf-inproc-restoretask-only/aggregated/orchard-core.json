@@ -1,0 +1,38 @@
+[
+  {
+    "date": "2026-07-14",
+    "scenario": "orchard-core-rebuild-mt-dotnet",
+    "perfstarCIBuildNumber": "20260714.6.t",
+    "branch": "refs/heads/perf/inproc-restoretask-only",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-07-14T15:41:36.7821681Z",
+    "results": {
+      "netSdkVersion": "11.0.100-preview.7.26363.123",
+      "aspNetCoreVersion": "10.0.9+901ca9412484",
+      "netCoreAppVersion": "10.0.9+901ca9412484",
+      "msbuild-version": "18.10.0.36406",
+      "msbuild-display-version": "18.10.0.36406",
+      "evaluation-time": 358836.0,
+      "evaluation-time-globbing": 11561.0,
+      "evaluation-time-pass0": 311.0,
+      "evaluation-time-pass1": 191651.0,
+      "evaluation-time-pass2": 254.0,
+      "evaluation-time-pass3": 38566.0,
+      "evaluation-time-pass3dot1": 47214.0,
+      "evaluation-time-pass4": 3840.0,
+      "evaluation-time-pass5": 74369.0,
+      "exit-code": 0.0,
+      "build-time": 223788.6026,
+      "recollected-attempts": 0.0,
+      "info/test-asset": "OrchardCore",
+      "info/test-scenario": "Rebuild",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 2.0,
+      "info/iterations-number": 1.0,
+      "dotnet-version": "11.0.100-preview.7.26363.123",
+      "crank-netSdkVersion": "10.0.301"
+    }
+  }
+]
