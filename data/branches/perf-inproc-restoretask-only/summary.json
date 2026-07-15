@@ -33,33 +33,39 @@
           "rebuild": {
             "p50": 126554.4789,
             "regressionPct": null,
-            "samplesLast7d": 1,
+            "samplesLast7d": 2,
             "samplesPrior30d": 0,
             "passRate": 100.0,
             "passRate30d": 100.0,
-            "totalRuns": 1,
+            "totalRuns": 2,
             "sparkline": [
               {
                 "v": 126554.4789
+              },
+              {
+                "v": 129299.7037
               }
             ]
           }
         }
       },
       "rebuild": {
-        "p50": 143150.9175,
+        "p50": 129299.7037,
         "regressionPct": null,
-        "samplesLast7d": 3,
+        "samplesLast7d": 4,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 3,
+        "totalRuns": 4,
         "sparkline": [
           {
             "v": 126554.4789
           },
           {
             "v": 223788.6026
+          },
+          {
+            "v": 129299.7037
           },
           {
             "v": 143150.9175
@@ -97,35 +103,41 @@
         },
         "linux": {
           "incBuild": {
-            "p50": 82117.68789999999,
+            "p50": 81189.23896000002,
             "regressionPct": null,
-            "samplesLast7d": 1,
+            "samplesLast7d": 2,
             "samplesPrior30d": 0,
             "passRate": 100.0,
             "passRate30d": 100.0,
-            "totalRuns": 1,
+            "totalRuns": 2,
             "sparkline": [
               {
                 "v": 82117.68789999999
+              },
+              {
+                "v": 81189.23896000002
               }
             ]
           }
         }
       },
       "incBuild": {
-        "p50": 105811.98662000001,
+        "p50": 82117.68789999999,
         "regressionPct": null,
-        "samplesLast7d": 3,
+        "samplesLast7d": 4,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 3,
+        "totalRuns": 4,
         "sparkline": [
           {
             "v": 82117.68789999999
           },
           {
             "v": 197164.60916
+          },
+          {
+            "v": 81189.23896000002
           },
           {
             "v": 105811.98662000001
