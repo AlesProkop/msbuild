@@ -1,21 +1,21 @@
 [
   {
     "name": "orchard-core",
-    "records": 2,
+    "records": 3,
     "scenarios": [
       "orchard-core-rebuild-mt-dotnet"
     ],
     "firstDate": "2026-07-14",
-    "latestDate": "2026-07-14"
+    "latestDate": "2026-07-15"
   },
   {
     "name": "orchard-core-warm",
-    "records": 4,
+    "records": 6,
     "scenarios": [
       "orchard-core-warm-inc-build-mt-dotnet",
       "orchard-core-warm-restore-mt-dotnet"
     ],
     "firstDate": "2026-07-14",
-    "latestDate": "2026-07-14"
+    "latestDate": "2026-07-15"
   }
 ]
