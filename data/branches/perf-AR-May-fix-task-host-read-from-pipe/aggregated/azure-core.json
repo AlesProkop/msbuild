@@ -1,0 +1,42 @@
+[
+  {
+    "date": "2026-07-23",
+    "scenario": "azure-core-rebuild-mt-dotnet",
+    "perfstarCIBuildNumber": "20260723.3.t",
+    "branch": "refs/heads/perf/AR-May/fix-task-host-read-from-pipe",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-07-23T19:20:45.1806176Z",
+    "results": {
+      "netSdkVersion": "11.0.100-preview.7.26366.102",
+      "aspNetCoreVersion": "10.0.10+f7d90799ce4e",
+      "netCoreAppVersion": "10.0.10+f7d90799ce4e",
+      "msbuild-version": "18.10.0.37303",
+      "msbuild-display-version": "18.10.0.37303",
+      "evaluation-time": 13611.0,
+      "evaluation-time-globbing": 312.0,
+      "evaluation-time-pass0": 18.0,
+      "evaluation-time-pass1": 4687.0,
+      "evaluation-time-pass2": 26.0,
+      "evaluation-time-pass3": 1723.0,
+      "evaluation-time-pass3dot1": 5421.0,
+      "evaluation-time-pass4": 250.0,
+      "evaluation-time-pass5": 1478.0,
+      "exit-code": 0.0,
+      "build-time": 22139.6941,
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 2306372622.0,
+      "disk/nuget-global-bytes": 3230081337.0,
+      "disk/nuget-http-cache-bytes": 96106597.0,
+      "disk/free-bytes": 532627603456.0,
+      "info/test-asset": "AzureCore",
+      "info/test-scenario": "Rebuild",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 1.0,
+      "dotnet-version": "11.0.100-preview.7.26366.102",
+      "crank-netSdkVersion": "10.0.302"
+    }
+  }
+]
