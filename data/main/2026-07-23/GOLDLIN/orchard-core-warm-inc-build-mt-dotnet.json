@@ -1,0 +1,31 @@
+{
+  "date": "2026-07-23",
+  "scenario": "orchard-core-warm-inc-build-mt-dotnet",
+  "perfstarCIBuildNumber": "20260723.1.s",
+  "branch": "refs/heads/main",
+  "ciRunReason": "Schedule",
+  "machineID": "GOLDLIN",
+  "schemaVersion": "2",
+  "timestamp": "2026-07-23T03:16:14.6343293Z",
+  "results": {
+    "netSdkVersion": "11.0.100-preview.7.26366.102",
+    "aspNetCoreVersion": "10.0.10+f7d90799ce4e",
+    "netCoreAppVersion": "10.0.10+f7d90799ce4e",
+    "msbuild-version": "18.10.0.37201",
+    "msbuild-display-version": "18.10.0.37201",
+    "exit-code": -1000.0,
+    "failure-description": "Incremental build finished with non zero exit code.",
+    "recollected-attempts": 1.0,
+    "disk/working-dir-bytes": 3717152655.0,
+    "disk/nuget-global-bytes": 6027421912.0,
+    "disk/nuget-http-cache-bytes": 0.0,
+    "disk/free-bytes": 0.0,
+    "info/test-asset": "OrchardCore",
+    "info/test-scenario": "WarmIncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 2.0,
+    "info/iterations-number": 5.0,
+    "dotnet-version": "11.0.100-preview.7.26366.102",
+    "crank-netSdkVersion": "10.0.302"
+  }
+}
