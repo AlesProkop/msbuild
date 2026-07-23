@@ -1,45 +1,45 @@
 [
   {
     "name": "aspire",
-    "records": 65,
+    "records": 67,
     "scenarios": [
       "aspire-inc-build-dotnet",
       "aspire-rebuild-dotnet",
       "aspire-rebuild-mt-dotnet"
     ],
     "firstDate": "2026-06-30",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "aspire-warm",
-    "records": 62,
+    "records": 64,
     "scenarios": [
       "aspire-warm-inc-build-dotnet",
       "aspire-warm-inc-build-mt-dotnet"
     ],
     "firstDate": "2026-06-30",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "azure-core",
-    "records": 63,
+    "records": 65,
     "scenarios": [
       "azure-core-inc-build-dotnet",
       "azure-core-rebuild-dotnet",
       "azure-core-rebuild-mt-dotnet"
     ],
     "firstDate": "2026-06-30",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "azure-core-warm",
-    "records": 62,
+    "records": 64,
     "scenarios": [
       "azure-core-warm-inc-build-dotnet",
       "azure-core-warm-inc-build-mt-dotnet"
     ],
     "firstDate": "2026-06-30",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "blazorwasm-app",
@@ -113,7 +113,7 @@
   },
   {
     "name": "eshop-on-blazor-modified",
-    "records": 1726,
+    "records": 1728,
     "scenarios": [
       "eshop-on-blazor-modified-inc-build-dotnet",
       "eshop-on-blazor-modified-inc-build-mt-dotnet",
@@ -121,7 +121,7 @@
       "eshop-on-blazor-modified-rebuild-mt-dotnet"
     ],
     "firstDate": "2023-09-09",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "net-console-app",
@@ -235,7 +235,7 @@
   },
   {
     "name": "net8-blazorwasm-app",
-    "records": 2308,
+    "records": 2310,
     "scenarios": [
       "net8-blazorwasm-app-inc-build-binlog-dotnet",
       "net8-blazorwasm-app-inc-build-dotnet",
@@ -245,7 +245,7 @@
       "net8-blazorwasm-app-rebuild-mt-dotnet"
     ],
     "firstDate": "2023-10-14",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "net8-blazorwasm-app-publish-dotnet",
@@ -258,14 +258,14 @@
   },
   {
     "name": "net8-class-lib",
-    "records": 1239,
+    "records": 1241,
     "scenarios": [
       "net8-class-lib-inc-build-dotnet",
       "net8-class-lib-rebuild-dotnet",
       "net8-class-lib-rebuild-mt-dotnet"
     ],
     "firstDate": "2023-10-14",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "net8-class-lib-pack-dotnet",
@@ -278,7 +278,7 @@
   },
   {
     "name": "net8-console-app",
-    "records": 3434,
+    "records": 3436,
     "scenarios": [
       "net8-console-app-inc-build-binlog-dotnet",
       "net8-console-app-inc-build-check-dotnet",
@@ -292,7 +292,7 @@
       "net8-console-app-rebuild-mt-dotnet"
     ],
     "firstDate": "2023-10-14",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "net8-console-app-publish-dotnet",
@@ -305,7 +305,7 @@
   },
   {
     "name": "net8-console-app-warm",
-    "records": 208,
+    "records": 212,
     "scenarios": [
       "net8-console-app-warm-inc-build-dotnet",
       "net8-console-app-warm-inc-build-mt-dotnet",
@@ -315,7 +315,7 @@
       "net8-console-app-warm-restore-mt-dotnet"
     ],
     "firstDate": "2026-06-19",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "net8-web-app",
@@ -358,7 +358,7 @@
   },
   {
     "name": "orchard-core",
-    "records": 1556,
+    "records": 1558,
     "scenarios": [
       "orchard-core-inc-build-binlog-dotnet",
       "orchard-core-inc-build-check-dotnet",
@@ -370,17 +370,17 @@
       "orchard-core-rebuild-mt-dotnet"
     ],
     "firstDate": "2025-04-14",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "orchard-core-cold",
-    "records": 106,
+    "records": 108,
     "scenarios": [
       "orchard-core-cold-restore-dotnet",
       "orchard-core-cold-restore-mt-dotnet"
     ],
     "firstDate": "2026-06-18",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "orchard-core-inc",
@@ -394,7 +394,7 @@
   },
   {
     "name": "orchard-core-warm",
-    "records": 199,
+    "records": 203,
     "scenarios": [
       "orchard-core-warm-inc-build-dotnet",
       "orchard-core-warm-inc-build-mt-dotnet",
@@ -403,17 +403,17 @@
       "orchard-core-warm-restore-mt-dotnet"
     ],
     "firstDate": "2026-06-19",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "very-large-net8-console-app",
-    "records": 340,
+    "records": 342,
     "scenarios": [
       "very-large-net8-console-app-restore-dotnet",
       "very-large-net8-console-app-restore-mt-dotnet"
     ],
     "firstDate": "2025-06-28",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "very-large-net8-console-app-inc",
@@ -456,23 +456,23 @@
   },
   {
     "name": "xunit",
-    "records": 66,
+    "records": 68,
     "scenarios": [
       "xunit-inc-build-dotnet",
       "xunit-rebuild-dotnet",
       "xunit-rebuild-mt-dotnet"
     ],
     "firstDate": "2026-06-30",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   },
   {
     "name": "xunit-warm",
-    "records": 64,
+    "records": 66,
     "scenarios": [
       "xunit-warm-inc-build-dotnet",
       "xunit-warm-inc-build-mt-dotnet"
     ],
     "firstDate": "2026-06-30",
-    "latestDate": "2026-07-22"
+    "latestDate": "2026-07-23"
   }
 ]
