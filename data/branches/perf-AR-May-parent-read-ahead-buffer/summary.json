@@ -25,21 +25,46 @@
               }
             ]
           }
+        },
+        "linux": {
+          "rebuild": {
+            "p50": 55566.8869,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 55566.8869
+              }
+            ]
+          }
         }
       },
       "rebuild": {
-        "p50": 80905.2602,
+        "p50": 55566.8869,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 55566.8869
+          },
           {
             "v": 80905.2602
           }
         ]
+      },
+      "mt": {
+        "rebuild": {
+          "p50": 55566.8869,
+          "speedupPct": 9.2
+        }
       }
     },
     {
@@ -66,21 +91,46 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 18574.6306,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 18574.6306
+              }
+            ]
+          }
         }
       },
       "incBuild": {
-        "p50": 68756.0638,
+        "p50": 18574.6306,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 18574.6306
+          },
           {
             "v": 68756.0638
           }
         ]
+      },
+      "mt": {
+        "incBuild": {
+          "p50": 18574.6306,
+          "speedupPct": 12.1
+        }
       }
     },
     {
@@ -107,21 +157,46 @@
               }
             ]
           }
+        },
+        "linux": {
+          "rebuild": {
+            "p50": 22615.4044,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 22615.4044
+              }
+            ]
+          }
         }
       },
       "rebuild": {
-        "p50": 27726.5372,
+        "p50": 22615.4044,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 22615.4044
+          },
           {
             "v": 27726.5372
           }
         ]
+      },
+      "mt": {
+        "rebuild": {
+          "p50": 22615.4044,
+          "speedupPct": 34.3
+        }
       }
     },
     {
@@ -148,21 +223,46 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 8751.0318,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 8751.0318
+              }
+            ]
+          }
         }
       },
       "incBuild": {
-        "p50": 17714.9211,
+        "p50": 8751.0318,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 8751.0318
+          },
           {
             "v": 17714.9211
           }
         ]
+      },
+      "mt": {
+        "incBuild": {
+          "p50": 8751.0318,
+          "speedupPct": 11.9
+        }
       }
     },
     {
@@ -203,17 +303,50 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 7398.02347,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 7398.02347
+              }
+            ]
+          },
+          "rebuild": {
+            "p50": 7671.0578399999995,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 7671.0578399999995
+              }
+            ]
+          }
         }
       },
       "incBuild": {
         "p50": 5907.71437,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 7398.02347
+          },
           {
             "v": 5907.71437
           }
@@ -222,16 +355,29 @@
       "rebuild": {
         "p50": 6252.696850000001,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 7671.0578399999995
+          },
           {
             "v": 6252.696850000001
           }
         ]
+      },
+      "mt": {
+        "incBuild": {
+          "p50": 5907.71437,
+          "speedupPct": 19.8
+        },
+        "rebuild": {
+          "p50": 6252.696850000001,
+          "speedupPct": 16.8
+        }
       }
     },
     {
@@ -272,17 +418,50 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 8416.601859999999,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 8416.601859999999
+              }
+            ]
+          },
+          "rebuild": {
+            "p50": 8558.898319999998,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 8558.898319999998
+              }
+            ]
+          }
         }
       },
       "incBuild": {
         "p50": 7998.40367,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 8416.601859999999
+          },
           {
             "v": 7998.40367
           }
@@ -291,12 +470,15 @@
       "rebuild": {
         "p50": 8536.3191,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 8558.898319999998
+          },
           {
             "v": 8536.3191
           }
@@ -306,8 +488,21 @@
         "incBuild": {
           "p50": 7998.40367,
           "speedupPct": -23.0
+        },
+        "rebuild": {
+          "p50": 8536.3191,
+          "speedupPct": -1.0
         }
       }
+    },
+    {
+      "name": "net8-blazorwasm-app-publish-dotnet",
+      "latestDate": "2026-07-24",
+      "stale": false,
+      "staleDays": 0,
+      "archived": false,
+      "hasMt": false,
+      "canonical": "standard"
     },
     {
       "name": "net8-class-lib",
@@ -333,22 +528,56 @@
               }
             ]
           }
+        },
+        "linux": {
+          "rebuild": {
+            "p50": 5422.3834799999995,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 5422.3834799999995
+              }
+            ]
+          }
         }
       },
       "rebuild": {
         "p50": 4088.389800000001,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 5422.3834799999995
+          },
           {
             "v": 4088.389800000001
           }
         ]
+      },
+      "mt": {
+        "rebuild": {
+          "p50": 4088.389800000001,
+          "speedupPct": 23.2
+        }
       }
+    },
+    {
+      "name": "net8-class-lib-pack-dotnet",
+      "latestDate": "2026-07-24",
+      "stale": false,
+      "staleDays": 0,
+      "archived": false,
+      "hasMt": false,
+      "canonical": "standard"
     },
     {
       "name": "net8-console-app",
@@ -388,17 +617,50 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 5098.4479,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 5098.4479
+              }
+            ]
+          },
+          "rebuild": {
+            "p50": 5236.2725,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 5236.2725
+              }
+            ]
+          }
         }
       },
       "incBuild": {
         "p50": 4115.44207,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 5098.4479
+          },
           {
             "v": 4115.44207
           }
@@ -407,12 +669,15 @@
       "rebuild": {
         "p50": 4136.99056,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 5236.2725
+          },
           {
             "v": 4136.99056
           }
@@ -462,17 +727,36 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 1637.83718,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 1637.83718
+              }
+            ]
+          }
         }
       },
       "incBuild": {
         "p50": 1502.2402399999999,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 1637.83718
+          },
           {
             "v": 1502.2402399999999
           }
@@ -739,31 +1023,67 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 52771.8912,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 52771.8912
+              }
+            ]
+          },
+          "rebuild": {
+            "p50": 96056.6731,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 96056.6731
+              }
+            ]
+          }
         }
       },
       "incBuild": {
-        "p50": 193993.2049,
+        "p50": 52771.8912,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 52771.8912
+          },
           {
             "v": 193993.2049
           }
         ]
       },
       "rebuild": {
-        "p50": 199259.7822,
+        "p50": 96056.6731,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 96056.6731
+          },
           {
             "v": 199259.7822
           }
@@ -771,12 +1091,12 @@
       },
       "mt": {
         "incBuild": {
-          "p50": 193993.2049,
-          "speedupPct": -39.1
+          "p50": 52771.8912,
+          "speedupPct": -1.7
         },
         "rebuild": {
-          "p50": 199259.7822,
-          "speedupPct": -53.7
+          "p50": 96056.6731,
+          "speedupPct": 16.0
         }
       }
     },
@@ -804,12 +1124,12 @@
       "stale": false,
       "staleDays": 0,
       "archived": false,
-      "hasMt": false,
-      "canonical": "standard",
+      "hasMt": true,
+      "canonical": "mt",
       "platforms": {
-        "windows": {
+        "linux": {
           "incBuild": {
-            "p50": 94792.83119999999,
+            "p50": 39444.49492,
             "regressionPct": null,
             "samplesLast7d": 1,
             "samplesPrior30d": 0,
@@ -818,14 +1138,14 @@
             "totalRuns": 1,
             "sparkline": [
               {
-                "v": 94792.83119999999
+                "v": 39444.49492
               }
             ]
           }
         }
       },
       "incBuild": {
-        "p50": 94792.83119999999,
+        "p50": 39444.49492,
         "regressionPct": null,
         "samplesLast7d": 1,
         "samplesPrior30d": 0,
@@ -834,9 +1154,15 @@
         "totalRuns": 1,
         "sparkline": [
           {
-            "v": 94792.83119999999
+            "v": 39444.49492
           }
         ]
+      },
+      "mt": {
+        "incBuild": {
+          "p50": 39444.49492,
+          "speedupPct": -2.6
+        }
       }
     },
     {
@@ -845,8 +1171,8 @@
       "stale": false,
       "staleDays": 0,
       "archived": false,
-      "hasMt": false,
-      "canonical": "standard"
+      "hasMt": true,
+      "canonical": "mt"
     },
     {
       "name": "very-large-net8-console-app-inc",
@@ -863,26 +1189,12 @@
       "stale": false,
       "staleDays": 0,
       "archived": false,
-      "hasMt": false,
-      "canonical": "standard",
+      "hasMt": true,
+      "canonical": "mt",
       "platforms": {
-        "windows": {
-          "incBuild": {
-            "p50": 43829.087,
-            "regressionPct": null,
-            "samplesLast7d": 1,
-            "samplesPrior30d": 0,
-            "passRate": 100.0,
-            "passRate30d": 100.0,
-            "totalRuns": 1,
-            "sparkline": [
-              {
-                "v": 43829.087
-              }
-            ]
-          },
+        "linux": {
           "rebuild": {
-            "p50": 41662.9469,
+            "p50": 58574.6513,
             "regressionPct": null,
             "samplesLast7d": 1,
             "samplesPrior30d": 0,
@@ -891,14 +1203,14 @@
             "totalRuns": 1,
             "sparkline": [
               {
-                "v": 41662.9469
+                "v": 58574.6513
               }
             ]
           }
         }
       },
-      "incBuild": {
-        "p50": 43829.087,
+      "rebuild": {
+        "p50": 58574.6513,
         "regressionPct": null,
         "samplesLast7d": 1,
         "samplesPrior30d": 0,
@@ -907,23 +1219,15 @@
         "totalRuns": 1,
         "sparkline": [
           {
-            "v": 43829.087
+            "v": 58574.6513
           }
         ]
       },
-      "rebuild": {
-        "p50": 41662.9469,
-        "regressionPct": null,
-        "samplesLast7d": 1,
-        "samplesPrior30d": 0,
-        "passRate": 100.0,
-        "passRate30d": 100.0,
-        "totalRuns": 1,
-        "sparkline": [
-          {
-            "v": 41662.9469
-          }
-        ]
+      "mt": {
+        "rebuild": {
+          "p50": 58574.6513,
+          "speedupPct": -40.6
+        }
       }
     },
     {
@@ -932,12 +1236,12 @@
       "stale": false,
       "staleDays": 0,
       "archived": false,
-      "hasMt": false,
-      "canonical": "standard",
+      "hasMt": true,
+      "canonical": "mt",
       "platforms": {
-        "windows": {
+        "linux": {
           "incBuild": {
-            "p50": 30836.3258,
+            "p50": 12249.4063,
             "regressionPct": null,
             "samplesLast7d": 1,
             "samplesPrior30d": 0,
@@ -946,14 +1250,14 @@
             "totalRuns": 1,
             "sparkline": [
               {
-                "v": 30836.3258
+                "v": 12249.4063
               }
             ]
           }
         }
       },
       "incBuild": {
-        "p50": 30836.3258,
+        "p50": 12249.4063,
         "regressionPct": null,
         "samplesLast7d": 1,
         "samplesPrior30d": 0,
@@ -962,9 +1266,15 @@
         "totalRuns": 1,
         "sparkline": [
           {
-            "v": 30836.3258
+            "v": 12249.4063
           }
         ]
+      },
+      "mt": {
+        "incBuild": {
+          "p50": 12249.4063,
+          "speedupPct": 20.3
+        }
       }
     }
   ],
