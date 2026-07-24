@@ -1,0 +1,42 @@
+[
+  {
+    "date": "2026-07-24",
+    "scenario": "aspire-warm-inc-build-mt-dotnet",
+    "perfstarCIBuildNumber": "20260723.5.t",
+    "branch": "refs/heads/perf/AR-May/parent-read-ahead-buffer",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-07-24T00:20:35.3480537Z",
+    "results": {
+      "netSdkVersion": "11.0.100-preview.7.26366.102",
+      "aspNetCoreVersion": "10.0.10+f7d90799ce4e",
+      "netCoreAppVersion": "10.0.10+f7d90799ce4e",
+      "msbuild-version": "18.10.0.37308",
+      "msbuild-display-version": "18.10.0.37308",
+      "evaluation-time": 97965.0,
+      "evaluation-time-globbing": 870.0,
+      "evaluation-time-pass0": 51.0,
+      "evaluation-time-pass1": 44727.0,
+      "evaluation-time-pass2": 125.0,
+      "evaluation-time-pass3": 15321.0,
+      "evaluation-time-pass3dot1": 10346.0,
+      "evaluation-time-pass4": 748.0,
+      "evaluation-time-pass5": 26621.0,
+      "exit-code": 0.0,
+      "build-time": 68756.0638,
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 10790472478.0,
+      "disk/nuget-global-bytes": 3230081337.0,
+      "disk/nuget-http-cache-bytes": 96106597.0,
+      "disk/free-bytes": 520112820224.0,
+      "info/test-asset": "Aspire",
+      "info/test-scenario": "WarmIncrementalBuild",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 1.0,
+      "dotnet-version": "11.0.100-preview.7.26366.102",
+      "crank-netSdkVersion": "10.0.302"
+    }
+  }
+]
