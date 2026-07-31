@@ -55,7 +55,7 @@
   },
   {
     "name": "net8-blazorwasm-app",
-    "records": 8,
+    "records": 9,
     "scenarios": [
       "net8-blazorwasm-app-inc-build-dotnet",
       "net8-blazorwasm-app-inc-build-mt-dotnet",
@@ -170,7 +170,7 @@
   },
   {
     "name": "orchard-core",
-    "records": 13,
+    "records": 17,
     "scenarios": [
       "orchard-core-inc-build-check-dotnet",
       "orchard-core-inc-build-dotnet",
@@ -184,7 +184,7 @@
   },
   {
     "name": "orchard-core-cold",
-    "records": 5,
+    "records": 6,
     "scenarios": [
       "orchard-core-cold-restore-dotnet",
       "orchard-core-cold-restore-mt-dotnet"
@@ -194,17 +194,17 @@
   },
   {
     "name": "orchard-core-inc",
-    "records": 4,
+    "records": 5,
     "scenarios": [
       "orchard-core-inc-restore-dotnet",
       "orchard-core-inc-restore-mt-dotnet"
     ],
     "firstDate": "2026-07-23",
-    "latestDate": "2026-07-23"
+    "latestDate": "2026-07-31"
   },
   {
     "name": "orchard-core-warm",
-    "records": 8,
+    "records": 10,
     "scenarios": [
       "orchard-core-warm-inc-build-dotnet",
       "orchard-core-warm-inc-build-mt-dotnet",
@@ -212,11 +212,11 @@
       "orchard-core-warm-restore-mt-dotnet"
     ],
     "firstDate": "2026-07-23",
-    "latestDate": "2026-07-23"
+    "latestDate": "2026-07-31"
   },
   {
     "name": "very-large-net8-console-app",
-    "records": 4,
+    "records": 5,
     "scenarios": [
       "very-large-net8-console-app-restore-dotnet",
       "very-large-net8-console-app-restore-mt-dotnet"
@@ -226,7 +226,7 @@
   },
   {
     "name": "very-large-net8-console-app-inc",
-    "records": 3,
+    "records": 4,
     "scenarios": [
       "very-large-net8-console-app-inc-restore-dotnet"
     ],
@@ -235,7 +235,7 @@
   },
   {
     "name": "xunit",
-    "records": 7,
+    "records": 9,
     "scenarios": [
       "xunit-inc-build-dotnet",
       "xunit-rebuild-dotnet",
@@ -246,7 +246,7 @@
   },
   {
     "name": "xunit-warm",
-    "records": 4,
+    "records": 5,
     "scenarios": [
       "xunit-warm-inc-build-dotnet",
       "xunit-warm-inc-build-mt-dotnet"

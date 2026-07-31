@@ -1128,7 +1128,7 @@
       "mt": {
         "incBuild": {
           "p50": 50497.9288,
-          "speedupPct": 65.8
+          "speedupPct": 8.8
         },
         "rebuild": {
           "p50": 104068.6483,
@@ -1147,18 +1147,18 @@
     },
     {
       "name": "orchard-core-inc",
-      "latestDate": "2026-07-23",
+      "latestDate": "2026-07-31",
       "stale": false,
-      "staleDays": 8,
+      "staleDays": 0,
       "archived": false,
       "hasMt": true,
       "canonical": "mt"
     },
     {
       "name": "orchard-core-warm",
-      "latestDate": "2026-07-23",
+      "latestDate": "2026-07-31",
       "stale": false,
-      "staleDays": 8,
+      "staleDays": 0,
       "archived": false,
       "hasMt": true,
       "canonical": "mt",
@@ -1216,7 +1216,7 @@
       "mt": {
         "incBuild": {
           "p50": 40196.16076,
-          "speedupPct": -3.6
+          "speedupPct": -3.3
         }
       }
     },
@@ -1328,7 +1328,7 @@
       "mt": {
         "incBuild": {
           "p50": 11680.2333,
-          "speedupPct": 56.8
+          "speedupPct": 22.6
         }
       }
     }
