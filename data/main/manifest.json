@@ -1,7 +1,7 @@
 [
   {
     "name": "aspire",
-    "records": 133,
+    "records": 135,
     "scenarios": [
       "aspire-inc-build-dotnet",
       "aspire-rebuild-dotnet",
@@ -12,7 +12,7 @@
   },
   {
     "name": "aspire-warm",
-    "records": 130,
+    "records": 132,
     "scenarios": [
       "aspire-warm-inc-build-dotnet",
       "aspire-warm-inc-build-mt-dotnet"
@@ -22,7 +22,7 @@
   },
   {
     "name": "azure-core",
-    "records": 131,
+    "records": 133,
     "scenarios": [
       "azure-core-inc-build-dotnet",
       "azure-core-rebuild-dotnet",
@@ -33,7 +33,7 @@
   },
   {
     "name": "azure-core-warm",
-    "records": 130,
+    "records": 132,
     "scenarios": [
       "azure-core-warm-inc-build-dotnet",
       "azure-core-warm-inc-build-mt-dotnet"
@@ -113,7 +113,7 @@
   },
   {
     "name": "eshop-on-blazor-modified",
-    "records": 1794,
+    "records": 1796,
     "scenarios": [
       "eshop-on-blazor-modified-inc-build-dotnet",
       "eshop-on-blazor-modified-inc-build-mt-dotnet",
@@ -235,7 +235,7 @@
   },
   {
     "name": "net8-blazorwasm-app",
-    "records": 2376,
+    "records": 2378,
     "scenarios": [
       "net8-blazorwasm-app-inc-build-binlog-dotnet",
       "net8-blazorwasm-app-inc-build-dotnet",
@@ -258,7 +258,7 @@
   },
   {
     "name": "net8-class-lib",
-    "records": 1307,
+    "records": 1309,
     "scenarios": [
       "net8-class-lib-inc-build-dotnet",
       "net8-class-lib-rebuild-dotnet",
@@ -278,7 +278,7 @@
   },
   {
     "name": "net8-console-app",
-    "records": 3502,
+    "records": 3504,
     "scenarios": [
       "net8-console-app-inc-build-binlog-dotnet",
       "net8-console-app-inc-build-check-dotnet",
@@ -305,7 +305,7 @@
   },
   {
     "name": "net8-console-app-warm",
-    "records": 344,
+    "records": 348,
     "scenarios": [
       "net8-console-app-warm-inc-build-dotnet",
       "net8-console-app-warm-inc-build-mt-dotnet",
@@ -358,7 +358,7 @@
   },
   {
     "name": "orchard-core",
-    "records": 1624,
+    "records": 1626,
     "scenarios": [
       "orchard-core-inc-build-binlog-dotnet",
       "orchard-core-inc-build-check-dotnet",
@@ -374,7 +374,7 @@
   },
   {
     "name": "orchard-core-cold",
-    "records": 174,
+    "records": 176,
     "scenarios": [
       "orchard-core-cold-restore-dotnet",
       "orchard-core-cold-restore-mt-dotnet"
@@ -394,7 +394,7 @@
   },
   {
     "name": "orchard-core-warm",
-    "records": 335,
+    "records": 339,
     "scenarios": [
       "orchard-core-warm-inc-build-dotnet",
       "orchard-core-warm-inc-build-mt-dotnet",
@@ -407,7 +407,7 @@
   },
   {
     "name": "very-large-net8-console-app",
-    "records": 408,
+    "records": 410,
     "scenarios": [
       "very-large-net8-console-app-restore-dotnet",
       "very-large-net8-console-app-restore-mt-dotnet"
@@ -456,7 +456,7 @@
   },
   {
     "name": "xunit",
-    "records": 134,
+    "records": 136,
     "scenarios": [
       "xunit-inc-build-dotnet",
       "xunit-rebuild-dotnet",
@@ -467,7 +467,7 @@
   },
   {
     "name": "xunit-warm",
-    "records": 132,
+    "records": 134,
     "scenarios": [
       "xunit-warm-inc-build-dotnet",
       "xunit-warm-inc-build-mt-dotnet"
