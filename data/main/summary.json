@@ -3,7 +3,7 @@
   "assets": [
     {
       "name": "aspire",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -12,17 +12,14 @@
       "platforms": {
         "windows": {
           "rebuild": {
-            "p50": 45671.0653,
-            "regressionPct": -8.1,
+            "p50": 45666.0226,
+            "regressionPct": -3.3,
             "samplesLast7d": 8,
-            "samplesPrior30d": 21,
+            "samplesPrior30d": 22,
             "passRate": 100.0,
             "passRate30d": 100.0,
-            "totalRuns": 40,
+            "totalRuns": 41,
             "sparkline": [
-              {
-                "v": 79042.8769
-              },
               {
                 "v": 80866.6553
               },
@@ -109,6 +106,9 @@
               },
               {
                 "v": 43807.66
+              },
+              {
+                "v": 44975.5728
               }
             ]
           }
@@ -116,9 +116,9 @@
         "linux": {
           "rebuild": {
             "p50": 52237.1235,
-            "regressionPct": -4.6,
-            "samplesLast7d": 6,
-            "samplesPrior30d": 21,
+            "regressionPct": -3.0,
+            "samplesLast7d": 5,
+            "samplesPrior30d": 22,
             "passRate": 90.0,
             "passRate30d": 90.0,
             "totalRuns": 40,
@@ -220,15 +220,12 @@
       "rebuild": {
         "p50": 51316.5625,
         "regressionPct": -12.2,
-        "samplesLast7d": 14,
-        "samplesPrior30d": 42,
-        "passRate": 95.0,
-        "passRate30d": 94.9,
-        "totalRuns": 80,
+        "samplesLast7d": 13,
+        "samplesPrior30d": 44,
+        "passRate": 95.1,
+        "passRate30d": 95.0,
+        "totalRuns": 81,
         "sparkline": [
-          {
-            "v": 43479.0966
-          },
           {
             "v": 44917.574
           },
@@ -287,10 +284,10 @@
             "v": 44521.6191
           },
           {
-            "v": 44366.2015
+            "v": 49127.4902
           },
           {
-            "v": 49127.4902
+            "v": 44366.2015
           },
           {
             "v": 50683.1101
@@ -311,10 +308,13 @@
             "v": 45888.0521
           },
           {
+            "v": 43807.66
+          },
+          {
             "v": 49559.5014
           },
           {
-            "v": 43807.66
+            "v": 44975.5728
           }
         ]
       },
@@ -327,7 +327,7 @@
     },
     {
       "name": "aspire-warm",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -337,16 +337,13 @@
         "windows": {
           "incBuild": {
             "p50": 44178.3443,
-            "regressionPct": -9.8,
+            "regressionPct": -6.4,
             "samplesLast7d": 8,
-            "samplesPrior30d": 21,
+            "samplesPrior30d": 22,
             "passRate": 100.0,
             "passRate30d": 100.0,
-            "totalRuns": 40,
+            "totalRuns": 41,
             "sparkline": [
-              {
-                "v": 65856.1322
-              },
               {
                 "v": 69198.8013
               },
@@ -433,6 +430,9 @@
               },
               {
                 "v": 43897.0652
+              },
+              {
+                "v": 44504.9859
               }
             ]
           }
@@ -440,9 +440,9 @@
         "linux": {
           "incBuild": {
             "p50": 17980.4183,
-            "regressionPct": -3.8,
-            "samplesLast7d": 6,
-            "samplesPrior30d": 21,
+            "regressionPct": -2.2,
+            "samplesLast7d": 5,
+            "samplesPrior30d": 22,
             "passRate": 90.0,
             "passRate30d": 90.0,
             "totalRuns": 40,
@@ -542,17 +542,14 @@
         }
       },
       "incBuild": {
-        "p50": 40257.9634,
-        "regressionPct": 117.3,
-        "samplesLast7d": 14,
-        "samplesPrior30d": 42,
-        "passRate": 95.0,
-        "passRate30d": 94.9,
-        "totalRuns": 80,
+        "p50": 41084.7402,
+        "regressionPct": 122.2,
+        "samplesLast7d": 13,
+        "samplesPrior30d": 44,
+        "passRate": 95.1,
+        "passRate30d": 95.0,
+        "totalRuns": 81,
         "sparkline": [
-          {
-            "v": 45287.1732
-          },
           {
             "v": 43318.3165
           },
@@ -611,10 +608,10 @@
             "v": 41084.7402
           },
           {
-            "v": 42006.3281
+            "v": 18008.4812
           },
           {
-            "v": 18008.4812
+            "v": 42006.3281
           },
           {
             "v": 17925.1066
@@ -635,23 +632,26 @@
             "v": 46099.4786
           },
           {
+            "v": 43897.0652
+          },
+          {
             "v": 17434.03
           },
           {
-            "v": 43897.0652
+            "v": 44504.9859
           }
         ]
       },
       "mt": {
         "incBuild": {
-          "p50": 40257.9634,
-          "speedupPct": 6.1
+          "p50": 41084.7402,
+          "speedupPct": 11.2
         }
       }
     },
     {
       "name": "azure-core",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -660,17 +660,14 @@
       "platforms": {
         "windows": {
           "rebuild": {
-            "p50": 24926.9745,
-            "regressionPct": -15.7,
+            "p50": 24821.2691,
+            "regressionPct": -15.3,
             "samplesLast7d": 8,
-            "samplesPrior30d": 21,
+            "samplesPrior30d": 22,
             "passRate": 100.0,
             "passRate30d": 100.0,
-            "totalRuns": 40,
+            "totalRuns": 41,
             "sparkline": [
-              {
-                "v": 21509.1055
-              },
               {
                 "v": 28012.7404
               },
@@ -757,6 +754,9 @@
               },
               {
                 "v": 22031.8274
+              },
+              {
+                "v": 20686.211
               }
             ]
           }
@@ -764,9 +764,9 @@
         "linux": {
           "rebuild": {
             "p50": 22700.5294,
-            "regressionPct": -0.9,
-            "samplesLast7d": 8,
-            "samplesPrior30d": 22,
+            "regressionPct": -1.1,
+            "samplesLast7d": 7,
+            "samplesPrior30d": 23,
             "passRate": 97.5,
             "passRate30d": 100.0,
             "totalRuns": 40,
@@ -866,17 +866,14 @@
         }
       },
       "rebuild": {
-        "p50": 23642.4832,
-        "regressionPct": -6.9,
-        "samplesLast7d": 16,
-        "samplesPrior30d": 43,
+        "p50": 23642.4709,
+        "regressionPct": -7.8,
+        "samplesLast7d": 15,
+        "samplesPrior30d": 45,
         "passRate": 98.8,
         "passRate30d": 100.0,
-        "totalRuns": 80,
+        "totalRuns": 81,
         "sparkline": [
-          {
-            "v": 23572.7144
-          },
           {
             "v": 25859.357
           },
@@ -929,10 +926,10 @@
             "v": 23386.6683
           },
           {
-            "v": 21668.0667
+            "v": 25716.1451
           },
           {
-            "v": 25716.1451
+            "v": 21668.0667
           },
           {
             "v": 24025.0134
@@ -959,23 +956,26 @@
             "v": 25543.2475
           },
           {
+            "v": 22031.8274
+          },
+          {
             "v": 25554.5449
           },
           {
-            "v": 22031.8274
+            "v": 20686.211
           }
         ]
       },
       "mt": {
         "rebuild": {
-          "p50": 23642.4832,
-          "speedupPct": 25.8
+          "p50": 23642.4709,
+          "speedupPct": 25.7
         }
       }
     },
     {
       "name": "azure-core-warm",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -984,17 +984,14 @@
       "platforms": {
         "windows": {
           "incBuild": {
-            "p50": 17663.6017,
-            "regressionPct": -8.4,
+            "p50": 17589.0207,
+            "regressionPct": -9.1,
             "samplesLast7d": 8,
-            "samplesPrior30d": 21,
+            "samplesPrior30d": 22,
             "passRate": 100.0,
             "passRate30d": 100.0,
-            "totalRuns": 40,
+            "totalRuns": 41,
             "sparkline": [
-              {
-                "v": 20782.2565
-              },
               {
                 "v": 19462.8844
               },
@@ -1081,6 +1078,9 @@
               },
               {
                 "v": 16948.2637
+              },
+              {
+                "v": 16073.2933
               }
             ]
           }
@@ -1088,9 +1088,9 @@
         "linux": {
           "incBuild": {
             "p50": 8069.3105,
-            "regressionPct": -3.1,
-            "samplesLast7d": 8,
-            "samplesPrior30d": 22,
+            "regressionPct": -2.1,
+            "samplesLast7d": 7,
+            "samplesPrior30d": 23,
             "passRate": 97.5,
             "passRate30d": 100.0,
             "totalRuns": 40,
@@ -1191,16 +1191,13 @@
       },
       "incBuild": {
         "p50": 9236.4804,
-        "regressionPct": -9.0,
-        "samplesLast7d": 16,
-        "samplesPrior30d": 43,
+        "regressionPct": 61.8,
+        "samplesLast7d": 15,
+        "samplesPrior30d": 45,
         "passRate": 98.8,
         "passRate30d": 100.0,
-        "totalRuns": 80,
+        "totalRuns": 81,
         "sparkline": [
-          {
-            "v": 8064.7913
-          },
           {
             "v": 8003.0174
           },
@@ -1253,10 +1250,10 @@
             "v": 16588.3619
           },
           {
-            "v": 14949.0478
+            "v": 8401.7172
           },
           {
-            "v": 8401.7172
+            "v": 14949.0478
           },
           {
             "v": 7995.4704
@@ -1283,10 +1280,13 @@
             "v": 20964.05
           },
           {
+            "v": 16948.2637
+          },
+          {
             "v": 7934.701
           },
           {
-            "v": 16948.2637
+            "v": 16073.2933
           }
         ]
       },
@@ -1301,7 +1301,7 @@
       "name": "blazorwasm-app",
       "latestDate": "2023-10-11",
       "stale": true,
-      "staleDays": 1040,
+      "staleDays": 1041,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -1411,7 +1411,7 @@
       "name": "class-lib",
       "latestDate": "2023-10-11",
       "stale": true,
-      "staleDays": 1040,
+      "staleDays": 1041,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -1521,7 +1521,7 @@
       "name": "csproj-class-lib",
       "latestDate": "2024-04-17",
       "stale": true,
-      "staleDays": 851,
+      "staleDays": 852,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -1733,7 +1733,7 @@
       "name": "csproj-console-app",
       "latestDate": "2024-04-17",
       "stale": true,
-      "staleDays": 851,
+      "staleDays": 852,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -1945,7 +1945,7 @@
       "name": "csproj-web-app",
       "latestDate": "2024-04-17",
       "stale": true,
-      "staleDays": 851,
+      "staleDays": 852,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -2157,7 +2157,7 @@
       "name": "csproj-win-forms-app",
       "latestDate": "2024-04-17",
       "stale": true,
-      "staleDays": 851,
+      "staleDays": 852,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -2369,7 +2369,7 @@
       "name": "csproj-wpf-app",
       "latestDate": "2024-04-17",
       "stale": true,
-      "staleDays": 851,
+      "staleDays": 852,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -2579,7 +2579,7 @@
     },
     {
       "name": "eshop-on-blazor-modified",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -2689,17 +2689,14 @@
             ]
           },
           "rebuild": {
-            "p50": 6224.87649,
-            "regressionPct": -6.8,
+            "p50": 6223.36728,
+            "regressionPct": -7.3,
             "samplesLast7d": 8,
-            "samplesPrior30d": 21,
-            "passRate": 64.7,
+            "samplesPrior30d": 22,
+            "passRate": 64.9,
             "passRate30d": 100.0,
-            "totalRuns": 153,
+            "totalRuns": 154,
             "sparkline": [
-              {
-                "v": 6106.93989
-              },
               {
                 "v": 6382.06308
               },
@@ -2786,6 +2783,9 @@
               },
               {
                 "v": 5824.93463
+              },
+              {
+                "v": 5820.12794
               }
             ]
           }
@@ -2894,9 +2894,9 @@
           },
           "rebuild": {
             "p50": 7692.64835,
-            "regressionPct": -4.3,
-            "samplesLast7d": 8,
-            "samplesPrior30d": 22,
+            "regressionPct": -5.1,
+            "samplesLast7d": 7,
+            "samplesPrior30d": 23,
             "passRate": 50.0,
             "passRate30d": 100.0,
             "totalRuns": 156,
@@ -3097,17 +3097,14 @@
         ]
       },
       "rebuild": {
-        "p50": 7290.768529999999,
+        "p50": 6401.24231,
         "regressionPct": -18.5,
-        "samplesLast7d": 16,
-        "samplesPrior30d": 43,
-        "passRate": 57.3,
+        "samplesLast7d": 15,
+        "samplesPrior30d": 45,
+        "passRate": 57.4,
         "passRate30d": 100.0,
-        "totalRuns": 309,
+        "totalRuns": 310,
         "sparkline": [
-          {
-            "v": 6218.83138
-          },
           {
             "v": 7776.10226
           },
@@ -3190,17 +3187,20 @@
             "v": 5858.6402499999995
           },
           {
+            "v": 5824.93463
+          },
+          {
             "v": 7475.59289
           },
           {
-            "v": 5824.93463
+            "v": 5820.12794
           }
         ]
       },
       "mt": {
         "rebuild": {
-          "p50": 7290.768529999999,
-          "speedupPct": -2.7
+          "p50": 6401.24231,
+          "speedupPct": -7.9
         }
       }
     },
@@ -3208,7 +3208,7 @@
       "name": "net-console-app",
       "latestDate": "2023-10-11",
       "stale": true,
-      "staleDays": 1040,
+      "staleDays": 1041,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -3336,7 +3336,7 @@
       "name": "net48-class-lib",
       "latestDate": "2024-04-17",
       "stale": true,
-      "staleDays": 851,
+      "staleDays": 852,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -3548,7 +3548,7 @@
       "name": "net48-win-forms-app",
       "latestDate": "2024-04-17",
       "stale": true,
-      "staleDays": 851,
+      "staleDays": 852,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -3760,7 +3760,7 @@
       "name": "net48-wpf-app",
       "latestDate": "2024-04-17",
       "stale": true,
-      "staleDays": 851,
+      "staleDays": 852,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -3972,7 +3972,7 @@
       "name": "net6-blazorwasm-app",
       "latestDate": "2025-12-13",
       "stale": true,
-      "staleDays": 246,
+      "staleDays": 247,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -4420,7 +4420,7 @@
       "name": "net6-class-lib",
       "latestDate": "2025-12-13",
       "stale": true,
-      "staleDays": 246,
+      "staleDays": 247,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -4934,7 +4934,7 @@
       "name": "net6-console-app",
       "latestDate": "2025-12-13",
       "stale": true,
-      "staleDays": 246,
+      "staleDays": 247,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -5448,7 +5448,7 @@
       "name": "net6-web-app",
       "latestDate": "2025-12-13",
       "stale": true,
-      "staleDays": 246,
+      "staleDays": 247,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -5866,7 +5866,7 @@
       "name": "net6-win-forms-app",
       "latestDate": "2025-12-13",
       "stale": true,
-      "staleDays": 246,
+      "staleDays": 247,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -6284,7 +6284,7 @@
       "name": "net6-wpf-app",
       "latestDate": "2025-12-13",
       "stale": true,
-      "staleDays": 246,
+      "staleDays": 247,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -6700,7 +6700,7 @@
     },
     {
       "name": "net8-blazorwasm-app",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -6810,17 +6810,14 @@
             ]
           },
           "rebuild": {
-            "p50": 8334.77664,
-            "regressionPct": -23.2,
+            "p50": 8315.205080000003,
+            "regressionPct": -23.4,
             "samplesLast7d": 8,
-            "samplesPrior30d": 21,
-            "passRate": 75.5,
+            "samplesPrior30d": 22,
+            "passRate": 75.7,
             "passRate30d": 100.0,
-            "totalRuns": 151,
+            "totalRuns": 152,
             "sparkline": [
-              {
-                "v": 9233.059469999998
-              },
               {
                 "v": 9465.23398
               },
@@ -6907,6 +6904,9 @@
               },
               {
                 "v": 6863.2453
+              },
+              {
+                "v": 6871.87856
               }
             ]
           }
@@ -7015,9 +7015,9 @@
           },
           "rebuild": {
             "p50": 8685.46318,
-            "regressionPct": -5.2,
-            "samplesLast7d": 8,
-            "samplesPrior30d": 22,
+            "regressionPct": -5.3,
+            "samplesLast7d": 7,
+            "samplesPrior30d": 23,
             "passRate": 68.4,
             "passRate30d": 100.0,
             "totalRuns": 155,
@@ -7218,17 +7218,14 @@
         ]
       },
       "rebuild": {
-        "p50": 8666.695039999999,
+        "p50": 8656.919409999999,
         "regressionPct": -19.9,
-        "samplesLast7d": 16,
-        "samplesPrior30d": 43,
-        "passRate": 71.9,
+        "samplesLast7d": 15,
+        "samplesPrior30d": 45,
+        "passRate": 72.0,
         "passRate30d": 100.0,
-        "totalRuns": 306,
+        "totalRuns": 307,
         "sparkline": [
-          {
-            "v": 8315.205080000003
-          },
           {
             "v": 8867.444780000002
           },
@@ -7242,22 +7239,22 @@
             "v": 8164.55724
           },
           {
-            "v": 8189.10956
-          },
-          {
             "v": 8908.825630000001
           },
           {
-            "v": 8334.77664
+            "v": 8189.10956
           },
           {
             "v": 8756.488290000001
           },
           {
-            "v": 8769.09724
+            "v": 8334.77664
           },
           {
             "v": 8387.99327
+          },
+          {
+            "v": 8769.09724
           },
           {
             "v": 8719.87154
@@ -7275,10 +7272,10 @@
             "v": 7025.53262
           },
           {
-            "v": 7027.58928
+            "v": 8758.60261
           },
           {
-            "v": 8758.60261
+            "v": 7027.58928
           },
           {
             "v": 8203.023669999999
@@ -7311,17 +7308,20 @@
             "v": 6940.1518
           },
           {
+            "v": 6863.2453
+          },
+          {
             "v": 8267.396100000002
           },
           {
-            "v": 6863.2453
+            "v": 6871.87856
           }
         ]
       },
       "mt": {
         "rebuild": {
-          "p50": 8666.695039999999,
-          "speedupPct": -6.8
+          "p50": 8656.919409999999,
+          "speedupPct": -8.3
         }
       }
     },
@@ -7329,14 +7329,14 @@
       "name": "net8-blazorwasm-app-publish-dotnet",
       "latestDate": "2026-06-30",
       "stale": true,
-      "staleDays": 47,
+      "staleDays": 48,
       "archived": false,
       "hasMt": false,
       "canonical": "standard"
     },
     {
       "name": "net8-class-lib",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -7345,17 +7345,14 @@
       "platforms": {
         "windows": {
           "rebuild": {
-            "p50": 4133.68342,
-            "regressionPct": -1.4,
+            "p50": 4132.691499999999,
+            "regressionPct": -1.6,
             "samplesLast7d": 8,
-            "samplesPrior30d": 21,
+            "samplesPrior30d": 22,
             "passRate": 100.0,
             "passRate30d": 100.0,
-            "totalRuns": 40,
+            "totalRuns": 41,
             "sparkline": [
-              {
-                "v": 4037.4262500000004
-              },
               {
                 "v": 4143.9630799999995
               },
@@ -7442,6 +7439,9 @@
               },
               {
                 "v": 4046.0107799999996
+              },
+              {
+                "v": 4054.94119
               }
             ]
           }
@@ -7450,8 +7450,8 @@
           "rebuild": {
             "p50": 5274.169110000001,
             "regressionPct": -3.0,
-            "samplesLast7d": 8,
-            "samplesPrior30d": 22,
+            "samplesLast7d": 7,
+            "samplesPrior30d": 23,
             "passRate": 100.0,
             "passRate30d": 100.0,
             "totalRuns": 40,
@@ -7551,17 +7551,14 @@
         }
       },
       "rebuild": {
-        "p50": 4998.24695,
+        "p50": 4284.42383,
         "regressionPct": -17.6,
-        "samplesLast7d": 16,
-        "samplesPrior30d": 43,
+        "samplesLast7d": 15,
+        "samplesPrior30d": 45,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 80,
+        "totalRuns": 81,
         "sparkline": [
-          {
-            "v": 5577.50981
-          },
           {
             "v": 5521.409010000001
           },
@@ -7614,10 +7611,10 @@
             "v": 4170.4250999999995
           },
           {
-            "v": 4054.3127
+            "v": 5052.501480000001
           },
           {
-            "v": 5052.501480000001
+            "v": 4054.3127
           },
           {
             "v": 5040.102580000001
@@ -7644,17 +7641,20 @@
             "v": 4121.3007
           },
           {
+            "v": 4046.0107799999996
+          },
+          {
             "v": 5235.92856
           },
           {
-            "v": 4046.0107799999996
+            "v": 4054.94119
           }
         ]
       },
       "mt": {
         "rebuild": {
-          "p50": 4998.24695,
-          "speedupPct": -4.4
+          "p50": 4284.42383,
+          "speedupPct": -3.3
         }
       }
     },
@@ -7662,14 +7662,14 @@
       "name": "net8-class-lib-pack-dotnet",
       "latestDate": "2026-06-30",
       "stale": true,
-      "staleDays": 47,
+      "staleDays": 48,
       "archived": false,
       "hasMt": false,
       "canonical": "standard"
     },
     {
       "name": "net8-console-app",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -7780,19 +7780,13 @@
           },
           "rebuild": {
             "p50": 4223.7294999999995,
-            "regressionPct": 0.4,
-            "samplesLast7d": 13,
-            "samplesPrior30d": 21,
-            "passRate": 81.0,
+            "regressionPct": -1.1,
+            "samplesLast7d": 14,
+            "samplesPrior30d": 22,
+            "passRate": 81.2,
             "passRate30d": 100.0,
-            "totalRuns": 158,
+            "totalRuns": 160,
             "sparkline": [
-              {
-                "v": 4140.449610000001
-              },
-              {
-                "v": 4151.99832
-              },
               {
                 "v": 4207.6655599999995
               },
@@ -7876,6 +7870,12 @@
               },
               {
                 "v": 4414.576950000001
+              },
+              {
+                "v": 4126.19283
+              },
+              {
+                "v": 4382.84867
               }
             ]
           }
@@ -7984,9 +7984,9 @@
           },
           "rebuild": {
             "p50": 5456.31441,
-            "regressionPct": -0.9,
-            "samplesLast7d": 13,
-            "samplesPrior30d": 22,
+            "regressionPct": -3.0,
+            "samplesLast7d": 12,
+            "samplesPrior30d": 23,
             "passRate": 78.6,
             "passRate30d": 100.0,
             "totalRuns": 159,
@@ -8187,20 +8187,14 @@
         ]
       },
       "rebuild": {
-        "p50": 5084.2318399999995,
-        "regressionPct": -12.3,
+        "p50": 4457.10203,
+        "regressionPct": -12.7,
         "samplesLast7d": 26,
-        "samplesPrior30d": 43,
-        "passRate": 79.8,
+        "samplesPrior30d": 45,
+        "passRate": 79.9,
         "passRate30d": 100.0,
-        "totalRuns": 317,
+        "totalRuns": 319,
         "sparkline": [
-          {
-            "v": 5494.16259
-          },
-          {
-            "v": 5491.38173
-          },
           {
             "v": 5615.51451
           },
@@ -8220,22 +8214,22 @@
             "v": 4265.10198
           },
           {
-            "v": 4127.98656
-          },
-          {
             "v": 5205.23222
           },
           {
-            "v": 5299.1023
+            "v": 4127.98656
+          },
+          {
+            "v": 4439.885469999999
           },
           {
             "v": 5603.581830000001
           },
           {
-            "v": 4169.67077
+            "v": 5299.1023
           },
           {
-            "v": 4439.885469999999
+            "v": 4169.67077
           },
           {
             "v": 5217.52709
@@ -8253,16 +8247,13 @@
             "v": 4423.584970000001
           },
           {
-            "v": 4140.43455
-          },
-          {
             "v": 5253.8694
           },
           {
             "v": 5417.27572
           },
           {
-            "v": 4457.10203
+            "v": 4140.43455
           },
           {
             "v": 5282.152339999999
@@ -8272,6 +8263,9 @@
           },
           {
             "v": 4176.857309999999
+          },
+          {
+            "v": 4457.10203
           },
           {
             "v": 5551.66734
@@ -8284,13 +8278,19 @@
           },
           {
             "v": 4414.576950000001
+          },
+          {
+            "v": 4126.19283
+          },
+          {
+            "v": 4382.84867
           }
         ]
       },
       "mt": {
         "rebuild": {
-          "p50": 5084.2318399999995,
-          "speedupPct": -7.3
+          "p50": 4457.10203,
+          "speedupPct": -5.4
         }
       }
     },
@@ -8298,14 +8298,14 @@
       "name": "net8-console-app-publish-dotnet",
       "latestDate": "2026-06-30",
       "stale": true,
-      "staleDays": 47,
+      "staleDays": 48,
       "archived": false,
       "hasMt": false,
       "canonical": "standard"
     },
     {
       "name": "net8-console-app-warm",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -8314,17 +8314,14 @@
       "platforms": {
         "windows": {
           "incBuild": {
-            "p50": 1516.7469,
-            "regressionPct": -12.8,
+            "p50": 1514.98382,
+            "regressionPct": -13.3,
             "samplesLast7d": 8,
-            "samplesPrior30d": 21,
+            "samplesPrior30d": 22,
             "passRate": 100.0,
             "passRate30d": 100.0,
-            "totalRuns": 50,
+            "totalRuns": 51,
             "sparkline": [
-              {
-                "v": 1433.3029599999998
-              },
               {
                 "v": 1543.5538999999999
               },
@@ -8411,6 +8408,9 @@
               },
               {
                 "v": 1317.75552
+              },
+              {
+                "v": 1309.88998
               }
             ]
           },
@@ -8447,9 +8447,9 @@
         "linux": {
           "incBuild": {
             "p50": 1549.7489600000001,
-            "regressionPct": -9.4,
-            "samplesLast7d": 8,
-            "samplesPrior30d": 22,
+            "regressionPct": -9.8,
+            "samplesLast7d": 7,
+            "samplesPrior30d": 23,
             "passRate": 100.0,
             "passRate30d": 100.0,
             "totalRuns": 43,
@@ -8549,17 +8549,14 @@
         }
       },
       "incBuild": {
-        "p50": 1521.1138999999998,
-        "regressionPct": -11.0,
-        "samplesLast7d": 16,
-        "samplesPrior30d": 43,
+        "p50": 1519.2555800000002,
+        "regressionPct": -11.1,
+        "samplesLast7d": 15,
+        "samplesPrior30d": 45,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 93,
+        "totalRuns": 94,
         "sparkline": [
-          {
-            "v": 1523.0688
-          },
           {
             "v": 1543.67078
           },
@@ -8642,10 +8639,13 @@
             "v": 1326.3349
           },
           {
+            "v": 1317.75552
+          },
+          {
             "v": 1437.7695199999998
           },
           {
-            "v": 1317.75552
+            "v": 1309.88998
           }
         ]
       },
@@ -8680,8 +8680,8 @@
       },
       "mt": {
         "incBuild": {
-          "p50": 1521.1138999999998,
-          "speedupPct": -4.1
+          "p50": 1519.2555800000002,
+          "speedupPct": -3.9
         }
       }
     },
@@ -8689,7 +8689,7 @@
       "name": "net8-web-app",
       "latestDate": "2026-06-30",
       "stale": true,
-      "staleDays": 47,
+      "staleDays": 48,
       "archived": false,
       "hasMt": false,
       "canonical": "standard",
@@ -9107,7 +9107,7 @@
       "name": "net8-web-app-publish-dotnet",
       "latestDate": "2026-06-30",
       "stale": true,
-      "staleDays": 47,
+      "staleDays": 48,
       "archived": false,
       "hasMt": false,
       "canonical": "standard"
@@ -9116,7 +9116,7 @@
       "name": "net8-win-forms-app",
       "latestDate": "2026-06-30",
       "stale": true,
-      "staleDays": 47,
+      "staleDays": 48,
       "archived": false,
       "hasMt": false,
       "canonical": "standard",
@@ -9534,7 +9534,7 @@
       "name": "net8-wpf-app",
       "latestDate": "2026-06-30",
       "stale": true,
-      "staleDays": 47,
+      "staleDays": 48,
       "archived": false,
       "hasMt": false,
       "canonical": "standard",
@@ -9950,7 +9950,7 @@
     },
     {
       "name": "orchard-core",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -10046,19 +10046,13 @@
           },
           "rebuild": {
             "p50": 105769.7427,
-            "regressionPct": -8.9,
-            "samplesLast7d": 13,
-            "samplesPrior30d": 21,
-            "passRate": 67.0,
+            "regressionPct": -8.8,
+            "samplesLast7d": 14,
+            "samplesPrior30d": 22,
+            "passRate": 67.7,
             "passRate30d": 100.0,
-            "totalRuns": 97,
+            "totalRuns": 99,
             "sparkline": [
-              {
-                "v": 202416.0198
-              },
-              {
-                "v": 204837.6677
-              },
               {
                 "v": 199197.3944
               },
@@ -10142,6 +10136,12 @@
               },
               {
                 "v": 97742.3681
+              },
+              {
+                "v": 107367.3183
+              },
+              {
+                "v": 100622.1369
               }
             ]
           }
@@ -10251,8 +10251,8 @@
           "rebuild": {
             "p50": 92407.8621,
             "regressionPct": 2.2,
-            "samplesLast7d": 9,
-            "samplesPrior30d": 21,
+            "samplesLast7d": 8,
+            "samplesPrior30d": 22,
             "passRate": 70.5,
             "passRate30d": 85.7,
             "totalRuns": 105,
@@ -10453,20 +10453,14 @@
         ]
       },
       "rebuild": {
-        "p50": 100510.6546,
+        "p50": 100622.1369,
         "regressionPct": 3.2,
         "samplesLast7d": 22,
-        "samplesPrior30d": 42,
-        "passRate": 68.8,
-        "passRate30d": 92.8,
-        "totalRuns": 202,
+        "samplesPrior30d": 44,
+        "passRate": 69.1,
+        "passRate30d": 93.0,
+        "totalRuns": 204,
         "sparkline": [
-          {
-            "v": 111208.9943
-          },
-          {
-            "v": 92862.142
-          },
           {
             "v": 105648.9307
           },
@@ -10480,10 +10474,10 @@
             "v": 92352.8467
           },
           {
-            "v": 92407.8621
+            "v": 99556.0352
           },
           {
-            "v": 99556.0352
+            "v": 92407.8621
           },
           {
             "v": 106172.6084
@@ -10516,10 +10510,10 @@
             "v": 103995.1282
           },
           {
-            "v": 102775.6877
+            "v": 99621.1811
           },
           {
-            "v": 99621.1811
+            "v": 102775.6877
           },
           {
             "v": 104340.0774
@@ -10540,29 +10534,35 @@
             "v": 112897.5523
           },
           {
-            "v": 98902.0964
-          },
-          {
             "v": 103312.6022
           },
           {
             "v": 95624.5884
           },
           {
+            "v": 98902.0964
+          },
+          {
             "v": 97742.3681
+          },
+          {
+            "v": 107367.3183
+          },
+          {
+            "v": 100622.1369
           }
         ]
       },
       "mt": {
         "rebuild": {
-          "p50": 100510.6546,
-          "speedupPct": 26.2
+          "p50": 100622.1369,
+          "speedupPct": 26.4
         }
       }
     },
     {
       "name": "orchard-core-cold",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -10573,14 +10573,14 @@
       "name": "orchard-core-inc",
       "latestDate": "2026-06-30",
       "stale": true,
-      "staleDays": 47,
+      "staleDays": 48,
       "archived": false,
       "hasMt": true,
       "canonical": "mt"
     },
     {
       "name": "orchard-core-warm",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -10590,16 +10590,13 @@
         "windows": {
           "incBuild": {
             "p50": 74643.15036,
-            "regressionPct": -9.9,
+            "regressionPct": -10.3,
             "samplesLast7d": 8,
-            "samplesPrior30d": 20,
+            "samplesPrior30d": 21,
             "passRate": 100.0,
             "passRate30d": 100.0,
-            "totalRuns": 43,
+            "totalRuns": 44,
             "sparkline": [
-              {
-                "v": 178373.94217999998
-              },
               {
                 "v": 174585.6286
               },
@@ -10686,6 +10683,9 @@
               },
               {
                 "v": 68955.74764
+              },
+              {
+                "v": 68682.73066
               }
             ]
           }
@@ -10693,9 +10693,9 @@
         "linux": {
           "incBuild": {
             "p50": 35663.92872,
-            "regressionPct": -6.6,
-            "samplesLast7d": 6,
-            "samplesPrior30d": 21,
+            "regressionPct": -2.9,
+            "samplesLast7d": 5,
+            "samplesPrior30d": 22,
             "passRate": 90.5,
             "passRate30d": 90.0,
             "totalRuns": 42,
@@ -10796,16 +10796,13 @@
       },
       "incBuild": {
         "p50": 67652.72688,
-        "regressionPct": 66.7,
-        "samplesLast7d": 14,
-        "samplesPrior30d": 41,
+        "regressionPct": 66.8,
+        "samplesLast7d": 13,
+        "samplesPrior30d": 43,
         "passRate": 95.3,
-        "passRate30d": 94.8,
-        "totalRuns": 85,
+        "passRate30d": 94.9,
+        "totalRuns": 86,
         "sparkline": [
-          {
-            "v": 75890.66640000002
-          },
           {
             "v": 73031.17984
           },
@@ -10892,19 +10889,22 @@
           },
           {
             "v": 68955.74764
+          },
+          {
+            "v": 68682.73066
           }
         ]
       },
       "mt": {
         "incBuild": {
           "p50": 67652.72688,
-          "speedupPct": 27.8
+          "speedupPct": 28.5
         }
       }
     },
     {
       "name": "very-large-net8-console-app",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -10915,7 +10915,7 @@
       "name": "very-large-net8-console-app-inc",
       "latestDate": "2026-06-30",
       "stale": true,
-      "staleDays": 47,
+      "staleDays": 48,
       "archived": false,
       "hasMt": false,
       "canonical": "standard"
@@ -10924,7 +10924,7 @@
       "name": "web-app",
       "latestDate": "2023-10-11",
       "stale": true,
-      "staleDays": 1040,
+      "staleDays": 1041,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -11034,7 +11034,7 @@
       "name": "win-forms-app",
       "latestDate": "2023-10-11",
       "stale": true,
-      "staleDays": 1040,
+      "staleDays": 1041,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -11144,7 +11144,7 @@
       "name": "wpf-app",
       "latestDate": "2023-10-11",
       "stale": true,
-      "staleDays": 1040,
+      "staleDays": 1041,
       "archived": true,
       "hasMt": false,
       "canonical": "standard",
@@ -11252,7 +11252,7 @@
     },
     {
       "name": "xunit",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -11261,17 +11261,14 @@
       "platforms": {
         "windows": {
           "rebuild": {
-            "p50": 38716.9137,
+            "p50": 38604.8573,
             "regressionPct": -7.5,
             "samplesLast7d": 8,
-            "samplesPrior30d": 21,
+            "samplesPrior30d": 22,
             "passRate": 100.0,
             "passRate30d": 100.0,
-            "totalRuns": 40,
+            "totalRuns": 41,
             "sparkline": [
-              {
-                "v": 40449.197
-              },
               {
                 "v": 44522.3614
               },
@@ -11358,6 +11355,9 @@
               },
               {
                 "v": 36931.1669
+              },
+              {
+                "v": 37663.3898
               }
             ]
           }
@@ -11366,8 +11366,8 @@
           "rebuild": {
             "p50": 53889.8614,
             "regressionPct": 3.4,
-            "samplesLast7d": 8,
-            "samplesPrior30d": 21,
+            "samplesLast7d": 7,
+            "samplesPrior30d": 22,
             "passRate": 97.5,
             "passRate30d": 96.7,
             "totalRuns": 40,
@@ -11468,16 +11468,13 @@
       },
       "rebuild": {
         "p50": 45482.265,
-        "regressionPct": -11.9,
-        "samplesLast7d": 16,
-        "samplesPrior30d": 42,
+        "regressionPct": -16.1,
+        "samplesLast7d": 15,
+        "samplesPrior30d": 44,
         "passRate": 98.8,
         "passRate30d": 98.3,
-        "totalRuns": 80,
+        "totalRuns": 81,
         "sparkline": [
-          {
-            "v": 54501.4012
-          },
           {
             "v": 52477.9681
           },
@@ -11530,10 +11527,10 @@
             "v": 37416.5693
           },
           {
-            "v": 36325.0425
+            "v": 52798.5261
           },
           {
-            "v": 52798.5261
+            "v": 36325.0425
           },
           {
             "v": 53902.8387
@@ -11560,10 +11557,13 @@
             "v": 38150.7113
           },
           {
+            "v": 36931.1669
+          },
+          {
             "v": 52985.4111
           },
           {
-            "v": 36931.1669
+            "v": 37663.3898
           }
         ]
       },
@@ -11576,7 +11576,7 @@
     },
     {
       "name": "xunit-warm",
-      "latestDate": "2026-08-16",
+      "latestDate": "2026-08-17",
       "stale": false,
       "staleDays": 0,
       "archived": false,
@@ -11585,17 +11585,14 @@
       "platforms": {
         "windows": {
           "incBuild": {
-            "p50": 23953.9353,
-            "regressionPct": -8.4,
+            "p50": 23822.8553,
+            "regressionPct": -8.3,
             "samplesLast7d": 8,
-            "samplesPrior30d": 21,
+            "samplesPrior30d": 22,
             "passRate": 100.0,
             "passRate30d": 100.0,
-            "totalRuns": 40,
+            "totalRuns": 41,
             "sparkline": [
-              {
-                "v": 24572.4655
-              },
               {
                 "v": 24135.974
               },
@@ -11682,6 +11679,9 @@
               },
               {
                 "v": 25915.7749
+              },
+              {
+                "v": 20416.3544
               }
             ]
           }
@@ -11689,9 +11689,9 @@
         "linux": {
           "incBuild": {
             "p50": 12591.0218,
-            "regressionPct": -4.8,
-            "samplesLast7d": 8,
-            "samplesPrior30d": 21,
+            "regressionPct": -2.8,
+            "samplesLast7d": 7,
+            "samplesPrior30d": 22,
             "passRate": 97.5,
             "passRate30d": 96.7,
             "totalRuns": 40,
@@ -11791,17 +11791,14 @@
         }
       },
       "incBuild": {
-        "p50": 15780.3245,
-        "regressionPct": -8.3,
-        "samplesLast7d": 16,
-        "samplesPrior30d": 42,
+        "p50": 18697.5809,
+        "regressionPct": 27.1,
+        "samplesLast7d": 15,
+        "samplesPrior30d": 44,
         "passRate": 98.8,
         "passRate30d": 98.3,
-        "totalRuns": 80,
+        "totalRuns": 81,
         "sparkline": [
-          {
-            "v": 12022.1947
-          },
           {
             "v": 12559.3179
           },
@@ -11854,10 +11851,10 @@
             "v": 23953.9353
           },
           {
-            "v": 21823.7655
+            "v": 11383.0812
           },
           {
-            "v": 11383.0812
+            "v": 21823.7655
           },
           {
             "v": 12270.2405
@@ -11884,17 +11881,20 @@
             "v": 22823.5937
           },
           {
+            "v": 25915.7749
+          },
+          {
             "v": 11216.0423
           },
           {
-            "v": 25915.7749
+            "v": 20416.3544
           }
         ]
       },
       "mt": {
         "incBuild": {
-          "p50": 15780.3245,
-          "speedupPct": 21.5
+          "p50": 18697.5809,
+          "speedupPct": 21.1
         }
       }
     }
