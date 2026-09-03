@@ -1,0 +1,42 @@
+[
+  {
+    "date": "2026-09-03",
+    "scenario": "aspire-rebuild-mt-dotnet",
+    "perfstarCIBuildNumber": "20260902.1.t",
+    "branch": "refs/heads/perf/veronikao/evaluation-metrics-pr14458-lazy-items",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDLIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-09-03T00:09:52.9127722Z",
+    "results": {
+      "netSdkVersion": "11.0.100-rc.2.26452.102",
+      "aspNetCoreVersion": "10.0.11+e2f47b0110ed",
+      "netCoreAppVersion": "10.0.11+e2f47b0110ed",
+      "msbuild-version": "18.12.0.45202",
+      "msbuild-display-version": "18.12.0.45202",
+      "evaluation-time": 159457.0,
+      "evaluation-time-globbing": 414.0,
+      "evaluation-time-pass0": 228.0,
+      "evaluation-time-pass1": 70555.0,
+      "evaluation-time-pass2": 210.0,
+      "evaluation-time-pass3": 25547.0,
+      "evaluation-time-pass3dot1": 25593.0,
+      "evaluation-time-pass4": 2185.0,
+      "evaluation-time-pass5": 35050.0,
+      "exit-code": 0.0,
+      "build-time": 48691.0781,
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 9032842787.0,
+      "disk/nuget-global-bytes": 5691750698.0,
+      "disk/nuget-http-cache-bytes": 0.0,
+      "disk/free-bytes": 17033240576.0,
+      "info/test-asset": "Aspire",
+      "info/test-scenario": "Rebuild",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 1.0,
+      "dotnet-version": "11.0.100-rc.2.26452.102",
+      "crank-netSdkVersion": "10.0.400"
+    }
+  }
+]
