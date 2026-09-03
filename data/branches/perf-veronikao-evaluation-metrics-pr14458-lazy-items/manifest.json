@@ -79,10 +79,9 @@
   },
   {
     "name": "orchard-core-warm",
-    "records": 2,
+    "records": 1,
     "scenarios": [
-      "orchard-core-warm-inc-build-dotnet",
-      "orchard-core-warm-restore-dotnet"
+      "orchard-core-warm-inc-build-dotnet"
     ],
     "firstDate": "2026-09-03",
     "latestDate": "2026-09-03"
