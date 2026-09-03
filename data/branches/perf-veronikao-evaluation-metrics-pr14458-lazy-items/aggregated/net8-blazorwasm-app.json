@@ -1,0 +1,42 @@
+[
+  {
+    "date": "2026-09-03",
+    "scenario": "net8-blazorwasm-app-inc-build-dotnet",
+    "perfstarCIBuildNumber": "20260902.1.t",
+    "branch": "refs/heads/perf/veronikao/evaluation-metrics-pr14458-lazy-items",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-09-02T21:18:43.5124886Z",
+    "results": {
+      "netSdkVersion": "11.0.100-rc.2.26452.102",
+      "aspNetCoreVersion": "10.0.11+e2f47b0110ed",
+      "netCoreAppVersion": "10.0.11+e2f47b0110ed",
+      "msbuild-version": "18.12.0.45202",
+      "msbuild-display-version": "18.12.0.45202",
+      "evaluation-time": 811.9,
+      "evaluation-time-globbing": 39.2,
+      "evaluation-time-pass0": 8.0,
+      "evaluation-time-pass1": 398.7,
+      "evaluation-time-pass2": 4.0,
+      "evaluation-time-pass3": 79.7,
+      "evaluation-time-pass3dot1": 141.4,
+      "evaluation-time-pass4": 11.2,
+      "evaluation-time-pass5": 163.5,
+      "exit-code": 0.0,
+      "build-time": 6030.645439999999,
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 397300007.0,
+      "disk/nuget-global-bytes": 3230081337.0,
+      "disk/nuget-http-cache-bytes": 96106597.0,
+      "disk/free-bytes": 532164689920.0,
+      "info/test-asset": "Net8BlazorWasmApp",
+      "info/test-scenario": "IncrementalBuild",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 2.0,
+      "info/iterations-number": 10.0,
+      "dotnet-version": "11.0.100-rc.2.26452.102",
+      "crank-netSdkVersion": "10.0.400"
+    }
+  }
+]

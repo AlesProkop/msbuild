@@ -1,0 +1,42 @@
+[
+  {
+    "date": "2026-09-03",
+    "scenario": "very-large-net8-console-app-restore-dotnet",
+    "perfstarCIBuildNumber": "20260902.1.t",
+    "branch": "refs/heads/perf/veronikao/evaluation-metrics-pr14458-lazy-items",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-09-02T22:19:36.6398168Z",
+    "results": {
+      "netSdkVersion": "11.0.100-rc.2.26452.102",
+      "aspNetCoreVersion": "10.0.11+e2f47b0110ed",
+      "netCoreAppVersion": "10.0.11+e2f47b0110ed",
+      "msbuild-version": "18.12.0.45202",
+      "msbuild-display-version": "18.12.0.45202",
+      "evaluation-time": 524.6,
+      "evaluation-time-globbing": 0.0,
+      "evaluation-time-pass0": 8.0,
+      "evaluation-time-pass1": 306.8,
+      "evaluation-time-pass2": 3.0,
+      "evaluation-time-pass3": 85.0,
+      "evaluation-time-pass3dot1": 41.0,
+      "evaluation-time-pass4": 6.0,
+      "evaluation-time-pass5": 70.0,
+      "exit-code": 0.0,
+      "build-time": 1784.91084,
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 141351040.0,
+      "disk/nuget-global-bytes": 3230081337.0,
+      "disk/nuget-http-cache-bytes": 96106597.0,
+      "disk/free-bytes": 529799843840.0,
+      "info/test-asset": "very-large-net8-console-app",
+      "info/test-scenario": "Restore",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 2.0,
+      "info/iterations-number": 5.0,
+      "dotnet-version": "11.0.100-rc.2.26452.102",
+      "crank-netSdkVersion": "10.0.400"
+    }
+  }
+]

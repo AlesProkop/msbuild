@@ -1,0 +1,42 @@
+[
+  {
+    "date": "2026-09-03",
+    "scenario": "orchard-core-inc-restore-dotnet",
+    "perfstarCIBuildNumber": "20260902.1.t",
+    "branch": "refs/heads/perf/veronikao/evaluation-metrics-pr14458-lazy-items",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-09-02T23:07:14.0314800Z",
+    "results": {
+      "netSdkVersion": "11.0.100-rc.2.26452.102",
+      "aspNetCoreVersion": "10.0.11+e2f47b0110ed",
+      "netCoreAppVersion": "10.0.11+e2f47b0110ed",
+      "msbuild-version": "18.12.0.45202",
+      "msbuild-display-version": "18.12.0.45202",
+      "evaluation-time": 161195.9,
+      "evaluation-time-globbing": 8017.8,
+      "evaluation-time-pass0": 974.2,
+      "evaluation-time-pass1": 69449.1,
+      "evaluation-time-pass2": 583.5,
+      "evaluation-time-pass3": 21740.2,
+      "evaluation-time-pass3dot1": 24918.4,
+      "evaluation-time-pass4": 2072.5,
+      "evaluation-time-pass5": 40921.7,
+      "exit-code": 0.0,
+      "build-time": 27175.484940000002,
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 3057482633.0,
+      "disk/nuget-global-bytes": 3230081337.0,
+      "disk/nuget-http-cache-bytes": 96106597.0,
+      "disk/free-bytes": 526764302336.0,
+      "info/test-asset": "OrchardCore",
+      "info/test-scenario": "IncrementalRestore",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 2.0,
+      "info/iterations-number": 10.0,
+      "dotnet-version": "11.0.100-rc.2.26452.102",
+      "crank-netSdkVersion": "10.0.400"
+    }
+  }
+]
