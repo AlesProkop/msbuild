@@ -1,0 +1,42 @@
+[
+  {
+    "date": "2026-09-07",
+    "scenario": "xunit-warm-inc-build-dotnet",
+    "perfstarCIBuildNumber": "20260907.1.t",
+    "branch": "refs/heads/perf/binlog-serialization-baseline",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-09-07T15:04:55.0739583Z",
+    "results": {
+      "netSdkVersion": "11.0.100-rc.2.26455.110",
+      "aspNetCoreVersion": "10.0.11+e2f47b0110ed",
+      "netCoreAppVersion": "10.0.11+e2f47b0110ed",
+      "msbuild-version": "18.12.0.45701",
+      "msbuild-display-version": "18.12.0.45701",
+      "evaluation-time": 53578.0,
+      "evaluation-time-globbing": 7413.0,
+      "evaluation-time-pass0": 369.0,
+      "evaluation-time-pass1": 22570.0,
+      "evaluation-time-pass2": 220.0,
+      "evaluation-time-pass3": 5771.0,
+      "evaluation-time-pass3dot1": 13474.0,
+      "evaluation-time-pass4": 410.0,
+      "evaluation-time-pass5": 10457.0,
+      "exit-code": 0.0,
+      "build-time": 28591.863,
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 5012143640.0,
+      "disk/nuget-global-bytes": 3230081337.0,
+      "disk/nuget-http-cache-bytes": 96106597.0,
+      "disk/free-bytes": 517105635328.0,
+      "info/test-asset": "Xunit",
+      "info/test-scenario": "WarmIncrementalBuild",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 1.0,
+      "dotnet-version": "11.0.100-rc.2.26455.110",
+      "crank-netSdkVersion": "10.0.400"
+    }
+  }
+]
