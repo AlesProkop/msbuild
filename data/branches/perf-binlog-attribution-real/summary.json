@@ -10,6 +10,22 @@
       "hasMt": false,
       "canonical": "standard",
       "platforms": {
+        "windows": {
+          "incBuild": {
+            "p50": 99693.34151999999,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 99693.34151999999
+              }
+            ]
+          }
+        },
         "linux": {
           "incBuild": {
             "p50": 38883.29318,
@@ -30,14 +46,17 @@
       "incBuild": {
         "p50": 38883.29318,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
           {
             "v": 38883.29318
+          },
+          {
+            "v": 99693.34151999999
           }
         ]
       }
