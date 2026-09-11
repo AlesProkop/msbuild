@@ -1,0 +1,42 @@
+[
+  {
+    "date": "2026-09-11",
+    "scenario": "net8-console-app-publish-dotnet",
+    "perfstarCIBuildNumber": "20260911.3.t",
+    "branch": "refs/heads/perf/davkean/pr-15006-composite-globs",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-09-11T21:41:02.3106421Z",
+    "results": {
+      "netSdkVersion": "11.0.100-rc.2.26460.105",
+      "aspNetCoreVersion": "10.0.12+95017c711e6a",
+      "netCoreAppVersion": "10.0.12+95017c711e6a",
+      "msbuild-version": "18.12.0.46104",
+      "msbuild-display-version": "18.12.0.46104",
+      "evaluation-time": 628.1,
+      "evaluation-time-globbing": 12.0,
+      "evaluation-time-pass0": 8.0,
+      "evaluation-time-pass1": 362.6,
+      "evaluation-time-pass2": 3.0,
+      "evaluation-time-pass3": 93.8,
+      "evaluation-time-pass3dot1": 62.5,
+      "evaluation-time-pass4": 7.0,
+      "evaluation-time-pass5": 87.1,
+      "exit-code": 0.0,
+      "build-time": 3891.7985500000004,
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 140722509.0,
+      "disk/nuget-global-bytes": 3230081337.0,
+      "disk/nuget-http-cache-bytes": 96106597.0,
+      "disk/free-bytes": 526578417664.0,
+      "info/test-asset": "Net8ConsoleApp",
+      "info/test-scenario": "Publish",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 2.0,
+      "info/iterations-number": 10.0,
+      "dotnet-version": "11.0.100-rc.2.26460.105",
+      "crank-netSdkVersion": "10.0.401"
+    }
+  }
+]
