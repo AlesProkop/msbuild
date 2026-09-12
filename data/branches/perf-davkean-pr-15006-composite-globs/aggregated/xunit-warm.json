@@ -78,5 +78,45 @@
       "dotnet-version": "11.0.100-rc.2.26460.105",
       "crank-netSdkVersion": "10.0.401"
     }
+  },
+  {
+    "date": "2026-09-12",
+    "scenario": "xunit-warm-inc-build-dotnet",
+    "perfstarCIBuildNumber": "20260912.1.t",
+    "branch": "refs/heads/perf/davkean/pr-15006-composite-globs",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-09-12T17:41:08.7887057Z",
+    "results": {
+      "netSdkVersion": "11.0.100-rc.2.26461.115",
+      "aspNetCoreVersion": "10.0.12+95017c711e6a",
+      "netCoreAppVersion": "10.0.12+95017c711e6a",
+      "msbuild-version": "18.12.0.46202",
+      "msbuild-display-version": "18.12.0.46202",
+      "evaluation-time": 27375.0,
+      "evaluation-time-globbing": 1543.0,
+      "evaluation-time-pass0": 49.0,
+      "evaluation-time-pass1": 11103.0,
+      "evaluation-time-pass2": 67.0,
+      "evaluation-time-pass3": 2928.0,
+      "evaluation-time-pass3dot1": 4370.0,
+      "evaluation-time-pass4": 192.0,
+      "evaluation-time-pass5": 8433.0,
+      "exit-code": 0.0,
+      "build-time": 22633.4506,
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 5012167262.0,
+      "disk/nuget-global-bytes": 3230081337.0,
+      "disk/nuget-http-cache-bytes": 96106597.0,
+      "disk/free-bytes": 521187352576.0,
+      "info/test-asset": "Xunit",
+      "info/test-scenario": "WarmIncrementalBuild",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 1.0,
+      "dotnet-version": "11.0.100-rc.2.26461.115",
+      "crank-netSdkVersion": "10.0.401"
+    }
   }
 ]
