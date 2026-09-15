@@ -25,17 +25,36 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 32804.50554,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 32804.50554
+              }
+            ]
+          }
         }
       },
       "incBuild": {
-        "p50": 68936.84907999999,
+        "p50": 32804.50554,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 32804.50554
+          },
           {
             "v": 68936.84907999999
           }
@@ -43,8 +62,8 @@
       },
       "mt": {
         "incBuild": {
-          "p50": 68936.84907999999,
-          "speedupPct": 24.9
+          "p50": 32804.50554,
+          "speedupPct": 14.8
         }
       }
     }
