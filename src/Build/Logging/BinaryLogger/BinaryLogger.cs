@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
 using Microsoft.Build.Experimental.BuildCheck.Infrastructure.EditorConfig;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Framework.Telemetry;
@@ -138,14 +139,45 @@ namespace Microsoft.Build.Logging
         private const string ProjectImportsNoneParameter = "ProjectImports=None";
         private const string ProjectImportsEmbedParameter = "ProjectImports=Embed";
         private const string ProjectImportsZipFileParameter = "ProjectImports=ZipFile";
+        internal const string ExperimentModeEnvironmentVariable = "MSBUILD_BINARYLOGGER_EXPERIMENT_MODE";
+        internal const string ExperimentCompressionLevelEnvironmentVariable = "MSBUILD_BINARYLOGGER_COMPRESSION_LEVEL";
+        private static readonly object s_busyLoopLock = new();
+        private static readonly object s_loggingStateLock = new();
+        private static Thread s_busyLoopThread;
+        private static int s_busyLoopReferenceCount;
+        private static int s_busyLoopStopRequested;
+        private static int s_loggingStateReferenceCount;
+        private static bool s_initialTargetOutputLogging;
+        private static bool s_initialLogImports;
+        private static string s_initialIsBinaryLoggerEnabled;
 
         private Stream stream;
         private BinaryWriter binaryWriter;
         private BuildEventArgsWriter eventArgsWriter;
         private ProjectImportsCollector projectImportsCollector;
-        private bool _initialTargetOutputLogging;
-        private bool _initialLogImports;
-        private string _initialIsBinaryLoggerEnabled;
+        private ExperimentMode _experimentMode;
+        private CompressionLevel _experimentCompressionLevel = CompressionLevel.Optimal;
+        private bool _ownsBusyLoop;
+        private bool _ownsLoggingState;
+        private readonly object _shutdownLock = new();
+
+        internal enum ExperimentMode
+        {
+            Real,
+            NoOp,
+            BusyLoop,
+        }
+
+        internal bool ExperimentBusyLoopThreadRunning
+        {
+            get
+            {
+                lock (s_busyLoopLock)
+                {
+                    return s_busyLoopThread?.IsAlive == true;
+                }
+            }
+        }
 
         /// <summary>
         /// Describes whether to collect the project files (including imported project files) used during the build.
@@ -344,19 +376,52 @@ namespace Microsoft.Build.Logging
         /// </summary>
         public void Initialize(IEventSource eventSource)
         {
-            _initialTargetOutputLogging = Traits.Instance.EnableTargetOutputLogging;
-            _initialLogImports = Traits.Instance.EscapeHatches.LogProjectImports;
-            _initialIsBinaryLoggerEnabled = Environment.GetEnvironmentVariable("MSBUILDBINARYLOGGERENABLED");
-
-            Environment.SetEnvironmentVariable("MSBUILDTARGETOUTPUTLOGGING", "true");
-            Environment.SetEnvironmentVariable("MSBUILDLOGIMPORTS", "1");
-            Environment.SetEnvironmentVariable("MSBUILDBINARYLOGGERENABLED", bool.TrueString);
-
-            Traits.Instance.EscapeHatches.LogProjectImports = true;
-            Traits.Instance.EnableTargetOutputLogging = true;
-            bool logPropertiesAndItemsAfterEvaluation = Traits.Instance.EscapeHatches.LogPropertiesAndItemsAfterEvaluation ?? true;
+            (_experimentMode, _experimentCompressionLevel) = ParseExperimentConfiguration(
+                Environment.GetEnvironmentVariable(ExperimentModeEnvironmentVariable),
+                Environment.GetEnvironmentVariable(ExperimentCompressionLevelEnvironmentVariable));
 
             ProcessParameters(out bool omitInitialInfo);
+
+            AcquireLoggingState();
+            bool logPropertiesAndItemsAfterEvaluation = Traits.Instance.EscapeHatches.LogPropertiesAndItemsAfterEvaluation ?? true;
+
+            try
+            {
+                if (_experimentMode != ExperimentMode.Real)
+                {
+                    InitializeDiscardingEventStream(eventSource, logPropertiesAndItemsAfterEvaluation);
+                    if (_experimentMode == ExperimentMode.BusyLoop)
+                    {
+                        StartBusyLoop();
+                    }
+
+                    KnownTelemetry.LoggingConfigurationTelemetry.BinaryLogger = true;
+                    return;
+                }
+
+                InitializeRealLogger(eventSource, logPropertiesAndItemsAfterEvaluation, omitInitialInfo);
+                KnownTelemetry.LoggingConfigurationTelemetry.BinaryLogger = true;
+            }
+            catch
+            {
+                try
+                {
+                    CleanupAfterInitializationFailure();
+                }
+                finally
+                {
+                    StopBusyLoop();
+                    RestoreLoggingState();
+                }
+                throw;
+            }
+        }
+
+        private void InitializeRealLogger(
+            IEventSource eventSource,
+            bool logPropertiesAndItemsAfterEvaluation,
+            bool omitInitialInfo)
+        {
             var replayEventSource = eventSource as IBinaryLogReplaySource;
 
             try
@@ -403,7 +468,7 @@ namespace Microsoft.Build.Logging
                 throw new LoggerException(message, e, errorCode, helpKeyword);
             }
 
-            stream = new GZipStream(stream, CompressionLevel.Optimal);
+            stream = new GZipStream(stream, _experimentCompressionLevel);
 
             // wrapping the GZipStream in a buffered stream significantly improves performance
             // and the max throughput is reached with a 32K buffer. See details here:
@@ -452,8 +517,6 @@ namespace Microsoft.Build.Logging
                 SubscribeToStructuredEvents();
             }
 
-            KnownTelemetry.LoggingConfigurationTelemetry.BinaryLogger = true;
-
             void SubscribeToStructuredEvents()
             {
                 // Write the version info - the latest version is written only for structured events replaying
@@ -468,6 +531,125 @@ namespace Microsoft.Build.Logging
 
                 eventSource.AnyEventRaised += EventSource_AnyEventRaised;
             }
+        }
+
+        private static void InitializeDiscardingEventStream(
+            IEventSource eventSource,
+            bool logPropertiesAndItemsAfterEvaluation)
+        {
+            var replayEventSource = eventSource as IBinaryLogReplaySource;
+
+            if (eventSource is IEventSource3 eventSource3)
+            {
+                eventSource3.IncludeEvaluationMetaprojects();
+            }
+
+            if (logPropertiesAndItemsAfterEvaluation && eventSource is IEventSource4 eventSource4)
+            {
+                eventSource4.IncludeEvaluationPropertiesAndItems();
+            }
+
+            if (replayEventSource != null)
+            {
+                replayEventSource.EmbeddedContentRead += static args => args.ContentStream.CopyTo(Stream.Null);
+                replayEventSource.DeferredInitialize(
+                    () =>
+                    {
+                        replayEventSource.RawLogRecordReceived += static (_, rawStream) => rawStream.CopyTo(Stream.Null);
+                        replayEventSource.StringReadDone += static _ => { };
+                    },
+                    () => eventSource.AnyEventRaised += static (_, _) => { });
+            }
+            else
+            {
+                eventSource.AnyEventRaised += static (_, _) => { };
+            }
+        }
+
+        private void StartBusyLoop()
+        {
+            lock (s_busyLoopLock)
+            {
+                if (s_busyLoopThread != null)
+                {
+                    s_busyLoopReferenceCount++;
+                    _ownsBusyLoop = true;
+                    return;
+                }
+
+                s_busyLoopStopRequested = 0;
+                var busyLoopThread = new Thread(() =>
+                {
+                    while (Volatile.Read(ref s_busyLoopStopRequested) == 0)
+                    {
+                        Thread.SpinWait(4096);
+                    }
+                })
+                {
+                    IsBackground = true,
+                    Name = "MSBuild BinaryLogger experiment busy loop",
+                    Priority = ThreadPriority.Normal,
+                };
+                busyLoopThread.Start();
+                s_busyLoopThread = busyLoopThread;
+                s_busyLoopReferenceCount = 1;
+                _ownsBusyLoop = true;
+            }
+        }
+
+        private void StopBusyLoop()
+        {
+            lock (s_busyLoopLock)
+            {
+                if (!_ownsBusyLoop)
+                {
+                    return;
+                }
+
+                _ownsBusyLoop = false;
+                s_busyLoopReferenceCount--;
+                if (s_busyLoopReferenceCount != 0)
+                {
+                    return;
+                }
+
+                Volatile.Write(ref s_busyLoopStopRequested, 1);
+                s_busyLoopThread.Join();
+                s_busyLoopThread = null;
+            }
+        }
+
+        internal static (ExperimentMode Mode, CompressionLevel CompressionLevel) ParseExperimentConfiguration(
+            string modeValue,
+            string compressionLevelValue)
+        {
+            string normalizedMode = modeValue?.Trim();
+            ExperimentMode mode = normalizedMode?.ToLowerInvariant() switch
+            {
+                null or "" or "real" => ExperimentMode.Real,
+                "noop" => ExperimentMode.NoOp,
+                "busyloop" => ExperimentMode.BusyLoop,
+                _ => throw new LoggerException(
+                    $"Invalid {ExperimentModeEnvironmentVariable} value '{modeValue}'. Expected Real, NoOp, or BusyLoop."),
+            };
+
+            string normalizedCompressionLevel = compressionLevelValue?.Trim();
+            CompressionLevel compressionLevel = normalizedCompressionLevel?.ToLowerInvariant() switch
+            {
+                null or "" or "optimal" => CompressionLevel.Optimal,
+                "fastest" => CompressionLevel.Fastest,
+                "nocompression" => CompressionLevel.NoCompression,
+                _ => throw new LoggerException(
+                    $"Invalid {ExperimentCompressionLevelEnvironmentVariable} value '{compressionLevelValue}'. Expected Optimal, Fastest, or NoCompression."),
+            };
+
+            if (mode != ExperimentMode.Real && !string.IsNullOrEmpty(normalizedCompressionLevel))
+            {
+                throw new LoggerException(
+                    $"{ExperimentCompressionLevelEnvironmentVariable} cannot be set when {ExperimentModeEnvironmentVariable} is {mode}.");
+            }
+
+            return (mode, compressionLevel);
         }
 
         private void EventArgsWriter_EmbedFile(string filePath)
@@ -496,93 +678,179 @@ namespace Microsoft.Build.Logging
         /// </summary>
         public void Shutdown()
         {
-            Environment.SetEnvironmentVariable("MSBUILDTARGETOUTPUTLOGGING", _initialTargetOutputLogging ? "true" : null);
-            Environment.SetEnvironmentVariable("MSBUILDLOGIMPORTS", _initialLogImports ? "1" : null);
-            Environment.SetEnvironmentVariable("MSBUILDBINARYLOGGERENABLED", _initialIsBinaryLoggerEnabled);
+            lock (_shutdownLock)
+            {
+                ShutdownCore();
+            }
+        }
 
-            Traits.Instance.EscapeHatches.LogProjectImports = _initialLogImports;
-            Traits.Instance.EnableTargetOutputLogging = _initialTargetOutputLogging;
+        private void ShutdownCore()
+        {
+            StopBusyLoop();
 
+            if (_experimentMode != ExperimentMode.Real)
+            {
+                bool releasedFinalLoggingState = RestoreLoggingState();
+                if (releasedFinalLoggingState)
+                {
+                    EditorConfigParser.ClearEditorConfigFilePaths();
+                    Evaluation.ParserIgnoreConfiguration.ClearBinlogEmbedPaths();
+                }
+                return;
+            }
+
+            try
+            {
+                if (projectImportsCollector != null)
+                {
+                    // Write the build check editorconfig file paths to the log
+                    foreach (var filePath in EditorConfigParser.EditorConfigFilePaths)
+                    {
+                        projectImportsCollector.AddFile(filePath);
+                    }
+                    EditorConfigParser.ClearEditorConfigFilePaths();
+
+                    // Write the Directory.Parse.config file paths to the log
+                    foreach (var filePath in Evaluation.ParserIgnoreConfiguration.BinlogEmbedPaths)
+                    {
+                        projectImportsCollector.AddFile(filePath);
+                    }
+                    Evaluation.ParserIgnoreConfiguration.ClearBinlogEmbedPaths();
+
+                    projectImportsCollector.Close();
+
+                    if (CollectProjectImports == ProjectImportsCollectionMode.Embed)
+                    {
+                        projectImportsCollector.ProcessResult(
+                            streamToEmbed => eventArgsWriter.WriteBlob(BinaryLogRecordKind.ProjectImportArchive, streamToEmbed),
+                            LogMessage);
+
+                        projectImportsCollector.DeleteArchive();
+                    }
+
+                    projectImportsCollector.FileIOExceptionEvent -= EventSource_AnyEventRaised;
+                    projectImportsCollector = null;
+                }
+
+
+                // Log additional file paths before closing stream (so they're recorded in the binlog)
+                if (AdditionalFilePaths != null && AdditionalFilePaths.Count > 0 && stream != null)
+                {
+                    foreach (var additionalPath in AdditionalFilePaths)
+                    {
+                        LogMessage("BinLogCopyDestination=" + additionalPath);
+                    }
+                }
+
+                if (stream != null)
+                {
+                    // It's hard to determine whether we're at the end of decoding GZipStream
+                    // so add an explicit 0 at the end to signify end of file
+                    stream.WriteByte((byte)BinaryLogRecordKind.EndOfFile);
+                    stream.Flush();
+                    stream.Dispose();
+                    stream = null;
+                }
+
+                // Copy the binlog file to additional destinations if specified
+                if (AdditionalFilePaths != null && AdditionalFilePaths.Count > 0)
+                {
+                    foreach (var additionalPath in AdditionalFilePaths)
+                    {
+                        try
+                        {
+                            string directory = Path.GetDirectoryName(additionalPath);
+                            if (!string.IsNullOrEmpty(directory))
+                            {
+                                Directory.CreateDirectory(directory);
+                            }
+                            File.Copy(FilePath, additionalPath, overwrite: true);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Log the error but don't fail the build
+                            // Note: We can't use LogMessage here since the stream is already closed
+                            string message = ResourceUtilities.FormatResourceStringStripCodeAndKeyword(
+                                out _,
+                                out _,
+                                "ErrorCopyingBinaryLog",
+                                FilePath,
+                                additionalPath,
+                                ex.Message);
+
+                            Console.Error.WriteLine(message);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                RestoreLoggingState();
+            }
+        }
+
+        private bool RestoreLoggingState()
+        {
+            lock (s_loggingStateLock)
+            {
+                if (!_ownsLoggingState)
+                {
+                    return false;
+                }
+
+                _ownsLoggingState = false;
+                s_loggingStateReferenceCount--;
+                if (s_loggingStateReferenceCount != 0)
+                {
+                    return false;
+                }
+
+                Environment.SetEnvironmentVariable("MSBUILDTARGETOUTPUTLOGGING", s_initialTargetOutputLogging ? "true" : null);
+                Environment.SetEnvironmentVariable("MSBUILDLOGIMPORTS", s_initialLogImports ? "1" : null);
+                Environment.SetEnvironmentVariable("MSBUILDBINARYLOGGERENABLED", s_initialIsBinaryLoggerEnabled);
+
+                Traits.Instance.EscapeHatches.LogProjectImports = s_initialLogImports;
+                Traits.Instance.EnableTargetOutputLogging = s_initialTargetOutputLogging;
+                return true;
+            }
+        }
+
+        private void CleanupAfterInitializationFailure()
+        {
             if (projectImportsCollector != null)
             {
-                // Write the build check editorconfig file paths to the log
-                foreach (var filePath in EditorConfigParser.EditorConfigFilePaths)
-                {
-                    projectImportsCollector.AddFile(filePath);
-                }
-                EditorConfigParser.ClearEditorConfigFilePaths();
-
-                // Write the Directory.Parse.config file paths to the log
-                foreach (var filePath in Evaluation.ParserIgnoreConfiguration.BinlogEmbedPaths)
-                {
-                    projectImportsCollector.AddFile(filePath);
-                }
-                Evaluation.ParserIgnoreConfiguration.ClearBinlogEmbedPaths();
-
-                projectImportsCollector.Close();
-
-                if (CollectProjectImports == ProjectImportsCollectionMode.Embed)
-                {
-                    projectImportsCollector.ProcessResult(
-                        streamToEmbed => eventArgsWriter.WriteBlob(BinaryLogRecordKind.ProjectImportArchive, streamToEmbed),
-                        LogMessage);
-
-                    projectImportsCollector.DeleteArchive();
-                }
-
                 projectImportsCollector.FileIOExceptionEvent -= EventSource_AnyEventRaised;
+                projectImportsCollector.Close();
+                projectImportsCollector.DeleteArchive();
                 projectImportsCollector = null;
             }
 
+            stream?.Dispose();
+            stream = null;
+            binaryWriter = null;
+            eventArgsWriter = null;
+        }
 
-            // Log additional file paths before closing stream (so they're recorded in the binlog)
-            if (AdditionalFilePaths != null && AdditionalFilePaths.Count > 0 && stream != null)
+        private void AcquireLoggingState()
+        {
+            lock (s_loggingStateLock)
             {
-                foreach (var additionalPath in AdditionalFilePaths)
+                if (s_loggingStateReferenceCount == 0)
                 {
-                    LogMessage("BinLogCopyDestination=" + additionalPath);
+                    s_initialTargetOutputLogging = Traits.Instance.EnableTargetOutputLogging;
+                    s_initialLogImports = Traits.Instance.EscapeHatches.LogProjectImports;
+                    s_initialIsBinaryLoggerEnabled = Environment.GetEnvironmentVariable("MSBUILDBINARYLOGGERENABLED");
+
+                    Environment.SetEnvironmentVariable("MSBUILDTARGETOUTPUTLOGGING", "true");
+                    Environment.SetEnvironmentVariable("MSBUILDLOGIMPORTS", "1");
+                    Environment.SetEnvironmentVariable("MSBUILDBINARYLOGGERENABLED", bool.TrueString);
+
+                    Traits.Instance.EscapeHatches.LogProjectImports = true;
+                    Traits.Instance.EnableTargetOutputLogging = true;
                 }
-            }
 
-            if (stream != null)
-            {
-                // It's hard to determine whether we're at the end of decoding GZipStream
-                // so add an explicit 0 at the end to signify end of file
-                stream.WriteByte((byte)BinaryLogRecordKind.EndOfFile);
-                stream.Flush();
-                stream.Dispose();
-                stream = null;
-            }
-
-            // Copy the binlog file to additional destinations if specified
-            if (AdditionalFilePaths != null && AdditionalFilePaths.Count > 0)
-            {
-                foreach (var additionalPath in AdditionalFilePaths)
-                {
-                    try
-                    {
-                        string directory = Path.GetDirectoryName(additionalPath);
-                        if (!string.IsNullOrEmpty(directory))
-                        {
-                            Directory.CreateDirectory(directory);
-                        }
-                        File.Copy(FilePath, additionalPath, overwrite: true);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log the error but don't fail the build
-                        // Note: We can't use LogMessage here since the stream is already closed
-                        string message = ResourceUtilities.FormatResourceStringStripCodeAndKeyword(
-                            out _,
-                            out _,
-                            "ErrorCopyingBinaryLog",
-                            FilePath,
-                            additionalPath,
-                            ex.Message);
-
-                        Console.Error.WriteLine(message);
-                    }
-                }
+                s_loggingStateReferenceCount++;
+                _ownsLoggingState = true;
             }
         }
 

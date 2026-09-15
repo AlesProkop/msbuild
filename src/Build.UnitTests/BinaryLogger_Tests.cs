@@ -1188,4 +1188,186 @@ namespace Microsoft.Build.UnitTests
             _env.Dispose();
         }
     }
+
+    public class BinaryLoggerExperimentTests
+    {
+        [Theory]
+        [InlineData(null, null, "Real", "Optimal")]
+        [InlineData("", "", "Real", "Optimal")]
+        [InlineData("Real", "Optimal", "Real", "Optimal")]
+        [InlineData("NoOp", null, "NoOp", "Optimal")]
+        [InlineData("BusyLoop", null, "BusyLoop", "Optimal")]
+        [InlineData(null, "Fastest", "Real", "Fastest")]
+        [InlineData(null, "NoCompression", "Real", "NoCompression")]
+        public void ParseExperimentConfiguration(
+            string mode,
+            string compressionLevel,
+            string expectedMode,
+            string expectedCompressionLevel)
+        {
+            (BinaryLogger.ExperimentMode actualMode, CompressionLevel actualCompressionLevel) =
+                BinaryLogger.ParseExperimentConfiguration(mode, compressionLevel);
+
+            actualMode.ToString().ShouldBe(expectedMode);
+            actualCompressionLevel.ToString().ShouldBe(expectedCompressionLevel);
+        }
+
+        [Theory]
+        [InlineData("invalid", null)]
+        [InlineData(null, "invalid")]
+        [InlineData("NoOp", "Fastest")]
+        [InlineData("BusyLoop", "NoCompression")]
+        public void ParseExperimentConfigurationRejectsInvalidCombinations(string mode, string compressionLevel)
+        {
+            Should.Throw<LoggerException>(
+                () => BinaryLogger.ParseExperimentConfiguration(mode, compressionLevel));
+        }
+
+        [Fact]
+        public void InvalidExperimentConfigurationHasNoLoggerSideEffects()
+        {
+            using TestEnvironment env = TestEnvironment.Create();
+            env.SetEnvironmentVariable(BinaryLogger.ExperimentModeEnvironmentVariable, "invalid");
+            string initialBinaryLoggerEnabled = Environment.GetEnvironmentVariable("MSBUILDBINARYLOGGERENABLED");
+            string logFile = Path.Combine(env.DefaultTestDirectory.Path, "invalid.binlog");
+            var logger = new BinaryLogger { Parameters = logFile };
+
+            Should.Throw<LoggerException>(() => logger.Initialize(new EventSourceSink()));
+
+            Environment.GetEnvironmentVariable("MSBUILDBINARYLOGGERENABLED").ShouldBe(initialBinaryLoggerEnabled);
+            logger.ExperimentBusyLoopThreadRunning.ShouldBeFalse();
+            File.Exists(logFile).ShouldBeFalse();
+        }
+
+        [Theory]
+        [InlineData("NoOp", false)]
+        [InlineData("BusyLoop", true)]
+        public void DiscardingExperimentReceivesFullEventStreamWithoutCreatingAFile(
+            string mode,
+            bool expectsBusyLoop)
+        {
+            using TestEnvironment env = TestEnvironment.Create();
+            env.SetEnvironmentVariable(BinaryLogger.ExperimentModeEnvironmentVariable, mode);
+            string logFile = Path.Combine(env.DefaultTestDirectory.Path, $"{mode}.binlog");
+            var logger = new BinaryLogger { Parameters = logFile };
+            var eventSource = new EventSourceSink();
+
+            logger.Initialize(eventSource);
+            try
+            {
+                eventSource.IncludeEvaluationMetaprojects.ShouldBeTrue();
+                eventSource.IncludeEvaluationPropertiesAndItems.ShouldBeTrue();
+                logger.ExperimentBusyLoopThreadRunning.ShouldBe(expectsBusyLoop);
+
+                eventSource.Consume(new BuildMessageEventArgs(
+                    "message",
+                    helpKeyword: null,
+                    senderName: "test",
+                    MessageImportance.High));
+            }
+            finally
+            {
+                logger.Shutdown();
+            }
+
+            logger.ExperimentBusyLoopThreadRunning.ShouldBeFalse();
+            File.Exists(logFile).ShouldBeFalse();
+        }
+
+        [Fact]
+        public void BusyLoopIsSharedAcrossLoggerInstances()
+        {
+            using TestEnvironment env = TestEnvironment.Create();
+            env.SetEnvironmentVariable(BinaryLogger.ExperimentModeEnvironmentVariable, "BusyLoop");
+            var firstLogger = new BinaryLogger
+            {
+                Parameters = Path.Combine(env.DefaultTestDirectory.Path, "first.binlog")
+            };
+            var secondLogger = new BinaryLogger
+            {
+                Parameters = Path.Combine(env.DefaultTestDirectory.Path, "second.binlog")
+            };
+
+            firstLogger.Initialize(new EventSourceSink());
+            secondLogger.Initialize(new EventSourceSink());
+            try
+            {
+                firstLogger.ExperimentBusyLoopThreadRunning.ShouldBeTrue();
+                secondLogger.ExperimentBusyLoopThreadRunning.ShouldBeTrue();
+
+                firstLogger.Shutdown();
+                secondLogger.ExperimentBusyLoopThreadRunning.ShouldBeTrue();
+            }
+            finally
+            {
+                firstLogger.Shutdown();
+                secondLogger.Shutdown();
+            }
+
+            secondLogger.ExperimentBusyLoopThreadRunning.ShouldBeFalse();
+        }
+
+        [Fact]
+        public void NoOpExperimentConsumesRawReplayIncludingEmbeddedContent()
+        {
+            using TestEnvironment env = TestEnvironment.Create();
+            string projectFile = env.CreateFile(
+                "experiment.proj",
+                "<Project><Target Name=\"Build\"><Message Text=\"message\" /></Target></Project>").Path;
+            string sourceBinlog = Path.Combine(env.DefaultTestDirectory.Path, "source.binlog");
+            string discardedBinlog = Path.Combine(env.DefaultTestDirectory.Path, "discarded.binlog");
+
+            using (var projectCollection = new ProjectCollection())
+            {
+                var sourceLogger = new BinaryLogger { Parameters = sourceBinlog };
+                var project = new Project(projectFile, globalProperties: null, toolsVersion: null, projectCollection);
+                project.Build([sourceLogger]).ShouldBeTrue();
+            }
+
+            env.SetEnvironmentVariable(BinaryLogger.ExperimentModeEnvironmentVariable, "NoOp");
+            var discardLogger = new BinaryLogger { Parameters = discardedBinlog };
+            var replay = new BinaryLogReplayEventSource();
+            discardLogger.Initialize(replay);
+            try
+            {
+                replay.Replay(sourceBinlog);
+            }
+            finally
+            {
+                discardLogger.Shutdown();
+            }
+
+            File.Exists(discardedBinlog).ShouldBeFalse();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("Optimal")]
+        [InlineData("Fastest")]
+        [InlineData("NoCompression")]
+        public void ExperimentCompressionLevelsProduceReplayableBinlogs(string compressionLevel)
+        {
+            using TestEnvironment env = TestEnvironment.Create();
+            env.SetEnvironmentVariable(BinaryLogger.ExperimentCompressionLevelEnvironmentVariable, compressionLevel);
+            string logFile = Path.Combine(env.DefaultTestDirectory.Path, $"{compressionLevel ?? "Default"}.binlog");
+            var logger = new BinaryLogger
+            {
+                Parameters = $"{logFile};ProjectImports=None"
+            };
+            var eventSource = new EventSourceSink();
+
+            logger.Initialize(eventSource);
+            eventSource.Consume(new BuildStartedEventArgs("started", helpKeyword: null));
+            eventSource.Consume(new BuildFinishedEventArgs("finished", helpKeyword: null, succeeded: true));
+            logger.Shutdown();
+
+            int buildFinishedCount = 0;
+            var replay = new BinaryLogReplayEventSource();
+            replay.BuildFinished += (_, _) => buildFinishedCount++;
+            replay.Replay(logFile);
+
+            buildFinishedCount.ShouldBe(1);
+            new FileInfo(logFile).Length.ShouldBeGreaterThan(0);
+        }
+    }
 }
