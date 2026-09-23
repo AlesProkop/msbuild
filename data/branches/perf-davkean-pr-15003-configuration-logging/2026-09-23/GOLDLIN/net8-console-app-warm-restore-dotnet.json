@@ -1,0 +1,32 @@
+{
+  "date": "2026-09-23",
+  "scenario": "net8-console-app-warm-restore-dotnet",
+  "perfstarCIBuildNumber": "20260923.2.t",
+  "branch": "refs/heads/perf/davkean/pr-15003-configuration-logging",
+  "ciRunReason": "ResourceTrigger",
+  "machineID": "GOLDLIN",
+  "schemaVersion": "2",
+  "timestamp": "2026-09-23T18:09:24.7805754Z",
+  "results": {
+    "netSdkVersion": "11.0.100-rtm.26472.124",
+    "aspNetCoreVersion": "10.0.12+95017c711e6a",
+    "netCoreAppVersion": "10.0.12+95017c711e6a",
+    "msbuild-version": "18.12.0.47302",
+    "msbuild-display-version": "18.12.0.47302",
+    "evaluation-metrics-available": 0.0,
+    "exit-code": 0.0,
+    "build-time": 520.74672,
+    "recollected-attempts": 0.0,
+    "disk/working-dir-bytes": 64244984.0,
+    "disk/nuget-global-bytes": 5500051942.0,
+    "disk/nuget-http-cache-bytes": 0.0,
+    "disk/free-bytes": 27016146944.0,
+    "info/test-asset": "Net8ConsoleApp",
+    "info/test-scenario": "WarmRestore",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 2.0,
+    "info/iterations-number": 5.0,
+    "dotnet-version": "11.0.100-rtm.26472.124",
+    "crank-netSdkVersion": "10.0.401"
+  }
+}
