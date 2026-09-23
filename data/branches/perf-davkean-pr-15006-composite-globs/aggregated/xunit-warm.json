@@ -158,5 +158,36 @@
       "dotnet-version": "11.0.100-rc.2.26461.115",
       "crank-netSdkVersion": "10.0.401"
     }
+  },
+  {
+    "date": "2026-09-23",
+    "scenario": "xunit-warm-inc-build-dotnet",
+    "perfstarCIBuildNumber": "20260923.3.t",
+    "branch": "refs/heads/perf/davkean/pr-15006-composite-globs",
+    "ciRunReason": "ResourceTrigger",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-09-23T15:41:20.2049661Z",
+    "results": {
+      "netSdkVersion": "11.0.100-rtm.26472.124",
+      "aspNetCoreVersion": "10.0.12+95017c711e6a",
+      "netCoreAppVersion": "10.0.12+95017c711e6a",
+      "msbuild-version": "18.12.0.47303",
+      "msbuild-display-version": "18.12.0.47303",
+      "exit-code": 1.0,
+      "failure-description": "Incremental build finished with non zero exit code.",
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 3543744761.0,
+      "disk/nuget-global-bytes": 3230081337.0,
+      "disk/nuget-http-cache-bytes": 96106597.0,
+      "disk/free-bytes": 513707827200.0,
+      "info/test-asset": "Xunit",
+      "info/test-scenario": "WarmIncrementalBuild",
+      "info/msbuild-app": "Dotnet",
+      "info/test-version": 1.0,
+      "info/iterations-number": 1.0,
+      "dotnet-version": "11.0.100-rtm.26472.124",
+      "crank-netSdkVersion": "10.0.401"
+    }
   }
 ]
