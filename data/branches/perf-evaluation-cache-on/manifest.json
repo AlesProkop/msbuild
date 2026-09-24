@@ -1,7 +1,7 @@
 [
   {
     "name": "net8-blazorwasm-app",
-    "records": 1,
+    "records": 2,
     "scenarios": [
       "net8-blazorwasm-app-inc-build-dotnet"
     ],
@@ -49,7 +49,7 @@
   },
   {
     "name": "orchard-core",
-    "records": 4,
+    "records": 8,
     "scenarios": [
       "orchard-core-inc-build-check-dotnet",
       "orchard-core-inc-build-dotnet",
@@ -61,7 +61,7 @@
   },
   {
     "name": "orchard-core-cold",
-    "records": 1,
+    "records": 2,
     "scenarios": [
       "orchard-core-cold-restore-dotnet"
     ],
@@ -70,7 +70,7 @@
   },
   {
     "name": "orchard-core-inc",
-    "records": 1,
+    "records": 2,
     "scenarios": [
       "orchard-core-inc-restore-dotnet"
     ],
@@ -79,16 +79,17 @@
   },
   {
     "name": "orchard-core-warm",
-    "records": 1,
+    "records": 3,
     "scenarios": [
-      "orchard-core-warm-inc-build-dotnet"
+      "orchard-core-warm-inc-build-dotnet",
+      "orchard-core-warm-restore-dotnet"
     ],
     "firstDate": "2026-09-24",
     "latestDate": "2026-09-24"
   },
   {
     "name": "rar-conflict-details-stress",
-    "records": 2,
+    "records": 4,
     "scenarios": [
       "rar-conflict-details-stress-rebuild-dotnet",
       "rar-conflict-details-stress-rebuild-mt-dotnet"
@@ -98,7 +99,7 @@
   },
   {
     "name": "rar-conflict-warning-stress",
-    "records": 2,
+    "records": 4,
     "scenarios": [
       "rar-conflict-warning-stress-rebuild-dotnet",
       "rar-conflict-warning-stress-rebuild-mt-dotnet"
@@ -108,7 +109,7 @@
   },
   {
     "name": "rar-search-stress",
-    "records": 2,
+    "records": 4,
     "scenarios": [
       "rar-search-stress-rebuild-dotnet",
       "rar-search-stress-rebuild-mt-dotnet"
@@ -118,7 +119,7 @@
   },
   {
     "name": "very-large-net8-console-app",
-    "records": 1,
+    "records": 2,
     "scenarios": [
       "very-large-net8-console-app-restore-dotnet"
     ],
@@ -127,7 +128,7 @@
   },
   {
     "name": "very-large-net8-console-app-inc",
-    "records": 1,
+    "records": 2,
     "scenarios": [
       "very-large-net8-console-app-inc-restore-dotnet"
     ],
@@ -136,7 +137,7 @@
   },
   {
     "name": "xunit",
-    "records": 2,
+    "records": 4,
     "scenarios": [
       "xunit-inc-build-dotnet",
       "xunit-rebuild-dotnet"
@@ -146,7 +147,7 @@
   },
   {
     "name": "xunit-warm",
-    "records": 1,
+    "records": 2,
     "scenarios": [
       "xunit-warm-inc-build-dotnet"
     ],
