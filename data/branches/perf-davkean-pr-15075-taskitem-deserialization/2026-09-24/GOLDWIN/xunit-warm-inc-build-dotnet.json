@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-24",
+  "scenario": "xunit-warm-inc-build-dotnet",
+  "perfstarCIBuildNumber": "20260923.6.t",
+  "branch": "refs/heads/perf/davkean/pr-15075-taskitem-deserialization",
+  "ciRunReason": "ResourceTrigger",
+  "machineID": "GOLDWIN",
+  "schemaVersion": "2",
+  "timestamp": "2026-09-23T23:51:46.6990167Z",
+  "results": {
+    "netSdkVersion": "11.0.100-rtm.26473.104",
+    "aspNetCoreVersion": "10.0.12+95017c711e6a",
+    "netCoreAppVersion": "10.0.12+95017c711e6a",
+    "msbuild-version": "18.12.0.47306",
+    "msbuild-display-version": "18.12.0.47306",
+    "exit-code": 1.0,
+    "failure-description": "Incremental build finished with non zero exit code.",
+    "recollected-attempts": 0.0,
+    "disk/working-dir-bytes": 3543210324.0,
+    "disk/nuget-global-bytes": 3230081337.0,
+    "disk/nuget-http-cache-bytes": 96106597.0,
+    "disk/free-bytes": 497954930688.0,
+    "info/test-asset": "Xunit",
+    "info/test-scenario": "WarmIncrementalBuild",
+    "info/msbuild-app": "Dotnet",
+    "info/test-version": 1.0,
+    "info/iterations-number": 1.0,
+    "dotnet-version": "11.0.100-rtm.26473.104",
+    "crank-netSdkVersion": "10.0.401"
+  }
+}
