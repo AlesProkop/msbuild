@@ -1,0 +1,20 @@
+[
+  {
+    "name": "net8-console-app-warm",
+    "records": 1,
+    "scenarios": [
+      "net8-console-app-warm-inc-build-mt-dotnet"
+    ],
+    "firstDate": "2026-09-25",
+    "latestDate": "2026-09-25"
+  },
+  {
+    "name": "orchard-core-warm",
+    "records": 1,
+    "scenarios": [
+      "orchard-core-warm-inc-build-mt-dotnet"
+    ],
+    "firstDate": "2026-09-25",
+    "latestDate": "2026-09-25"
+  }
+]
