@@ -85,17 +85,36 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 942.21036,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 942.21036
+              }
+            ]
+          }
         }
       },
       "incBuild": {
-        "p50": 1049.17876,
+        "p50": 942.21036,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 942.21036
+          },
           {
             "v": 1049.17876
           }
@@ -465,17 +484,36 @@
               }
             ]
           }
+        },
+        "linux": {
+          "incBuild": {
+            "p50": 18898.700100000002,
+            "regressionPct": null,
+            "samplesLast7d": 1,
+            "samplesPrior30d": 0,
+            "passRate": 100.0,
+            "passRate30d": 100.0,
+            "totalRuns": 1,
+            "sparkline": [
+              {
+                "v": 18898.700100000002
+              }
+            ]
+          }
         }
       },
       "incBuild": {
-        "p50": 58172.740659999996,
+        "p50": 18898.700100000002,
         "regressionPct": null,
-        "samplesLast7d": 1,
+        "samplesLast7d": 2,
         "samplesPrior30d": 0,
         "passRate": 100.0,
         "passRate30d": 100.0,
-        "totalRuns": 1,
+        "totalRuns": 2,
         "sparkline": [
+          {
+            "v": 18898.700100000002
+          },
           {
             "v": 58172.740659999996
           }
@@ -483,8 +521,8 @@
       },
       "mt": {
         "incBuild": {
-          "p50": 58172.740659999996,
-          "speedupPct": -206.7
+          "p50": 18898.700100000002,
+          "speedupPct": 0.4
         }
       }
     },

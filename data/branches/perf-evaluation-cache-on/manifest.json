@@ -10,7 +10,7 @@
   },
   {
     "name": "net8-console-app-warm",
-    "records": 1,
+    "records": 2,
     "scenarios": [
       "net8-console-app-warm-inc-build-mt-dotnet"
     ],
@@ -88,7 +88,7 @@
   },
   {
     "name": "orchard-core-warm",
-    "records": 4,
+    "records": 5,
     "scenarios": [
       "orchard-core-warm-inc-build-dotnet",
       "orchard-core-warm-inc-build-mt-dotnet",
