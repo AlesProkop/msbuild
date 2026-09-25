@@ -28,6 +28,15 @@
     "latestDate": "2026-09-24"
   },
   {
+    "name": "net8-console-app-warm",
+    "records": 1,
+    "scenarios": [
+      "net8-console-app-warm-inc-build-mt-dotnet"
+    ],
+    "firstDate": "2026-09-25",
+    "latestDate": "2026-09-25"
+  },
+  {
     "name": "net8-web-app",
     "records": 2,
     "scenarios": [
@@ -98,13 +107,14 @@
   },
   {
     "name": "orchard-core-warm",
-    "records": 2,
+    "records": 3,
     "scenarios": [
       "orchard-core-warm-inc-build-dotnet",
+      "orchard-core-warm-inc-build-mt-dotnet",
       "orchard-core-warm-restore-dotnet"
     ],
     "firstDate": "2026-09-24",
-    "latestDate": "2026-09-24"
+    "latestDate": "2026-09-25"
   },
   {
     "name": "rar-conflict-details-stress",
