@@ -256,5 +256,48 @@
       "dotnet-version": "11.0.100-rtm.26473.115",
       "crank-netSdkVersion": "10.0.401"
     }
+  },
+  {
+    "date": "2026-09-28",
+    "scenario": "orchard-core-publish-evaluation-mt-dotnet",
+    "perfstarCIBuildNumber": "20260928.1.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-09-28T05:16:50.4592222Z",
+    "results": {
+      "netSdkVersion": "11.0.100-rtm.26473.115",
+      "aspNetCoreVersion": "10.0.12+95017c711e6a",
+      "netCoreAppVersion": "10.0.12+95017c711e6a",
+      "msbuild-version": "18.12.0.47105",
+      "msbuild-display-version": "18.12.0.47105",
+      "evaluation-time-metrics": 202940.2739416667,
+      "outside-build-submission-evaluation-time-metrics": 33356.21458333333,
+      "evaluation-metrics-count": 1048.0,
+      "outside-build-submission-evaluation-metrics-count": 98.0,
+      "evaluation-time-pass0-metrics": 1094.3644083333331,
+      "evaluation-time-pass1-metrics": 84368.70583333331,
+      "evaluation-time-pass2-metrics": 75.87129999999998,
+      "evaluation-time-pass3-metrics": 104838.56675000004,
+      "evaluation-time-pass4-metrics": 4055.7134916666687,
+      "evaluation-time-pass5-metrics": 7349.91189166667,
+      "outside-build-submission-evaluation-time-pass0-metrics": 755.5980916666667,
+      "outside-build-submission-evaluation-time-pass1-metrics": 31594.09870833333,
+      "build-time": 39613.641691666664,
+      "exit-code": 0.0,
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 7330979077.0,
+      "disk/nuget-global-bytes": 3230081337.0,
+      "disk/nuget-http-cache-bytes": 96106597.0,
+      "disk/free-bytes": 498839760896.0,
+      "info/test-asset": "OrchardCore",
+      "info/test-scenario": "publishRelease",
+      "info/msbuild-app": "DotnetPublish",
+      "info/test-version": 1.0,
+      "info/iterations-number": 12.0,
+      "dotnet-version": "11.0.100-rtm.26473.115",
+      "crank-netSdkVersion": "10.0.401"
+    }
   }
 ]
