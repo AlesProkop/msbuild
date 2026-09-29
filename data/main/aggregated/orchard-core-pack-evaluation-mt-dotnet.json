@@ -415,5 +415,48 @@
       "dotnet-version": "11.0.100-rtm.26473.115",
       "crank-netSdkVersion": "10.0.401"
     }
+  },
+  {
+    "date": "2026-09-29",
+    "scenario": "orchard-core-pack-evaluation-mt-dotnet",
+    "perfstarCIBuildNumber": "20260929.1.s",
+    "branch": "refs/heads/main",
+    "ciRunReason": "Schedule",
+    "machineID": "GOLDWIN",
+    "schemaVersion": "2",
+    "timestamp": "2026-09-29T03:34:06.1884948Z",
+    "results": {
+      "netSdkVersion": "11.0.100-rtm.26473.115",
+      "aspNetCoreVersion": "10.0.12+95017c711e6a",
+      "netCoreAppVersion": "10.0.12+95017c711e6a",
+      "msbuild-version": "18.12.0.47105",
+      "msbuild-display-version": "18.12.0.47105",
+      "evaluation-time-metrics": 172920.37565833333,
+      "outside-build-submission-evaluation-time-metrics": 29040.27750833333,
+      "evaluation-metrics-count": 1536.0,
+      "outside-build-submission-evaluation-metrics-count": 224.0,
+      "evaluation-time-pass0-metrics": 1083.3256750000003,
+      "evaluation-time-pass1-metrics": 85344.7355166667,
+      "evaluation-time-pass2-metrics": 92.32479166666666,
+      "evaluation-time-pass3-metrics": 77970.31655833339,
+      "evaluation-time-pass4-metrics": 3297.8760666666676,
+      "evaluation-time-pass5-metrics": 3852.877308333334,
+      "outside-build-submission-evaluation-time-pass0-metrics": 774.8594666666668,
+      "outside-build-submission-evaluation-time-pass1-metrics": 27218.904649999993,
+      "build-time": 62440.85825833334,
+      "exit-code": 0.0,
+      "recollected-attempts": 0.0,
+      "disk/working-dir-bytes": 7514871297.0,
+      "disk/nuget-global-bytes": 3230081337.0,
+      "disk/nuget-http-cache-bytes": 96106597.0,
+      "disk/free-bytes": 510457704448.0,
+      "info/test-asset": "OrchardCore",
+      "info/test-scenario": "packRelease",
+      "info/msbuild-app": "DotnetPack",
+      "info/test-version": 1.0,
+      "info/iterations-number": 12.0,
+      "dotnet-version": "11.0.100-rtm.26473.115",
+      "crank-netSdkVersion": "10.0.401"
+    }
   }
 ]
