@@ -887,17 +887,19 @@
         return getScenarioPairsFor(DATA);
     }
 
-    function toMs(v, metric) {
-        if (v == null || v === '') return null;
-        return +v;
+    function getMetricValue(results, metric) {
+        const value = results?.[`${metric}-metrics`] ?? results?.[metric];
+        if (value == null || (typeof value === 'string' && value.trim() === '')) return null;
+        const number = Number(value);
+        return Number.isFinite(number) ? number : null;
     }
 
     function getSeries(scenario, metric, dataSource) {
         const src = dataSource || DATA;
-        return src.filter(d => d.scenario === scenario && d.results[metric] != null && d.results[metric] !== '')
+        return src.filter(d => d.scenario === scenario && getMetricValue(d.results, metric) != null)
             .sort((a,b) => a.date.localeCompare(b.date))
             .map(d => ({
-                date: d.date, value: toMs(d.results[metric], metric), exitCode: d.results['exit-code'],
+                date: d.date, value: getMetricValue(d.results, metric), exitCode: d.results['exit-code'],
                 timestamp: d.timestamp || '',
                 machineID: d.machineID || '',
                 msbuildVersion: d.results['msbuild-version'] || '',
@@ -1806,8 +1808,6 @@
         const sel = document.getElementById('cmpMetric');
         return sel.options[sel.selectedIndex]?.textContent || sel.value;
     }
-    function cmpNum(v) { const n = Number(v); return Number.isFinite(n) ? n : null; }
-
     // Difference chip: positive % = slower than baseline (regression, red).
     function cmpDiffChip(pct) {
         if (pct == null) return '<span class="muted">—</span>';
@@ -1885,7 +1885,7 @@
         const acc = new Map(); // key -> {sum,count,scenario,platform}
         for (const rec of records) {
             if (rec.perfstarCIBuildNumber !== build) continue;
-            const v = cmpNum(rec.results?.[metric]);
+            const v = getMetricValue(rec.results, metric);
             if (v == null) continue;
             const platform = platformOf(rec);
             const key = rec.scenario + CMP_SEP + platform;
@@ -1911,7 +1911,7 @@
         for (const rec of records) {
             const t = Date.parse(rec.date);
             if (!Number.isFinite(t) || t < cutoff) continue;
-            const v = cmpNum(rec.results?.[metric]);
+            const v = getMetricValue(rec.results, metric);
             if (v == null) continue;
             const platform = platformOf(rec);
             const key = rec.scenario + CMP_SEP + platform;
