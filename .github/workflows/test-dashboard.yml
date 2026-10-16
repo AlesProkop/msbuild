@@ -1,0 +1,28 @@
+name: Test dashboard
+
+on:
+  pull_request:
+    branches: [ "perf/dashboard" ]
+    paths:
+      - "index.html"
+      - ".github/tests/**"
+      - ".github/workflows/test-dashboard.yml"
+  push:
+    branches: [ "perf/dashboard" ]
+    paths:
+      - "index.html"
+      - ".github/tests/**"
+      - ".github/workflows/test-dashboard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test .github/tests/metric-compatibility.test.cjs

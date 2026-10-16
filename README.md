@@ -43,6 +43,18 @@ http://localhost:8000/
 
 Do not rely on opening `index.html` directly from the file system. The dashboard loads JSON with `fetch()`, and browsers commonly block those requests for `file://` pages.
 
+## Tests
+
+Run the metric compatibility and comparison regression tests with Node.js 20 or newer:
+
+```powershell
+node --test .github\tests\metric-compatibility.test.cjs
+```
+
+No package installation is required. The tests execute the dashboard's own JavaScript
+with fixture data, covering legacy/current metrics, all comparison baseline modes,
+and the shared trend/MT data path. The dashboard test workflow runs them for UI changes.
+
 ## Data model
 
 The dashboard expects schema version `2` data.
@@ -68,5 +80,13 @@ The dashboard expects schema version `2` data.
 - `exit-code`;
 - MSBuild, measured SDK, ASP.NET Core, and runtime versions;
 - test asset, scenario, and app metadata.
+
+Evaluation-time selections accept both legacy keys (`evaluation-time`,
+`evaluation-time-pass1`, and so on) and newer keys with the `-metrics` suffix
+(`evaluation-time-metrics`, `evaluation-time-pass1-metrics`, and so on).
+The newer key takes precedence when both are present. Comparisons, including
+date-window baselines, and trend/MT charts use the same lookup. Missing, blank,
+and non-finite values are excluded rather than counted as zero; valid zeroes
+are retained. A metric absent from both schemas remains unavailable.
 
 Machine IDs ending in `WIN` are treated as Windows, IDs ending in `LIN` are treated as Linux, and missing or unrecognized IDs are shown as historical or unknown-platform data.
